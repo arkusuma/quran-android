@@ -20,7 +20,7 @@ public class ViewerActivity extends BaseActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.pager);
+		setContentView(R.layout.viewer);
 
 		mAdapter = new ViewerAdapter(getSupportFragmentManager());
 		mPager = (ViewPager) findViewById(R.id.pager);
