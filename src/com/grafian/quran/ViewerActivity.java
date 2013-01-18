@@ -9,7 +9,7 @@ import android.support.v4.view.ViewPager;
 
 import com.grafian.quran.MetaData.Mark;
 
-public class ViewerActivity extends BaseFragmentActivity {
+public class ViewerActivity extends BaseActivity {
 
 	private ViewPager mPager;
 	private ViewerAdapter mAdapter;
@@ -37,10 +37,10 @@ public class ViewerActivity extends BaseFragmentActivity {
 			mAya = intent.getIntExtra(QuranFragment.AYA, 1);
 		}
 
-		if (app.loaded) {
-			loadPage();
+		if (mApp.loaded) {
+			mPager.setCurrentItem(findPage(mSura, mAya));
 		} else {
-			app.loadAllData(this, new ProgressListener() {
+			mApp.loadAllData(this, new ProgressListener() {
 				@Override
 				public void onProgress() {
 				}
@@ -48,7 +48,7 @@ public class ViewerActivity extends BaseFragmentActivity {
 				@Override
 				public void onFinish() {
 					mAdapter.notifyDataSetChanged();
-					loadPage();
+					mPager.setCurrentItem(findPage(mSura, mAya));
 				}
 			});
 		}
@@ -65,23 +65,23 @@ public class ViewerActivity extends BaseFragmentActivity {
 		}
 	}
 
-	private void loadPage() {
+	private int findPage(int sura, int aya) {
 		int item = 0;
 		switch (mMode) {
 		case Config.MODE_SURA:
-			item = mSura - 1;
+			item = sura - 1;
 			break;
 		case Config.MODE_PAGE:
-			item = app.metaData.searchPage(mSura, mAya) - 1;
+			item = mApp.metaData.findPage(sura, aya) - 1;
 			break;
 		case Config.MODE_JUZ:
-			item = app.metaData.searchJuz(mSura, mAya) - 1;
+			item = mApp.metaData.findJuz(sura, aya) - 1;
 			break;
 		case Config.MODE_HIZB:
-			item = app.metaData.searchHizb(mSura, mAya) - 1;
+			item = mApp.metaData.findHizb(sura, aya) - 1;
 			break;
 		}
-		mPager.setCurrentItem(item);
+		return item;
 	}
 
 	private Mark getMark(int position) {
@@ -91,13 +91,13 @@ public class ViewerActivity extends BaseFragmentActivity {
 			mark = new Mark(position + 1, 1);
 			break;
 		case Config.MODE_PAGE:
-			mark = app.metaData.getPage(position + 1);
+			mark = new Mark(mApp.metaData.getPage(position + 1));
 			break;
 		case Config.MODE_JUZ:
-			mark = app.metaData.getJuz(position + 1);
+			mark = new Mark(mApp.metaData.getJuz(position + 1));
 			break;
 		case Config.MODE_HIZB:
-			mark = app.metaData.getHizb(position + 1);
+			mark = new Mark(mApp.metaData.getHizb(position + 1));
 			break;
 		}
 		return mark;
@@ -114,6 +114,10 @@ public class ViewerActivity extends BaseFragmentActivity {
 			Fragment fragment = new QuranFragment();
 			Bundle args = new Bundle();
 			Mark m = getMark(position);
+			if (findPage(m.sura, m.aya) == findPage(mSura, mAya)) {
+				m.sura = mSura;
+				m.aya = mAya;
+			}
 			args.putInt(QuranFragment.MODE, mMode);
 			args.putInt(QuranFragment.SURA, m.sura);
 			args.putInt(QuranFragment.AYA, m.aya);
@@ -123,16 +127,16 @@ public class ViewerActivity extends BaseFragmentActivity {
 
 		@Override
 		public int getCount() {
-			if (app.loaded) {
+			if (mApp.loaded) {
 				switch (mMode) {
 				case Config.MODE_SURA:
-					return app.metaData.getSuraCount();
+					return mApp.metaData.getSuraCount();
 				case Config.MODE_PAGE:
-					return app.metaData.getPageCount();
+					return mApp.metaData.getPageCount();
 				case Config.MODE_JUZ:
-					return app.metaData.getJuzCount();
+					return mApp.metaData.getJuzCount();
 				case Config.MODE_HIZB:
-					return app.metaData.getHizbCount();
+					return mApp.metaData.getHizbCount();
 				}
 			}
 			return 0;

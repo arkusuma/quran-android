@@ -14,13 +14,20 @@ public class App extends Application {
 	public Quran translation;
 	public boolean loaded = false;
 	public Config config;
+	public Bookmark bookmark;
 	public static App app;
 
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		config = new Config(this);
+
 		app = this;
+
+		config = new Config();
+		config.load(this);
+
+		bookmark = new Bookmark();
+		bookmark.load(this);
 	}
 
 	private int getTranslationID() {

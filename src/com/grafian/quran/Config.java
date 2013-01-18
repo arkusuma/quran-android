@@ -15,23 +15,17 @@ public class Config {
 	final private static String MODE = "mode";
 	final private static String LANG = "lang";
 
-	private Context mContext;
 	private int mMode;
 	private String mLang;
 
-	public Config(Context context) {
-		mContext = context;
-		load();
-	}
-
-	public void load() {
-		SharedPreferences sp = mContext.getSharedPreferences(CONFIG_NAME, Context.MODE_PRIVATE);
+	public void load(Context context) {
+		SharedPreferences sp = context.getSharedPreferences(CONFIG_NAME, Context.MODE_PRIVATE);
 		mMode = sp.getInt(MODE, 0);
 		mLang = sp.getString(LANG, "en");
 	}
 
-	public void save() {
-		SharedPreferences sp = mContext.getSharedPreferences(CONFIG_NAME, Context.MODE_PRIVATE);
+	public void save(Context context) {
+		SharedPreferences sp = context.getSharedPreferences(CONFIG_NAME, Context.MODE_PRIVATE);
 		Editor ed = sp.edit();
 		ed.putInt(MODE, mMode);
 		ed.putString(LANG, mLang);

@@ -1,12 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Quran</string>
+    <string name="app_name">Beautiful Quran</string>
     <string name="about">About</string>
     <string name="english">English</string>
     <string name="indonesia">Indonesia</string>
     <string name="loading">Loading data, please wait&#8230;</string>
-    <string name="select_translation">Select a Translation</string>
+    <string name="select_translation">Select Translation</string>
+    <string name="select_folder">Add Bookmark to Folder</string>
+    <string name="replace_confirm">Bookmark will be replaced. Are you sure?</string>
+    <string name="create_folder_title">Create New Bookmark Folder</string>
+    <string name="create_new">Create new&#8230;</string>
+    <string name="create_add">Create &amp; Add</string>
+    <string name="edit_folder_title">Edit Bookmark Folder</string>
+    <string name="save">Save</string>
+    <string name="replace">Replace</string>
+    <string name="cancel">Cancel</string>
+    <string name="share_via">Share Via</string>
+    <string name="delete">"Delete"</string>
+    <string name="delete_bookmark_folder">"Delete bookmark folder?"</string>
+    <string name="delete_bookmark_item">"Delete bookmark item?"</string>
+    <string name="folder_name_hint">Enter bookmark folder name</string>
+    <string name="folder_single">Single</string>
+    <string name="folder_multiple">Multiple</string>
+    <string name="view_as_sura">View as Sura</string>
+    <string name="view_as_page">View as Page</string>
+    <string name="view_as_juz">View as Juz</string>
+    <string name="view_as_hizb">View as Hizb</string>
 
     <!-- About Dialog -->
     <string name="about">About</string>
@@ -251,118 +271,118 @@
     <string-array name="sura_name_id">
         <item>Al-Fatihah</item>
         <item>Al-Baqarah</item>
-        <item>Ali Imran</item>
-        <item>An-Nisaa</item>
-        <item>Al-Maidah</item>
+        <item>Ali \'Imran</item>
+        <item>An-Nisa\'</item>
+        <item>Al-Ma\'idah</item>
         <item>Al-An\'am</item>
         <item>Al-A\'raf</item>
-        <item>Al-Anfaal</item>
+        <item>Al-Anfal</item>
         <item>At-Taubah</item>
         <item>Yunus</item>
-        <item>Huud</item>
+        <item>Hud</item>
         <item>Yusuf</item>
         <item>Ar-Ra\'d</item>
         <item>Ibrahim</item>
         <item>Al-Hijr</item>
         <item>An-Nahl</item>
-        <item>Al-Israa\'</item>
-        <item>Al-Kahfi</item>
+        <item>Al-Isra\'</item>
+        <item>Al-Kahf</item>
         <item>Maryam</item>
-        <item>Thaahaa</item>
-        <item>Al-Anbiyaa</item>
+        <item>Ta Ha</item>
+        <item>Al-Anbiya</item>
         <item>Al-Hajj</item>
-        <item>Al-Mu\'minuun</item>
-        <item>An-Nuur</item>
-        <item>Al-Furqaan</item>
-        <item>Asy-Syu\'araa</item>
+        <item>Al-Mu\'minun</item>
+        <item>An-Nur</item>
+        <item>Al-Furqan</item>
+        <item>Asy-Syu\'ara\'</item>
         <item>An-Naml</item>
-        <item>Al-Qashash</item>
-        <item>Al-\'Ankabuut</item>
-        <item>Ar-Ruum</item>
+        <item>Al-Qasas</item>
+        <item>Al-\'Ankabut</item>
+        <item>Ar-Rum</item>
         <item>Luqman</item>
         <item>As-Sajdah</item>
         <item>Al-Ahzab</item>
         <item>Saba\'</item>
-        <item>Faathir</item>
-        <item>Yaa Siin</item>
-        <item>Ash-Shaaffat</item>
-        <item>Shaad</item>
+        <item>Fatir</item>
+        <item>Ya Sin</item>
+        <item>As-Saffat</item>
+        <item>Sad</item>
         <item>Az-Zumar</item>
         <item>Al-Mu\'min</item>
-        <item>Fushshilat</item>
-        <item>Asy-Syuura</item>
+        <item>Fussilat</item>
+        <item>Asy-Syura</item>
         <item>Az-Zukhruf</item>
-        <item>Ad-Dukhaan</item>
-        <item>Al-Jaatsiyah</item>
-        <item>Al-Ahqaaf</item>
+        <item>Ad-Dukhan</item>
+        <item>Al-Jasiyah</item>
+        <item>Al-Ahqaf</item>
         <item>Muhammad</item>
-        <item>Al-Fat-h</item>
-        <item>Al-Hujuraat</item>
-        <item>Qaaf</item>
-        <item>Adz-Dzaariyat</item>
-        <item>Ath-Thuur</item>
+        <item>Al-Fath</item>
+        <item>Al-Hujurat</item>
+        <item>Qaf</item>
+        <item>Az-Zariyat</item>
+        <item>At-Tur</item>
         <item>An-Najm</item>
         <item>Al-Qamar</item>
-        <item>Ar-Rahmaan</item>
-        <item>Al-Waaqi\'ah</item>
-        <item>Al-Hadiid</item>
-        <item>Al-Mujaadilah</item>
+        <item>Ar-Rahman</item>
+        <item>Al-Waqi\'ah</item>
+        <item>Al-Hadid</item>
+        <item>Al-Mujadilah</item>
         <item>Al-Hasyr</item>
         <item>Al-Mumtahanah</item>
-        <item>Ash-Shaff</item>
-        <item>Al-Jumuah</item>
-        <item>Al-Munaafiqun</item>
-        <item>At-Taghaabun</item>
-        <item>Ath-Thalaaq</item>
-        <item>At-Tahriim</item>
+        <item>As-Saff</item>
+        <item>Al-Jumu\'ah</item>
+        <item>Al-Munafiqun</item>
+        <item>At-Tagabun</item>
+        <item>At-Talaq</item>
+        <item>At-Tahrim</item>
         <item>Al-Mulk</item>
         <item>Al-Qalam</item>
-        <item>Al-Haaqqah</item>
-        <item>Al-Ma\'aarij</item>
+        <item>Al-Haqqah</item>
+        <item>Al-Ma\'arij</item>
         <item>Nuh</item>
-        <item>Al-Jin</item>
+        <item>Al-Jinn</item>
         <item>Al-Muzzammil</item>
-        <item>Al-Muddatstsir</item>
-        <item>Al-Qiyaamah</item>
-        <item>Al-Insaan</item>
-        <item>Al-Mursalaat</item>
+        <item>Al-Muddassir</item>
+        <item>Al-Qiyamah</item>
+        <item>Al-Insan</item>
+        <item>Al-Mursalat</item>
         <item>An-Naba\'</item>
-        <item>An-Naazi\'aat</item>
+        <item>An-Nazi\'at</item>
         <item>\'Abasa</item>
-        <item>At-Takwiir</item>
-        <item>Al-Infithaar</item>
-        <item>Al-Muthaffif</item>
-        <item>Al-Insyiqaaq</item>
-        <item>Al-Buruuj</item>
-        <item>Ath-Thaariq</item>
-        <item>Al-A\'laa</item>
-        <item>Al-Ghaasyiyah</item>
+        <item>At-Takwir</item>
+        <item>Al-Infitar</item>
+        <item>Al-Tatfif</item>
+        <item>Al-Insyiqaq</item>
+        <item>Al-Buruj</item>
+        <item>At-Tariq</item>
+        <item>Al-A\'la</item>
+        <item>Al-Gasyiyah</item>
         <item>Al-Fajr</item>
         <item>Al-Balad</item>
         <item>Asy-Syams</item>
         <item>Al-Lail</item>
-        <item>Adh-Dhuhaa</item>
-        <item>Alam Nasyrah</item>
-        <item>At-Tiin</item>
+        <item>Ad-Duha</item>
+        <item>Al-Insyirah</item>
+        <item>At-Tin</item>
         <item>Al-\'Alaq</item>
         <item>Al-Qadr</item>
         <item>Al-Bayyinah</item>
         <item>Az-Zalzalah</item>
-        <item>Al-\'Aadiyaat</item>
-        <item>Al-Qaari\'ah</item>
-        <item>At-Takaatsur</item>
-        <item>Al-\'Ashr</item>
+        <item>Al-\'Adiyat</item>
+        <item>Al-Qari\'ah</item>
+        <item>At-Takasur</item>
+        <item>Al-\'Asr</item>
         <item>Al-Humazah</item>
-        <item>Al-Fiil</item>
+        <item>Al-Fil</item>
         <item>Quraisy</item>
-        <item>Al-Maa\'uun</item>
-        <item>Al-Kautsar</item>
-        <item>Al-Kaafiruun</item>
-        <item>An-Nashr</item>
+        <item>Al-Ma\'un</item>
+        <item>Al-Kausar</item>
+        <item>Al-Kafirun</item>
+        <item>An-Nasr</item>
         <item>Al-Lahab</item>
-        <item>Al-Ikhlash</item>
+        <item>Al-Ikhlas</item>
         <item>Al-Falaq</item>
-        <item>An-Naas</item>
+        <item>An-Nas</item>
     </string-array>
     <string-array name="sura_translation_id">
         <item>Pembukaan</item>
@@ -398,7 +418,7 @@
         <item>Luqman</item>
         <item>Sujud</item>
         <item>Golongan yang Bersekutu</item>
-        <item>Kaum Saba’</item>
+        <item>Kaum Saba\'</item>
         <item>Pencipta</item>
         <item>YaSin</item>
         <item>Yang Bersaf-saf</item>
@@ -426,7 +446,7 @@
         <item>Pengusiran</item>
         <item>Perempuan yang Diuji</item>
         <item>Barisan</item>
-        <item>Hari Jum’at</item>
+        <item>Hari Jum\'at</item>
         <item>Orang-Orang yang Munafik</item>
         <item>Hari Ditampakkan Segala Kesalahan</item>
         <item>Talak</item>
@@ -487,6 +507,10 @@
     <string-array name="lang_codes">
         <item>en</item>
         <item>id</item>
+    </string-array>
+    <string-array name="aya_operations">
+        <item>Copy</item>
+        <item>Share</item>
     </string-array>
 
 </resources>

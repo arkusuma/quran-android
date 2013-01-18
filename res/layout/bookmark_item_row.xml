@@ -5,25 +5,18 @@
     android:padding="8dp" >
 
     <TextView
-        android:id="@+id/sura_number"
-        android:layout_width="36dp"
-        android:layout_height="wrap_content"
-        android:gravity="right"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-
-    <TextView
         android:id="@+id/sura_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:layout_toRightOf="@id/sura_number"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <TextView
-        android:id="@+id/sura_name_arabic"
+        android:id="@+id/date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+        android:layout_centerVertical="true"
+        android:gravity="center"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
 
 </RelativeLayout>

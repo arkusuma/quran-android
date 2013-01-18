@@ -221,7 +221,7 @@ public class MetaData {
 		}
 	}
 
-	private int search(ArrayList<Mark> list, int sura, int aya) {
+	private int find(ArrayList<Mark> list, int sura, int aya) {
 		for (int i = 1; i < list.size(); i++) {
 			Mark m = list.get(i);
 			if (sura < m.sura || (sura == m.sura && aya < m.aya))
@@ -230,15 +230,15 @@ public class MetaData {
 		return list.size();
 	}
 
-	public int searchJuz(int sura, int aya) {
-		return search(mJuzs, sura, aya);
+	public int findJuz(int sura, int aya) {
+		return find(mJuzs, sura, aya);
 	}
 
-	public int searchHizb(int sura, int aya) {
-		return search(mHizbs, sura, aya);
+	public int findHizb(int sura, int aya) {
+		return find(mHizbs, sura, aya);
 	}
 
-	public int searchPage(int sura, int aya) {
-		return search(mPages, sura, aya);
+	public int findPage(int sura, int aya) {
+		return find(mPages, sura, aya);
 	}
 }

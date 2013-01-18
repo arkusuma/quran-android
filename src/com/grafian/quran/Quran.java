@@ -21,24 +21,30 @@ public class Quran {
 			mSuras.clear();
 			InputStream in = context.getResources().openRawResource(resid);
 			BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-			ArrayList<String> sura = null;
+			ArrayList<String> list = null;
 			String line;
 			String bismillah = null;
 			while ((line = reader.readLine()) != null) {
-				String[] fields = line.split("\\|");
-				if (fields.length == 3) {
-					if (fields[1].equals("1")) {
-						if (fields[0].equals("1")) {
-							bismillah = fields[2];
-						} else if (strip && !fields[0].equals("9")) {
-							fields[2] = fields[2].substring(bismillah.length() + 1);
+				if (Character.isDigit(line.charAt(0))) {
+					int a = line.indexOf("|", 0);
+					int b = line.indexOf("|", a + 1);
+					if (b != -1) {
+						int sura = Integer.parseInt(line.substring(0, a));
+						int aya = Integer.parseInt(line.substring(a + 1, b));
+						String text = line.substring(b + 1);
+						if (aya == 1) {
+							if (sura == 1) {
+								bismillah = text;
+							} else if (strip && sura != 9) {
+								text = text.substring(bismillah.length() + 1);
+							}
+							list = new ArrayList<String>(metaData.getSura(mSuras.size() + 1).ayas);
+							mSuras.add(list);
 						}
-						sura = new ArrayList<String>(metaData.getSura(mSuras.size() + 1).ayas);
-						mSuras.add(sura);
-					}
-					sura.add(fields[2]);
-					if (mListener != null) {
-						mListener.onProgress();
+						list.add(text);
+						if (mListener != null) {
+							mListener.onProgress();
+						}
 					}
 				}
 			}

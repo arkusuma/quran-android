@@ -6,16 +6,17 @@
 
     <TextView
         android:id="@+id/page_number"
-        android:layout_width="40dp"
+        android:layout_width="36dp"
         android:layout_height="wrap_content"
         android:gravity="right"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <TextView
         android:id="@+id/aya_number"
-        android:layout_width="40dp"
+        android:layout_width="36dp"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
+        android:gravity="right"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <TextView

@@ -36,6 +36,12 @@ public class PageFragment extends SherlockListFragment {
 		startActivity(intent);
 	}
 
+	private static class PageRowHolder {
+		public TextView pageNumber;
+		public TextView suraName;
+		public TextView ayaNumber;
+	}
+
 	class PageAdapter extends BaseAdapter {
 
 		@Override
@@ -55,19 +61,25 @@ public class PageFragment extends SherlockListFragment {
 
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
+			PageRowHolder holder;
 			if (convertView == null) {
 				convertView = getActivity().getLayoutInflater().inflate(R.layout.main_page_row, null);
+
+				holder = new PageRowHolder();
+				holder.pageNumber = (TextView) convertView.findViewById(R.id.page_number);
+				holder.suraName = (TextView) convertView.findViewById(R.id.sura_name);
+				holder.ayaNumber = (TextView) convertView.findViewById(R.id.aya_number);
+				convertView.setTag(holder);
+			} else {
+				holder = (PageRowHolder) convertView.getTag();
 			}
 
 			Mark mark = (Mark) getItem(position);
-			TextView pageNumber = (TextView) convertView.findViewById(R.id.page_number);
-			TextView suraName = (TextView) convertView.findViewById(R.id.sura_name);
-			TextView ayaNumber = (TextView) convertView.findViewById(R.id.aya_number);
-
 			Sura sura = app.metaData.getSura(mark.sura);
-			pageNumber.setText("" + (position + 1));
-			suraName.setText("" + sura.index + ". " + App.getSuraName(sura.index) + " : ");
-			ayaNumber.setText("" + mark.aya);
+
+			holder.pageNumber.setText("" + (position + 1));
+			holder.suraName.setText("" + sura.index + ". " + App.getSuraName(sura.index) + " :");
+			holder.ayaNumber.setText("" + mark.aya);
 
 			return convertView;
 		}

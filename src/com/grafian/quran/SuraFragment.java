@@ -34,6 +34,12 @@ public class SuraFragment extends SherlockListFragment {
 		startActivity(intent);
 	}
 
+	private static class SuraRowHolder {
+		public TextView suraNumber;
+		public TextView suraName;
+		public TextView suraNameArabic;
+	}
+
 	class SuraAdapter extends BaseAdapter {
 
 		@Override
@@ -53,19 +59,24 @@ public class SuraFragment extends SherlockListFragment {
 
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
+			SuraRowHolder holder;
 			if (convertView == null) {
 				convertView = getActivity().getLayoutInflater().inflate(R.layout.main_sura_row, null);
+
+				holder = new SuraRowHolder();
+				holder.suraNumber = (TextView) convertView.findViewById(R.id.sura_number);
+				holder.suraName = (TextView) convertView.findViewById(R.id.sura_name);
+				holder.suraNameArabic = (TextView) convertView.findViewById(R.id.sura_name_arabic);
+				convertView.setTag(holder);
+			} else {
+				holder = (SuraRowHolder) convertView.getTag();
 			}
 
 			Sura sura = (Sura) getItem(position);
 
-			TextView suraNumber = (TextView) convertView.findViewById(R.id.sura_number);
-			TextView suraName = (TextView) convertView.findViewById(R.id.sura_name);
-			TextView suraNameArabic = (TextView) convertView.findViewById(R.id.sura_name_arabic);
-
-			suraNumber.setText("" + sura.index + ".");
-			suraName.setText(App.getSuraName(sura.index));
-			suraNameArabic.setText(sura.name);
+			holder.suraNumber.setText("" + sura.index + ".");
+			holder.suraName.setText(App.getSuraName(sura.index));
+			holder.suraNameArabic.setText(sura.name);
 
 			return convertView;
 		}

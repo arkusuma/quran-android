@@ -36,6 +36,13 @@ public class HizbFragment extends SherlockListFragment {
 		startActivity(intent);
 	}
 
+	private static class HizbRowHolder {
+		public TextView hizbNumber;
+		public TextView juzNumber;
+		public TextView suraName;
+		public TextView ayaNumber;
+	}
+
 	class HizbAdapter extends BaseAdapter {
 
 		@Override
@@ -55,25 +62,30 @@ public class HizbFragment extends SherlockListFragment {
 
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
+			HizbRowHolder holder;
 			if (convertView == null) {
 				convertView = getActivity().getLayoutInflater().inflate(R.layout.main_hizb_row, null);
+
+				holder = new HizbRowHolder();
+				holder.hizbNumber = (TextView) convertView.findViewById(R.id.hizb_number);
+				holder.juzNumber = (TextView) convertView.findViewById(R.id.juz_number);
+				holder.suraName = (TextView) convertView.findViewById(R.id.sura_name);
+				holder.ayaNumber = (TextView) convertView.findViewById(R.id.aya_number);
+				convertView.setTag(holder);
+			} else {
+				holder = (HizbRowHolder) convertView.getTag();
 			}
 
 			Mark mark = (Mark) getItem(position);
-			TextView hizbNumber = (TextView) convertView.findViewById(R.id.hizb_number);
-			TextView juzNumber = (TextView) convertView.findViewById(R.id.juz_number);
-			TextView suraName = (TextView) convertView.findViewById(R.id.sura_name);
-			TextView ayaNumber = (TextView) convertView.findViewById(R.id.aya_number);
-
 			Sura sura = app.metaData.getSura(mark.sura);
-			hizbNumber.setText("" + (position + 1));
-			suraName.setText("" + sura.index + ". " + App.getSuraName(sura.index) + " : ");
-			ayaNumber.setText("" + mark.aya);
-
 			String s[] = { "", "⅛", "¼", "⅜", "½", "⅝", "¾", "⅞" };
 			int juz = (position / 8) + 1;
 			int part = position % 8;
-			juzNumber.setText("Juz " + juz + s[part]);
+
+			holder.hizbNumber.setText("" + (position + 1));
+			holder.suraName.setText("" + sura.index + ". " + App.getSuraName(sura.index) + " :");
+			holder.ayaNumber.setText("" + mark.aya);
+			holder.juzNumber.setText("Juz " + juz + s[part]);
 
 			return convertView;
 		}

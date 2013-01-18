@@ -5,12 +5,14 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v4.view.ViewPager.OnPageChangeListener;
 
-public class MainActivity extends BaseFragmentActivity {
+public class MainActivity extends BaseActivity {
+
+	final private static String PAGE = "page";
 
 	private ViewPager mPager;
 	private PagerAdapter mAdapter;
+	private int mPage;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -20,12 +22,17 @@ public class MainActivity extends BaseFragmentActivity {
 		mAdapter = new PagerAdapter(getSupportFragmentManager());
 		mPager = (ViewPager) findViewById(R.id.pager);
 		mPager.setAdapter(mAdapter);
-		mPager.setOnPageChangeListener(onPageChange);
 
-		if (app.loaded) {
-			updatePage();
+		if (savedInstanceState != null) {
+			mPage = savedInstanceState.getInt(PAGE);
 		} else {
-			app.loadAllData(this, new ProgressListener() {
+			mPage = mApp.config.getMode() + 1;
+		}
+
+		if (mApp.loaded) {
+			mPager.setCurrentItem(mPage);
+		} else {
+			mApp.loadAllData(this, new ProgressListener() {
 				@Override
 				public void onProgress() {
 				}
@@ -33,29 +40,16 @@ public class MainActivity extends BaseFragmentActivity {
 				@Override
 				public void onFinish() {
 					mAdapter.notifyDataSetChanged();
-					updatePage();
+					mPager.setCurrentItem(mPage);
 				}
 			});
 		}
 	}
 
-	final private OnPageChangeListener onPageChange = new OnPageChangeListener() {
-		@Override
-		public void onPageSelected(int page) {
-			app.config.setMode(page);
-		}
-
-		@Override
-		public void onPageScrolled(int arg0, float arg1, int arg2) {
-		}
-
-		@Override
-		public void onPageScrollStateChanged(int arg0) {
-		}
-	};
-
-	private void updatePage() {
-		mPager.setCurrentItem(app.config.getMode());
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		outState.putInt(PAGE, mPager.getCurrentItem());
 	}
 
 	private class PagerAdapter extends FragmentPagerAdapter {
@@ -68,12 +62,14 @@ public class MainActivity extends BaseFragmentActivity {
 		public Fragment getItem(int position) {
 			switch (position) {
 			case 0:
-				return new SuraFragment();
+				return new BookmarkFragment();
 			case 1:
-				return new PageFragment();
+				return new SuraFragment();
 			case 2:
-				return new JuzFragment();
+				return new PageFragment();
 			case 3:
+				return new JuzFragment();
+			case 4:
 				return new HizbFragment();
 			}
 			return null;
@@ -81,12 +77,12 @@ public class MainActivity extends BaseFragmentActivity {
 
 		@Override
 		public int getCount() {
-			return app.loaded ? 4 : 0;
+			return mApp.loaded ? 5 : 0;
 		}
 
 		@Override
 		public CharSequence getPageTitle(int position) {
-			String titles[] = { "Sura", "Page", "Juz", "Hizb" };
+			String titles[] = { "Bookmark", "Sura", "Page", "Juz", "Hizb" };
 			return titles[position];
 		}
 
