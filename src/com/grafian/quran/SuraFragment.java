@@ -2,6 +2,7 @@ package com.grafian.quran;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -13,15 +14,17 @@ import com.grafian.quran.MetaData.Sura;
 
 public class SuraFragment extends SherlockListFragment {
 
-	private App app;
+	private App mApp;
+	private SuraAdapter mAdapter;
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 
-		app = (App) getActivity().getApplication();
+		mApp = (App) getActivity().getApplication();
 
-		setListAdapter(new SuraAdapter());
+		mAdapter = new SuraAdapter();
+		setListAdapter(mAdapter);
 		getListView().setFastScrollEnabled(true);
 	}
 
@@ -34,6 +37,12 @@ public class SuraFragment extends SherlockListFragment {
 		startActivity(intent);
 	}
 
+	@Override
+	public void onResume() {
+		super.onResume();
+		mAdapter.notifyDataSetChanged();
+	}
+
 	private static class SuraRowHolder {
 		public TextView suraNumber;
 		public TextView suraName;
@@ -44,12 +53,12 @@ public class SuraFragment extends SherlockListFragment {
 
 		@Override
 		public int getCount() {
-			return app.loaded ? app.metaData.getSuraCount() : 0;
+			return mApp.loaded ? mApp.metaData.getSuraCount() : 0;
 		}
 
 		@Override
 		public Object getItem(int position) {
-			return app.metaData.getSura(position + 1);
+			return mApp.metaData.getSura(position + 1);
 		}
 
 		@Override
@@ -77,6 +86,7 @@ public class SuraFragment extends SherlockListFragment {
 			holder.suraNumber.setText("" + sura.index + ".");
 			holder.suraName.setText(App.getSuraName(sura.index));
 			holder.suraNameArabic.setText(sura.name);
+			holder.suraNameArabic.setTextSize(TypedValue.COMPLEX_UNIT_SP, mApp.config.fontSizeArabic);
 
 			return convertView;
 		}

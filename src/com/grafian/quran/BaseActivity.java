@@ -39,11 +39,12 @@ public class BaseActivity extends SherlockFragmentActivity {
 		if (mMenu != null) {
 			updateMenu();
 		}
+		mApp.config.load(this);
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		getSupportMenuInflater().inflate(R.menu.main, menu);
+		getSupportMenuInflater().inflate(R.menu.base, menu);
 		mMenu = menu;
 		updateMenu();
 		return true;
@@ -55,6 +56,10 @@ public class BaseActivity extends SherlockFragmentActivity {
 		case R.id.translation:
 			doTranslation();
 			return true;
+		case R.id.settings:
+			mApp.config.save(this);
+			startActivity(new Intent(this, SettingsActivity.class));
+			return true;
 		case R.id.about:
 			doAbout();
 			return true;
@@ -64,7 +69,7 @@ public class BaseActivity extends SherlockFragmentActivity {
 
 	private void updateMenu() {
 		MenuItem item = mMenu.findItem(R.id.translation);
-		if (mApp.config.getLang().equals("id")) {
+		if (mApp.config.lang.equals("id")) {
 			item.setTitle(R.string.indonesia);
 		} else {
 			item.setTitle(R.string.english);
@@ -116,8 +121,8 @@ public class BaseActivity extends SherlockFragmentActivity {
 		public void onClick(DialogInterface dialog, int which) {
 			String codes[] = getResources().getStringArray(R.array.lang_codes);
 			String lang = codes[which];
-			if (!mApp.config.getLang().equals(lang)) {
-				mApp.config.setLang(lang);
+			if (!mApp.config.lang.equals(lang)) {
+				mApp.config.lang = lang;
 				mApp.loadTranslation(BaseActivity.this, new ProgressListener() {
 					@Override
 					public void onProgress() {

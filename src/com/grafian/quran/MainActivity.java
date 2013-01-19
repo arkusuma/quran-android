@@ -26,7 +26,7 @@ public class MainActivity extends BaseActivity {
 		if (savedInstanceState != null) {
 			mPage = savedInstanceState.getInt(PAGE);
 		} else {
-			mPage = mApp.config.getMode() + 1;
+			mPage = mApp.config.pagingMode + 1;
 		}
 
 		if (mApp.loaded) {

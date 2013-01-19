@@ -31,7 +31,7 @@ public class App extends Application {
 	}
 
 	private int getTranslationID() {
-		if (config.getLang().equals("id")) {
+		if (config.lang.equals("id")) {
 			return R.raw.id_indonesian;
 		}
 		return R.raw.en_sahih;
@@ -166,7 +166,7 @@ public class App extends Application {
 
 	public static String getSuraName(int i) {
 		String items[];
-		if ("en".equals(app.config.getLang())) {
+		if ("en".equals(app.config.lang)) {
 			items = app.getResources().getStringArray(R.array.sura_name_en);
 		} else {
 			items = app.getResources().getStringArray(R.array.sura_name_id);
@@ -176,7 +176,7 @@ public class App extends Application {
 
 	public static String getSuraTranslation(int i) {
 		String items[];
-		if ("en".equals(app.config.getLang())) {
+		if ("en".equals(app.config.lang)) {
 			items = app.getResources().getStringArray(R.array.sura_translation_en);
 		} else {
 			items = app.getResources().getStringArray(R.array.sura_translation_id);

@@ -9,6 +9,7 @@ import android.text.ClipboardManager;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.RelativeSizeSpan;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
@@ -40,7 +41,6 @@ public class QuranFragment extends SherlockListFragment {
 	final private QuranAdapter mAdapter = new QuranAdapter();
 	private App app;
 
-	private boolean mVisible;
 	private int mMode;
 	private Mark mFrom;
 	private Mark mTo;
@@ -57,8 +57,9 @@ public class QuranFragment extends SherlockListFragment {
 		mMode = args.getInt(MODE);
 		mSura = args.getInt(SURA);
 		mAya = args.getInt(AYA);
+		app.config.pagingMode = mMode;
+
 		int pos;
-		app.config.setMode(mMode);
 		switch (mMode) {
 		case Config.MODE_SURA:
 			mFrom = new Mark(mSura, 1);
@@ -106,9 +107,9 @@ public class QuranFragment extends SherlockListFragment {
 	}
 
 	@Override
-	public void setUserVisibleHint(boolean isVisibleToUser) {
-		super.setUserVisibleHint(isVisibleToUser);
-		mVisible = isVisibleToUser;
+	public void onResume() {
+		super.onResume();
+		mAdapter.notifyDataSetChanged();
 	}
 
 	@Override
@@ -118,38 +119,49 @@ public class QuranFragment extends SherlockListFragment {
 	}
 
 	private void switchMode(int mode) {
-		if (mode != mMode) {
-			int pos = getListView().getFirstVisiblePosition();
-			Mark mark = (Mark) mAdapter.getItem(pos);
-			if (mark.aya == 0) {
-				mark.aya = 1;
-			}
-			Intent intent = getActivity().getIntent();
-			intent.putExtra(MODE, mode);
-			intent.putExtra(SURA, mark.sura);
-			intent.putExtra(AYA, mark.aya);
-			getActivity().finish();
-			startActivity(intent);
+		int pos = getListView().getFirstVisiblePosition();
+		Mark mark = (Mark) mAdapter.getItem(pos);
+		if (mark.aya == 0) {
+			mark.aya = 1;
 		}
+		Intent intent = getActivity().getIntent();
+		intent.putExtra(MODE, mode);
+		intent.putExtra(SURA, mark.sura);
+		intent.putExtra(AYA, mark.aya);
+		getActivity().finish();
+		startActivity(intent);
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
+		int mode = 0;
 		switch (item.getItemId()) {
 		case R.id.view_as_sura:
-			switchMode(Config.MODE_SURA);
+			mode = Config.MODE_SURA;
 			return true;
 		case R.id.view_as_page:
-			switchMode(Config.MODE_PAGE);
+			mode = Config.MODE_PAGE;
 			return true;
 		case R.id.view_as_juz:
-			switchMode(Config.MODE_JUZ);
+			mode = Config.MODE_JUZ;
 			return true;
 		case R.id.view_as_hizb:
-			switchMode(Config.MODE_HIZB);
+			mode = Config.MODE_HIZB;
 			return true;
 		}
+		if (mode != mMode) {
+			switchMode(mode);
+		}
 		return super.onOptionsItemSelected(item);
+	}
+
+	public Mark getCurrentPosition() {
+		int pos = getListView().getFirstVisiblePosition();
+		Mark mark = (Mark) mAdapter.getItem(pos);
+		if (mark.aya == 0) {
+			mark.aya = 1;
+		}
+		return mark;
 	}
 
 	final private OnScrollListener onScroll = new OnScrollListener() {
@@ -159,7 +171,7 @@ public class QuranFragment extends SherlockListFragment {
 
 		@Override
 		public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-			if (mVisible) {
+			if (getUserVisibleHint()) {
 				updateTitle(firstVisibleItem);
 			}
 		}
@@ -273,7 +285,7 @@ public class QuranFragment extends SherlockListFragment {
 			public void onClick(DialogInterface dialog, int which) {
 				if (folderName.getText().length() > 0) {
 					Folder folder = new Folder(folderName.getText().toString(),
-							folderType.getCheckedRadioButtonId() == Bookmark.TYPE_SINGLE ?
+							folderType.getCheckedRadioButtonId() == R.id.folder_single ?
 									Bookmark.TYPE_SINGLE : Bookmark.TYPE_MULTIPLE);
 					app.bookmark.addFolder(folder);
 					addBookmark(mark, folder);
@@ -392,6 +404,7 @@ public class QuranFragment extends SherlockListFragment {
 				if (mark.sura == 1 || mark.sura == 9) {
 					holder.bismillah.setVisibility(View.GONE);
 				} else {
+					holder.bismillah.setTextSize(TypedValue.COMPLEX_UNIT_SP, app.config.fontSizeArabic);
 					holder.bismillah.setVisibility(View.VISIBLE);
 					setArabic(holder.bismillah, app.quran.get(1, 1));
 				}
@@ -416,6 +429,7 @@ public class QuranFragment extends SherlockListFragment {
 					holder.juzNumber = (TextView) convertView.findViewById(R.id.juz_number);
 					holder.pageNumber = (TextView) convertView.findViewById(R.id.page_number);
 					holder.pageSeparator = convertView.findViewById(R.id.page_separator);
+
 					convertView.setTag(holder);
 				} else {
 					holder = (AyaRowHolder) convertView.getTag();
@@ -424,6 +438,12 @@ public class QuranFragment extends SherlockListFragment {
 				holder.ayaNumber.setText("(" + mark.aya + ")");
 				setArabic(holder.arabic, app.quran.get(mark.sura, mark.aya));
 				holder.translation.setText(app.translation.get(mark.sura, mark.aya));
+
+				holder.arabic.setTextSize(TypedValue.COMPLEX_UNIT_SP, app.config.fontSizeArabic);
+				holder.translation.setTextSize(TypedValue.COMPLEX_UNIT_SP, app.config.fontSizeTranslation);
+
+				holder.arabic.setVisibility(app.config.showArabic ? View.VISIBLE : View.GONE);
+				holder.translation.setVisibility(app.config.showTranslation ? View.VISIBLE : View.GONE);
 
 				int index = app.metaData.findHizb(mark.sura, mark.aya);
 				Mark hizb = app.metaData.getHizb(index);
