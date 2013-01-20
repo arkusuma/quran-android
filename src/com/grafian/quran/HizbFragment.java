@@ -30,7 +30,7 @@ public class HizbFragment extends SherlockListFragment {
 	public void onListItemClick(ListView l, View v, int position, long id) {
 		Intent intent = new Intent(getActivity(), ViewerActivity.class);
 		Mark mark = app.metaData.getHizb(position + 1);
-		intent.putExtra(QuranFragment.MODE, Config.MODE_HIZB);
+		intent.putExtra(QuranFragment.PAGING_MODE, Config.PAGING_MODE_HIZB);
 		intent.putExtra(QuranFragment.SURA, mark.sura);
 		intent.putExtra(QuranFragment.AYA, mark.aya);
 		startActivity(intent);

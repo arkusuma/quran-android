@@ -6,7 +6,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.view.View;
 
 import com.grafian.quran.MetaData.Mark;
 
@@ -14,8 +13,7 @@ public class ViewerActivity extends BaseActivity {
 
 	private ViewPager mPager;
 	private ViewerAdapter mAdapter;
-	private QuranFragment mCurrentPage;
-	private int mMode;
+	private int mPagingMode;
 	private int mSura;
 	private int mAya;
 
@@ -29,18 +27,18 @@ public class ViewerActivity extends BaseActivity {
 		mPager.setAdapter(mAdapter);
 
 		if (savedInstanceState != null) {
-			mMode = savedInstanceState.getInt(QuranFragment.MODE);
+			mPagingMode = savedInstanceState.getInt(QuranFragment.PAGING_MODE);
 			mSura = savedInstanceState.getInt(QuranFragment.SURA);
 			mAya = savedInstanceState.getInt(QuranFragment.AYA);
 		} else {
 			Intent intent = getIntent();
-			mMode = intent.getIntExtra(QuranFragment.MODE, Config.MODE_SURA);
+			mPagingMode = intent.getIntExtra(QuranFragment.PAGING_MODE, Config.PAGING_MODE_SURA);
 			mSura = intent.getIntExtra(QuranFragment.SURA, 1);
 			mAya = intent.getIntExtra(QuranFragment.AYA, 1);
 		}
 
 		if (mApp.loaded) {
-			mPager.setCurrentItem(findTransformedPosition(mSura, mAya));
+			showPage(mPagingMode, mSura, mAya);
 		} else {
 			mApp.loadAllData(this, new ProgressListener() {
 				@Override
@@ -49,8 +47,7 @@ public class ViewerActivity extends BaseActivity {
 
 				@Override
 				public void onFinish() {
-					mAdapter.notifyDataSetChanged();
-					mPager.setCurrentItem(findTransformedPosition(mSura, mAya));
+					showPage(mPagingMode, mSura, mAya);
 				}
 			});
 		}
@@ -61,27 +58,38 @@ public class ViewerActivity extends BaseActivity {
 		super.onResume();
 
 		// Check if reading direction is still valid
-		QuranFragment fragment = (QuranFragment) mAdapter.instantiateItem(mPager, mPager.getCurrentItem());
+		QuranFragment fragment = getCurrentFragment();
 		if (fragment.getUserVisibleHint()) {
 			Mark m = fragment.getCurrentPosition();
-			int pos = findTransformedPosition(m.sura, m.aya);
-			if (pos != mPager.getCurrentItem()) {
-				mSura = m.sura;
-				mAya = m.aya;
-				mPager.setCurrentItem(pos);
-			}
-			mAdapter.notifyDataSetChanged();
+			showPage(mPagingMode, m.sura, m.aya);
+		}
+	}
+
+	public void showPage(int pagingMode, int sura, int aya) {
+		mPagingMode = pagingMode;
+		mSura = sura;
+		mAya = aya;
+		mAdapter.notifyDataSetChanged();
+		mPager.setCurrentItem(findTransformedPosition(sura, aya));
+	}
+
+	private QuranFragment getCurrentFragment() {
+		if (mAdapter.getCount() == 0) {
+			return null;
+		} else {
+			return (QuranFragment) mAdapter.instantiateItem(mPager, mPager.getCurrentItem());
 		}
 	}
 
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
-		if (mCurrentPage != null) {
-			Mark mark = mCurrentPage.getCurrentPosition();
-			outState.putInt(QuranFragment.MODE, mMode);
-			outState.putInt(QuranFragment.SURA, mark.sura);
-			outState.putInt(QuranFragment.AYA, mark.aya);
+		QuranFragment fragment = getCurrentFragment();
+		if (fragment != null) {
+			Mark m = fragment.getCurrentPosition();
+			outState.putInt(QuranFragment.PAGING_MODE, mPagingMode);
+			outState.putInt(QuranFragment.SURA, m.sura);
+			outState.putInt(QuranFragment.AYA, m.aya);
 		}
 	}
 
@@ -94,17 +102,17 @@ public class ViewerActivity extends BaseActivity {
 
 	private int findTransformedPosition(int sura, int aya) {
 		int item = 0;
-		switch (mMode) {
-		case Config.MODE_SURA:
+		switch (mPagingMode) {
+		case Config.PAGING_MODE_SURA:
 			item = sura - 1;
 			break;
-		case Config.MODE_PAGE:
+		case Config.PAGING_MODE_PAGE:
 			item = mApp.metaData.findPage(sura, aya) - 1;
 			break;
-		case Config.MODE_JUZ:
+		case Config.PAGING_MODE_JUZ:
 			item = mApp.metaData.findJuz(sura, aya) - 1;
 			break;
-		case Config.MODE_HIZB:
+		case Config.PAGING_MODE_HIZB:
 			item = mApp.metaData.findHizb(sura, aya) - 1;
 			break;
 		}
@@ -117,27 +125,20 @@ public class ViewerActivity extends BaseActivity {
 			super(fm);
 		}
 
-		@SuppressWarnings("deprecation")
-		@Override
-		public void setPrimaryItem(View container, int position, Object object) {
-			super.setPrimaryItem(container, position, object);
-			mCurrentPage = (QuranFragment) object;
-		}
-
 		private Mark getStartMark(int page) {
 			page = transformPosition(page);
 			Mark mark = null;
-			switch (mMode) {
-			case Config.MODE_SURA:
+			switch (mPagingMode) {
+			case Config.PAGING_MODE_SURA:
 				mark = new Mark(page + 1, 1);
 				break;
-			case Config.MODE_PAGE:
+			case Config.PAGING_MODE_PAGE:
 				mark = new Mark(mApp.metaData.getPage(page + 1));
 				break;
-			case Config.MODE_JUZ:
+			case Config.PAGING_MODE_JUZ:
 				mark = new Mark(mApp.metaData.getJuz(page + 1));
 				break;
-			case Config.MODE_HIZB:
+			case Config.PAGING_MODE_HIZB:
 				mark = new Mark(mApp.metaData.getHizb(page + 1));
 				break;
 			}
@@ -153,7 +154,7 @@ public class ViewerActivity extends BaseActivity {
 				m.sura = mSura;
 				m.aya = mAya;
 			}
-			args.putInt(QuranFragment.MODE, mMode);
+			args.putInt(QuranFragment.PAGING_MODE, mPagingMode);
 			args.putInt(QuranFragment.SURA, m.sura);
 			args.putInt(QuranFragment.AYA, m.aya);
 			fragment.setArguments(args);
@@ -163,14 +164,14 @@ public class ViewerActivity extends BaseActivity {
 		@Override
 		public int getCount() {
 			if (mApp.loaded) {
-				switch (mMode) {
-				case Config.MODE_SURA:
+				switch (mPagingMode) {
+				case Config.PAGING_MODE_SURA:
 					return mApp.metaData.getSuraCount();
-				case Config.MODE_PAGE:
+				case Config.PAGING_MODE_PAGE:
 					return mApp.metaData.getPageCount();
-				case Config.MODE_JUZ:
+				case Config.PAGING_MODE_JUZ:
 					return mApp.metaData.getJuzCount();
-				case Config.MODE_HIZB:
+				case Config.PAGING_MODE_HIZB:
 					return mApp.metaData.getHizbCount();
 				}
 			}
@@ -179,16 +180,18 @@ public class ViewerActivity extends BaseActivity {
 
 		@Override
 		public CharSequence getPageTitle(int position) {
-			position = transformPosition(position);
-			switch (mMode) {
-			case Config.MODE_SURA:
-				return "" + (position + 1) + ". " + App.getSuraName(position + 1);
-			case Config.MODE_PAGE:
-				return "Page " + (position + 1);
-			case Config.MODE_JUZ:
-				return "Juz " + (position + 1);
-			case Config.MODE_HIZB:
-				return "Hizb " + (position + 1);
+			if (position < getCount()) {
+				position = transformPosition(position);
+				switch (mPagingMode) {
+				case Config.PAGING_MODE_SURA:
+					return "" + (position + 1) + ". " + App.getSuraName(position + 1);
+				case Config.PAGING_MODE_PAGE:
+					return "Page " + (position + 1);
+				case Config.PAGING_MODE_JUZ:
+					return "Juz " + (position + 1);
+				case Config.PAGING_MODE_HIZB:
+					return "Hizb " + (position + 1);
+				}
 			}
 			return "";
 		}

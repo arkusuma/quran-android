@@ -3,12 +3,13 @@
 
     <string name="app_name">Beautiful Quran</string>
     <string name="loading">Loading data, please wait&#8230;</string>
-    <string name="select_translation">Select Translation</string>
     <string name="save">Save</string>
     <string name="replace">Replace</string>
     <string name="cancel">Cancel</string>
+    <string name="quit">Quit</string>
     <string name="share_via">Share Via</string>
-    <string name="delete">"Delete"</string>
+    <string name="delete">Delete</string>
+    <string name="confirm_quit">Quit from this program?</string>
 
     <!-- Bookmark -->
     <string name="select_folder">Add Bookmark to Folder</string>

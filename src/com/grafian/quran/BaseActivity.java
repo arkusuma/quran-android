@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -18,13 +19,15 @@ import com.actionbarsherlock.view.MenuItem;
 public class BaseActivity extends SherlockFragmentActivity {
 
 	protected App mApp;
-	private Menu mMenu;
+	private Typeface mFont;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
 		mApp = (App) getApplication();
+
+		loadFont();
 	}
 
 	@Override
@@ -36,26 +39,44 @@ public class BaseActivity extends SherlockFragmentActivity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		if (mMenu != null) {
-			updateMenu();
-		}
+
+		String lastLang = mApp.config.lang;
+		int lastFont = mApp.config.fontArabic;
 		mApp.config.load(this);
+		if (lastLang != null && !mApp.config.lang.equals(lastLang)) {
+			updateTranslation();
+		}
+		if (lastFont != mApp.config.fontArabic) {
+			loadFont();
+		}
+	}
+
+	private void loadFont() {
+		switch (mApp.config.fontArabic) {
+		case Config.FONT_UTHMAN:
+			mFont = Typeface.createFromAsset(getAssets(), "uthman.otf");
+			break;
+		case Config.FONT_SALEEM:
+			mFont = Typeface.createFromAsset(getAssets(), "saleem.ttf");
+			break;
+		default:
+			mFont = null;
+		}
+	}
+
+	public Typeface getFont() {
+		return mFont;
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getSupportMenuInflater().inflate(R.menu.base, menu);
-		mMenu = menu;
-		updateMenu();
 		return true;
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-		case R.id.translation:
-			doTranslation();
-			return true;
 		case R.id.settings:
 			mApp.config.save(this);
 			startActivity(new Intent(this, SettingsActivity.class));
@@ -67,13 +88,22 @@ public class BaseActivity extends SherlockFragmentActivity {
 		return super.onOptionsItemSelected(item);
 	}
 
-	private void updateMenu() {
-		MenuItem item = mMenu.findItem(R.id.translation);
-		if (mApp.config.lang.equals("id")) {
-			item.setTitle(R.string.indonesia);
-		} else {
-			item.setTitle(R.string.english);
-		}
+	private void updateTranslation() {
+		mApp.loadTranslation(BaseActivity.this, new ProgressListener() {
+			@Override
+			public void onProgress() {
+			}
+
+			@Override
+			public void onFinish() {
+				if (Build.VERSION.SDK_INT >= 11) {
+					recreate();
+				} else {
+					finish();
+					startActivity(getIntent());
+				}
+			}
+		});
 	}
 
 	private void doAbout() {
@@ -110,35 +140,4 @@ public class BaseActivity extends SherlockFragmentActivity {
 		}
 	};
 
-	private void doTranslation() {
-		new AlertDialog.Builder(this)
-				.setTitle(R.string.select_translation)
-				.setItems(R.array.lang_names, onTranslate)
-				.show();
-	}
-
-	private DialogInterface.OnClickListener onTranslate = new DialogInterface.OnClickListener() {
-		public void onClick(DialogInterface dialog, int which) {
-			String codes[] = getResources().getStringArray(R.array.lang_codes);
-			String lang = codes[which];
-			if (!mApp.config.lang.equals(lang)) {
-				mApp.config.lang = lang;
-				mApp.loadTranslation(BaseActivity.this, new ProgressListener() {
-					@Override
-					public void onProgress() {
-					}
-
-					@Override
-					public void onFinish() {
-						if (Build.VERSION.SDK_INT >= 11) {
-							recreate();
-						} else {
-							finish();
-							startActivity(getIntent());
-						}
-					}
-				});
-			}
-		}
-	};
 }

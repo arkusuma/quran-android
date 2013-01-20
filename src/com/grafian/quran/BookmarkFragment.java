@@ -50,7 +50,7 @@ public class BookmarkFragment extends SherlockListFragment {
 		Object obj = getListAdapter().getItem(position);
 		if (obj instanceof Item) {
 			Item item = (Item) obj;
-			intent.putExtra(QuranFragment.MODE, item.getMode());
+			intent.putExtra(QuranFragment.PAGING_MODE, item.getMode());
 			intent.putExtra(QuranFragment.SURA, item.getSura());
 			intent.putExtra(QuranFragment.AYA, item.getAya());
 			startActivity(intent);

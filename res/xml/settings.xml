@@ -1,25 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
 
-    <CheckBoxPreference
-        android:key="rtl"
-        android:title="Right to Left" />
-    <CheckBoxPreference
-        android:key="showArabic"
-        android:title="Show Arabic" />
-    <CheckBoxPreference
-        android:key="showTranslation"
-        android:title="Show Translation" />
+    <PreferenceCategory android:title="Language" >
+        <ListPreference
+            android:entries="@array/lang_names"
+            android:entryValues="@array/lang_codes"
+            android:key="lang"
+            android:title="Translation" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Display" >
+        <CheckBoxPreference
+            android:key="rtl"
+            android:title="Right to Left" />
+        <CheckBoxPreference
+            android:key="showArabic"
+            android:title="Show Arabic" />
+        <CheckBoxPreference
+            android:key="showTranslation"
+            android:title="Show Translation" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Font" >
+        <ListPreference
+            android:entries="@array/font_names"
+            android:entryValues="@array/font_codes"
+            android:key="fontArabic"
+            android:title="Arabic Font" />
+        <ListPreference
+            android:entries="@array/font_sizes"
+            android:entryValues="@array/font_sizes"
+            android:key="fontSizeArabic"
+            android:title="Arabic Font Size" />
+        <ListPreference
+            android:entries="@array/font_sizes"
+            android:entryValues="@array/font_sizes"
+            android:key="fontSizeTranslation"
+            android:title="Translation Font Size" />
 
-    <ListPreference
-        android:entries="@array/font_sizes"
-        android:entryValues="@array/font_sizes"
-        android:key="fontSizeArabic"
-        android:title="Arabic Font Size" />
-    <ListPreference
-        android:entries="@array/font_sizes"
-        android:entryValues="@array/font_sizes"
-        android:key="fontSizeTranslation"
-        android:title="Translation Font Size" />
+        <CheckBoxPreference
+            android:key="internalReshaper"
+            android:title="Use Internal Reshaper" />
+    </PreferenceCategory>
 
 </PreferenceScreen>

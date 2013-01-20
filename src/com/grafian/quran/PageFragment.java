@@ -30,7 +30,7 @@ public class PageFragment extends SherlockListFragment {
 	public void onListItemClick(ListView l, View v, int position, long id) {
 		Intent intent = new Intent(getActivity(), ViewerActivity.class);
 		Mark mark = app.metaData.getPage(position + 1);
-		intent.putExtra(QuranFragment.MODE, Config.MODE_PAGE);
+		intent.putExtra(QuranFragment.PAGING_MODE, Config.PAGING_MODE_PAGE);
 		intent.putExtra(QuranFragment.SURA, mark.sura);
 		intent.putExtra(QuranFragment.AYA, mark.aya);
 		startActivity(intent);

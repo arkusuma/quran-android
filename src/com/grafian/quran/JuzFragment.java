@@ -30,7 +30,7 @@ public class JuzFragment extends SherlockListFragment {
 	public void onListItemClick(ListView l, View v, int position, long id) {
 		Intent intent = new Intent(getActivity(), ViewerActivity.class);
 		Mark mark = app.metaData.getJuz(position + 1);
-		intent.putExtra(QuranFragment.MODE, Config.MODE_JUZ);
+		intent.putExtra(QuranFragment.PAGING_MODE, Config.PAGING_MODE_JUZ);
 		intent.putExtra(QuranFragment.SURA, mark.sura);
 		intent.putExtra(QuranFragment.AYA, mark.aya);
 		startActivity(intent);
