@@ -8,6 +8,7 @@
         android:id="@+id/sura_number"
         android:layout_width="36dp"
         android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
         android:gravity="right"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
@@ -15,6 +16,7 @@
         android:id="@+id/sura_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
         android:layout_marginLeft="8dp"
         android:layout_toRightOf="@id/sura_number"
         android:textAppearance="?android:attr/textAppearanceMedium" />
@@ -24,6 +26,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
 </RelativeLayout>

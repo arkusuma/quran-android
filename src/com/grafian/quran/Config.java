@@ -15,7 +15,7 @@ public class Config {
 
 	final public static int FONT_DEFAULT = 0;
 	final public static int FONT_UTHMAN = 1;
-	final public static int FONT_SALEEM = 2;
+	final public static int FONT_ME_QURAN = 2;
 
 	final private static String PAGING_MODE = "pagingMode";
 	final private static String LANG = "lang";
@@ -40,15 +40,16 @@ public class Config {
 	public void load(Context context) {
 		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
 		try {
-			pagingMode = sp.getInt(PAGING_MODE, 0);
-			lang = sp.getString(LANG, "en");
-			rtl = sp.getBoolean(RTL, true);
-			showArabic = sp.getBoolean(SHOW_ARABIC, true);
-			showTranslation = sp.getBoolean(SHOW_TRANSLATION, true);
-			fontArabic = Integer.parseInt(sp.getString(FONT_ARABIC, "0"));
-			fontSizeArabic = Integer.parseInt(sp.getString(FONT_SIZE_ARABIC, "20"));
-			fontSizeTranslation = Integer.parseInt(sp.getString(FONT_SIZE_TRANSLATION, "16"));
-			internalReshaper = sp.getBoolean(INTERNAL_RESHAPER, getInternalReshaperDefault());
+			loadDefaults();
+			pagingMode = sp.getInt(PAGING_MODE, pagingMode);
+			lang = sp.getString(LANG, lang);
+			rtl = sp.getBoolean(RTL, rtl);
+			showArabic = sp.getBoolean(SHOW_ARABIC, showArabic);
+			showTranslation = sp.getBoolean(SHOW_TRANSLATION, showTranslation);
+			fontArabic = Integer.parseInt(sp.getString(FONT_ARABIC, Integer.toString(fontArabic)));
+			fontSizeArabic = Integer.parseInt(sp.getString(FONT_SIZE_ARABIC, Integer.toString(fontSizeArabic)));
+			fontSizeTranslation = Integer.parseInt(sp.getString(FONT_SIZE_TRANSLATION, Integer.toString(fontSizeTranslation)));
+			internalReshaper = sp.getBoolean(INTERNAL_RESHAPER, internalReshaper);
 		} catch (Exception e) {
 			loadDefaults();
 		}
@@ -60,23 +61,15 @@ public class Config {
 	}
 
 	public void loadDefaults() {
-		pagingMode = 0;
+		pagingMode = PAGING_MODE_SURA;
 		lang = "en";
 		rtl = true;
 		showArabic = true;
 		showTranslation = true;
-		fontArabic = FONT_DEFAULT;
+		fontArabic = FONT_ME_QURAN;
 		fontSizeArabic = 20;
 		fontSizeTranslation = 16;
-		internalReshaper = getInternalReshaperDefault();
-	}
-
-	private boolean getInternalReshaperDefault() {
-		// Enable internal reshaper on pre ICS
-		if (Build.VERSION.SDK_INT < 14) {
-			return true;
-		}
-		return false;
+		internalReshaper = Build.VERSION.SDK_INT < 14 ? true : false;
 	}
 
 	public void save(Context context) {

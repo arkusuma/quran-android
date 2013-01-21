@@ -7,6 +7,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 
+import com.actionbarsherlock.view.MenuItem;
 import com.grafian.quran.MetaData.Mark;
 
 public class ViewerActivity extends BaseActivity {
@@ -51,6 +52,8 @@ public class ViewerActivity extends BaseActivity {
 				}
 			});
 		}
+
+		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 	}
 
 	@Override
@@ -62,6 +65,29 @@ public class ViewerActivity extends BaseActivity {
 		if (fragment.getUserVisibleHint()) {
 			Mark m = fragment.getCurrentPosition();
 			showPage(mPagingMode, m.sura, m.aya);
+		}
+	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		QuranFragment fragment = getCurrentFragment();
+		if (fragment != null) {
+			Mark m = fragment.getCurrentPosition();
+			outState.putInt(QuranFragment.PAGING_MODE, mPagingMode);
+			outState.putInt(QuranFragment.SURA, m.sura);
+			outState.putInt(QuranFragment.AYA, m.aya);
+		}
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case android.R.id.home:
+			finish();
+			return true;
+		default:
+			return super.onOptionsItemSelected(item);
 		}
 	}
 
@@ -78,18 +104,6 @@ public class ViewerActivity extends BaseActivity {
 			return null;
 		} else {
 			return (QuranFragment) mAdapter.instantiateItem(mPager, mPager.getCurrentItem());
-		}
-	}
-
-	@Override
-	protected void onSaveInstanceState(Bundle outState) {
-		super.onSaveInstanceState(outState);
-		QuranFragment fragment = getCurrentFragment();
-		if (fragment != null) {
-			Mark m = fragment.getCurrentPosition();
-			outState.putInt(QuranFragment.PAGING_MODE, mPagingMode);
-			outState.putInt(QuranFragment.SURA, m.sura);
-			outState.putInt(QuranFragment.AYA, m.aya);
 		}
 	}
 

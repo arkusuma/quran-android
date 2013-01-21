@@ -3,7 +3,7 @@
     package="com.grafian.quran"
     android:installLocation="auto"
     android:versionCode="4"
-    android:versionName="1.1" >
+    android:versionName="1.2" >
 
     <uses-sdk
         android:minSdkVersion="8"
@@ -35,8 +35,7 @@
         <activity
             android:name=".SettingsActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
-            android:label="@string/settings"
-            android:theme="@style/Theme.Sherlock" />
+            android:label="@string/settings" />
         <activity
             android:name="com.google.ads.AdActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize" />

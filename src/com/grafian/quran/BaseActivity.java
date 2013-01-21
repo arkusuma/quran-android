@@ -53,14 +53,14 @@ public class BaseActivity extends SherlockFragmentActivity {
 
 	private void loadFont() {
 		switch (mApp.config.fontArabic) {
+		case Config.FONT_ME_QURAN:
+			mFont = Typeface.createFromAsset(getAssets(), "me_quran.ttf");
+			break;
 		case Config.FONT_UTHMAN:
 			mFont = Typeface.createFromAsset(getAssets(), "uthman.otf");
 			break;
-		case Config.FONT_SALEEM:
-			mFont = Typeface.createFromAsset(getAssets(), "saleem.ttf");
-			break;
 		default:
-			mFont = null;
+			mFont = Typeface.DEFAULT;
 		}
 	}
 

@@ -9,7 +9,7 @@
     <string name="quit">Quit</string>
     <string name="share_via">Share Via</string>
     <string name="delete">Delete</string>
-    <string name="confirm_quit">Quit from this program?</string>
+    <string name="confirm_quit">Do you really want to quit?</string>
 
     <!-- Bookmark -->
     <string name="select_folder">Add Bookmark to Folder</string>

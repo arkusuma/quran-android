@@ -1,9 +1,6 @@
 package com.grafian.quran;
 
-import org.amr.arabic.ArabicUtilities;
-
 import android.content.Intent;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.View;
@@ -32,18 +29,18 @@ public class SuraFragment extends SherlockListFragment {
 	}
 
 	@Override
+	public void onResume() {
+		super.onResume();
+		mAdapter.notifyDataSetChanged();
+	}
+
+	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
 		Intent intent = new Intent(getActivity(), ViewerActivity.class);
 		intent.putExtra(QuranFragment.PAGING_MODE, Config.PAGING_MODE_SURA);
 		intent.putExtra(QuranFragment.SURA, position + 1);
 		intent.putExtra(QuranFragment.AYA, 1);
 		startActivity(intent);
-	}
-
-	@Override
-	public void onResume() {
-		super.onResume();
-		mAdapter.notifyDataSetChanged();
 	}
 
 	private static class SuraRowHolder {
@@ -88,15 +85,13 @@ public class SuraFragment extends SherlockListFragment {
 
 			String arabic = sura.name;
 			if (mApp.config.internalReshaper) {
-				arabic = ArabicUtilities.reshape(arabic);
+				arabic = ArabicShaper.shape(arabic);
 			}
 			holder.suraNumber.setText("" + sura.index + ".");
 			holder.suraName.setText(App.getSuraName(sura.index));
 			holder.suraNameArabic.setText(arabic);
 			holder.suraNameArabic.setTextSize(TypedValue.COMPLEX_UNIT_SP, mApp.config.fontSizeArabic);
-
-			Typeface font = ((BaseActivity) getActivity()).getFont();
-			holder.suraNameArabic.setTypeface(font != null ? font : Typeface.SANS_SERIF);
+			holder.suraNameArabic.setTypeface(((BaseActivity) getActivity()).getFont());
 
 			return convertView;
 		}

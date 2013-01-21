@@ -26,13 +26,13 @@
             android:key="fontArabic"
             android:title="Arabic Font" />
         <ListPreference
-            android:entries="@array/font_sizes"
-            android:entryValues="@array/font_sizes"
+            android:entries="@array/arabic_font_sizes"
+            android:entryValues="@array/arabic_font_sizes"
             android:key="fontSizeArabic"
             android:title="Arabic Font Size" />
         <ListPreference
-            android:entries="@array/font_sizes"
-            android:entryValues="@array/font_sizes"
+            android:entries="@array/translation_font_sizes"
+            android:entryValues="@array/translation_font_sizes"
             android:key="fontSizeTranslation"
             android:title="Translation Font Size" />
 

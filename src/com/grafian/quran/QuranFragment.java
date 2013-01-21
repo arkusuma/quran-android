@@ -1,13 +1,10 @@
 package com.grafian.quran;
 
-import org.amr.arabic.ArabicUtilities;
-
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.ClipboardManager;
 import android.text.Spannable;
@@ -147,6 +144,38 @@ public class QuranFragment extends SherlockListFragment {
 		return true;
 	}
 
+	@Override
+	public void onListItemClick(ListView l, View v, int position, long id) {
+		final Mark mark = (Mark) l.getItemAtPosition(position);
+		if (mark.aya > 0) {
+			String folders[] = new String[app.bookmark.getFolderCount() + 1];
+			for (int i = 0; i < app.bookmark.getFolderCount(); i++) {
+				folders[i] = app.bookmark.getFolder(i).getName();
+			}
+			folders[folders.length - 1] = getString(R.string.create_new);
+
+			DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int which) {
+					if (which < app.bookmark.getFolderCount()) {
+						Folder folder = app.bookmark.getFolder(which);
+						if (folder.getType() == Bookmark.TYPE_SINGLE && folder.size() > 0) {
+							doConfirmSingleBookmark(mark, folder);
+						} else {
+							addBookmark(mark, folder);
+						}
+					} else {
+						doCreateFolder(mark);
+					}
+				}
+			};
+
+			new AlertDialog.Builder(getActivity())
+					.setTitle(R.string.select_folder)
+					.setItems(folders, listener)
+					.show();
+		}
+	}
+
 	public Mark getCurrentPosition() {
 		int pos = getListView().getFirstVisiblePosition();
 		Mark mark = (Mark) mAdapter.getItem(pos);
@@ -201,38 +230,6 @@ public class QuranFragment extends SherlockListFragment {
 		String arabic = app.quran.get(mark.sura, mark.aya);
 		String translation = app.translation.get(mark.sura, mark.aya);
 		return arabic + "\n\n" + translation;
-	}
-
-	@Override
-	public void onListItemClick(ListView l, View v, int position, long id) {
-		final Mark mark = (Mark) l.getItemAtPosition(position);
-		if (mark.aya > 0) {
-			String folders[] = new String[app.bookmark.getFolderCount() + 1];
-			for (int i = 0; i < app.bookmark.getFolderCount(); i++) {
-				folders[i] = app.bookmark.getFolder(i).getName();
-			}
-			folders[folders.length - 1] = getString(R.string.create_new);
-
-			DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
-				public void onClick(DialogInterface dialog, int which) {
-					if (which < app.bookmark.getFolderCount()) {
-						Folder folder = app.bookmark.getFolder(which);
-						if (folder.getType() == Bookmark.TYPE_SINGLE && folder.size() > 0) {
-							doConfirmSingleBookmark(mark, folder);
-						} else {
-							addBookmark(mark, folder);
-						}
-					} else {
-						doCreateFolder(mark);
-					}
-				}
-			};
-
-			new AlertDialog.Builder(getActivity())
-					.setTitle(R.string.select_folder)
-					.setItems(folders, listener)
-					.show();
-		}
 	}
 
 	private void doCopy(Mark mark) {
@@ -332,11 +329,12 @@ public class QuranFragment extends SherlockListFragment {
 	}
 
 	private void setArabic(TextView tv, String s) {
+		s = s.replace("\u064E\u0670", "\u0670");
 		if (app.config.internalReshaper) {
-			s = ArabicUtilities.reshape(s);
+			s = ArabicShaper.shape(s);
 		}
 		Spannable span = new SpannableString("\n" + s);
-		span.setSpan(new RelativeSizeSpan(0.3f), 0, 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+		span.setSpan(new RelativeSizeSpan(0.25f), 0, 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 		tv.setText(span, BufferType.SPANNABLE);
 	}
 
@@ -414,9 +412,7 @@ public class QuranFragment extends SherlockListFragment {
 					setArabic(holder.bismillah, app.quran.get(1, 1));
 
 					holder.bismillah.setTextSize(TypedValue.COMPLEX_UNIT_SP, app.config.fontSizeArabic);
-
-					Typeface font = ((BaseActivity) getActivity()).getFont();
-					holder.bismillah.setTypeface(font != null ? font : Typeface.SANS_SERIF);
+					holder.bismillah.setTypeface(((BaseActivity) getActivity()).getFont());
 				}
 
 				mark.aya = 1;
@@ -455,8 +451,7 @@ public class QuranFragment extends SherlockListFragment {
 				holder.arabic.setVisibility(app.config.showArabic ? View.VISIBLE : View.GONE);
 				holder.translation.setVisibility(app.config.showTranslation ? View.VISIBLE : View.GONE);
 
-				Typeface font = ((BaseActivity) getActivity()).getFont();
-				holder.arabic.setTypeface(font != null ? font : Typeface.SANS_SERIF);
+				holder.arabic.setTypeface(((BaseActivity) getActivity()).getFont());
 
 				if (app.config.fontArabic == 0) {
 					holder.arabic.setLineSpacing(0f, 1.5f);
