@@ -9,6 +9,9 @@ import android.os.Build;
 import android.widget.Toast;
 
 public class App extends Application {
+
+	public static String PACKAGE_NAME;
+
 	public MetaData metaData;
 	public Quran quran;
 	public Quran translation;
@@ -21,6 +24,7 @@ public class App extends Application {
 	public void onCreate() {
 		super.onCreate();
 
+		PACKAGE_NAME = getPackageName();
 		app = this;
 
 		config = new Config();
@@ -28,6 +32,7 @@ public class App extends Application {
 
 		bookmark = new Bookmark();
 		bookmark.load(this);
+
 	}
 
 	private int getTranslationID() {
@@ -183,4 +188,5 @@ public class App extends Application {
 		}
 		return items[i - 1];
 	}
+
 }

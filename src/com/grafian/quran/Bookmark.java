@@ -2,6 +2,7 @@ package com.grafian.quran;
 
 import java.util.ArrayList;
 
+import android.app.backup.BackupManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -13,7 +14,7 @@ public class Bookmark {
 	final public static int TYPE_SINGLE = 0;
 	final public static int TYPE_MULTIPLE = 1;
 
-	final private static String BOOKMARK_NAME = "bookmark";
+	final public static String BOOKMARK_NAME = "bookmark";
 
 	public static class Item {
 		private int sura;
@@ -67,6 +68,7 @@ public class Bookmark {
 
 		public void setName(String name) {
 			this.name = name;
+			BackupManager.dataChanged(App.PACKAGE_NAME);
 		}
 
 		public int getType() {
@@ -80,6 +82,7 @@ public class Bookmark {
 					items.remove(1);
 				}
 			}
+			BackupManager.dataChanged(App.PACKAGE_NAME);
 		}
 
 		public void add(Item item) {
@@ -96,6 +99,7 @@ public class Bookmark {
 				}
 			}
 			items.add(item);
+			BackupManager.dataChanged(App.PACKAGE_NAME);
 		}
 
 		public Item get(int index) {
@@ -104,14 +108,17 @@ public class Bookmark {
 
 		public void remove(int index) {
 			items.remove(index);
+			BackupManager.dataChanged(App.PACKAGE_NAME);
 		}
 
 		public void remove(Item item) {
 			items.remove(item);
+			BackupManager.dataChanged(App.PACKAGE_NAME);
 		}
 
 		public void clear() {
 			items.clear();
+			BackupManager.dataChanged(App.PACKAGE_NAME);
 		}
 
 		public int size() {
@@ -155,6 +162,7 @@ public class Bookmark {
 
 	public void addFolder(Folder folder) {
 		folders.add(folder);
+		BackupManager.dataChanged(App.PACKAGE_NAME);
 	}
 
 	public Folder getFolder(int i) {
@@ -163,10 +171,12 @@ public class Bookmark {
 
 	public void removeFolder(int i) {
 		folders.remove(i);
+		BackupManager.dataChanged(App.PACKAGE_NAME);
 	}
 
 	public void removeFolder(Folder folder) {
 		folders.remove(folder);
+		BackupManager.dataChanged(App.PACKAGE_NAME);
 	}
 
 	public int getFolderCount() {

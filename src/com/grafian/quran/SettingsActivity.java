@@ -1,5 +1,6 @@
 package com.grafian.quran;
 
+import android.app.backup.BackupManager;
 import android.os.Bundle;
 
 import com.actionbarsherlock.app.SherlockPreferenceActivity;
@@ -24,5 +25,11 @@ public class SettingsActivity extends SherlockPreferenceActivity {
 		default:
 			return super.onOptionsItemSelected(item);
 		}
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		BackupManager.dataChanged(App.PACKAGE_NAME);
 	}
 }
