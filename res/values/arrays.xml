@@ -20,6 +20,8 @@
         <item>24</item>
         <item>26</item>
         <item>28</item>
+        <item>30</item>
+        <item>32</item>
     </string-array>
     <string-array name="translation_font_sizes">
         <item>14</item>
@@ -29,13 +31,16 @@
     </string-array>
     <string-array name="font_names">
         <item>System Default</item>
-        <item>KFGQPC Uthman</item>
         <item>Me-Quran</item>
+        <item>NooreHira</item>
+        <item>NooreHuda</item>
     </string-array>
     <string-array name="font_codes">
         <item>0</item>
         <item>1</item>
         <item>2</item>
+        <item>3</item>
+        <item>4</item>
     </string-array>
 
 </resources>

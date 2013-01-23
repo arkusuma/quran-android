@@ -32,9 +32,9 @@ public class MainActivity extends BaseActivity {
 			mPage = mApp.config.pagingMode + 1;
 		}
 
-		if (mApp.loaded) {
-			mPager.setCurrentItem(mPage);
-		} else {
+		mPager.setCurrentItem(mPage);
+
+		if (!mApp.loaded) {
 			mApp.loadAllData(this, new ProgressListener() {
 				@Override
 				public void onProgress() {
@@ -42,8 +42,6 @@ public class MainActivity extends BaseActivity {
 
 				@Override
 				public void onFinish() {
-					mAdapter.notifyDataSetChanged();
-					mPager.setCurrentItem(mPage);
 				}
 			});
 		}
@@ -96,7 +94,7 @@ public class MainActivity extends BaseActivity {
 
 		@Override
 		public int getCount() {
-			return mApp.loaded ? 5 : 0;
+			return 5;
 		}
 
 		@Override

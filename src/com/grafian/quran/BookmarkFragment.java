@@ -17,9 +17,10 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockListFragment;
-import com.grafian.quran.Bookmark.Folder;
-import com.grafian.quran.Bookmark.Item;
-import com.grafian.quran.MetaData.Sura;
+import com.grafian.quran.parser.MetaData.Sura;
+import com.grafian.quran.prefs.Bookmark;
+import com.grafian.quran.prefs.Bookmark.Folder;
+import com.grafian.quran.prefs.Bookmark.Item;
 
 public class BookmarkFragment extends SherlockListFragment {
 

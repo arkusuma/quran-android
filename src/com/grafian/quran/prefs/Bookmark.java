@@ -1,4 +1,4 @@
-package com.grafian.quran;
+package com.grafian.quran.prefs;
 
 import java.util.ArrayList;
 
@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 
 import com.google.gson.Gson;
+import com.grafian.quran.App;
 
 public class Bookmark {
 

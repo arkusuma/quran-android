@@ -1,4 +1,4 @@
-package org.amr.arabic;
+package com.grafian.quran.text;
 /*
  *	Date : 25th of March 2008
  *	the class is Arabic string reshaper, this class is targeting Android platform

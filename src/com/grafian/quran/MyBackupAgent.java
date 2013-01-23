@@ -1,5 +1,7 @@
 package com.grafian.quran;
 
+import com.grafian.quran.prefs.Bookmark;
+
 import android.app.backup.BackupAgentHelper;
 import android.app.backup.SharedPreferencesBackupHelper;
 

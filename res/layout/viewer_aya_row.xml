@@ -11,7 +11,7 @@
 
     <LinearLayout
         android:id="@+id/left_side"
-        android:layout_width="48dp"
+        android:layout_width="50dp"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:gravity="center"
@@ -42,7 +42,9 @@
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/left_side"
         android:orientation="vertical"
-        android:padding="8dp" >
+        android:paddingBottom="8dp"
+        android:paddingRight="8dp"
+        android:paddingTop="8dp" >
 
         <TextView
             android:id="@+id/arabic"

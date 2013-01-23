@@ -8,7 +8,8 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 
 import com.actionbarsherlock.view.MenuItem;
-import com.grafian.quran.MetaData.Mark;
+import com.grafian.quran.parser.MetaData.Mark;
+import com.grafian.quran.prefs.Config;
 
 public class ViewerActivity extends BaseActivity {
 
@@ -62,7 +63,7 @@ public class ViewerActivity extends BaseActivity {
 
 		// Check if reading direction is still valid
 		QuranFragment fragment = getCurrentFragment();
-		if (fragment.getUserVisibleHint()) {
+		if (fragment != null && fragment.getUserVisibleHint()) {
 			Mark m = fragment.getCurrentPosition();
 			showPage(mPagingMode, m.sura, m.aya);
 		}

@@ -15,19 +15,18 @@ import android.widget.TextView;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
+import com.grafian.quran.prefs.Config;
 
 public class BaseActivity extends SherlockFragmentActivity {
 
 	protected App mApp;
 	private Typeface mFont;
+	private int mLoadedFont = -1;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
 		mApp = (App) getApplication();
-
-		loadFont();
 	}
 
 	@Override
@@ -40,27 +39,36 @@ public class BaseActivity extends SherlockFragmentActivity {
 	protected void onResume() {
 		super.onResume();
 
-		String lastLang = mApp.config.lang;
-		int lastFont = mApp.config.fontArabic;
 		mApp.config.load(this);
-		if (lastLang != null && !mApp.config.lang.equals(lastLang)) {
-			updateTranslation();
-		}
-		if (lastFont != mApp.config.fontArabic) {
+		if (mLoadedFont != mApp.config.fontArabic) {
 			loadFont();
+		}
+		if (mApp.loaded) {
+			if (mApp.needDataReload()) {
+				reloadData();
+			}
 		}
 	}
 
 	private void loadFont() {
-		switch (mApp.config.fontArabic) {
-		case Config.FONT_ME_QURAN:
-			mFont = Typeface.createFromAsset(getAssets(), "me_quran.ttf");
-			break;
-		case Config.FONT_UTHMAN:
-			mFont = Typeface.createFromAsset(getAssets(), "uthman.otf");
-			break;
-		default:
+		try {
+			switch (mApp.config.fontArabic) {
+			case Config.FONT_ME_QURAN:
+				mFont = Typeface.createFromAsset(getAssets(), "me_quran.ttf");
+				break;
+			case Config.FONT_NOOREHIRA:
+				mFont = Typeface.createFromAsset(getAssets(), "noorehira.ttf");
+				break;
+			case Config.FONT_NOOREHUDA:
+				mFont = Typeface.createFromAsset(getAssets(), "noorehuda.ttf");
+				break;
+			default:
+				mFont = Typeface.DEFAULT;
+			}
+			mLoadedFont = mApp.config.fontArabic;
+		} catch (Exception e) {
 			mFont = Typeface.DEFAULT;
+			mLoadedFont = mApp.config.fontArabic;
 		}
 	}
 
@@ -88,8 +96,8 @@ public class BaseActivity extends SherlockFragmentActivity {
 		return super.onOptionsItemSelected(item);
 	}
 
-	private void updateTranslation() {
-		mApp.loadTranslation(BaseActivity.this, new ProgressListener() {
+	private void reloadData() {
+		mApp.loadAllData(BaseActivity.this, new ProgressListener() {
 			@Override
 			public void onProgress() {
 			}

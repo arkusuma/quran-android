@@ -29,10 +29,13 @@ import com.actionbarsherlock.app.SherlockListFragment;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
-import com.grafian.quran.Bookmark.Folder;
-import com.grafian.quran.Bookmark.Item;
-import com.grafian.quran.MetaData.Mark;
-import com.grafian.quran.MetaData.Sura;
+import com.grafian.quran.parser.MetaData.Mark;
+import com.grafian.quran.parser.MetaData.Sura;
+import com.grafian.quran.prefs.Bookmark;
+import com.grafian.quran.prefs.Config;
+import com.grafian.quran.prefs.Bookmark.Folder;
+import com.grafian.quran.prefs.Bookmark.Item;
+import com.grafian.quran.text.ArabicShaper;
 
 @SuppressWarnings("deprecation")
 public class QuranFragment extends SherlockListFragment {
@@ -46,6 +49,8 @@ public class QuranFragment extends SherlockListFragment {
 	private int mPagingMode;
 	private Mark mFrom;
 	private Mark mTo;
+	private int mSura;
+	private int mAya;
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
@@ -55,18 +60,18 @@ public class QuranFragment extends SherlockListFragment {
 
 		Bundle args = getArguments();
 		mPagingMode = args.getInt(PAGING_MODE);
-		int sura = args.getInt(SURA);
-		int aya = args.getInt(AYA);
+		mSura = args.getInt(SURA);
+		mAya = args.getInt(AYA);
 		app.config.pagingMode = mPagingMode;
 
 		int pos;
 		switch (mPagingMode) {
 		case Config.PAGING_MODE_SURA:
-			mFrom = new Mark(sura, 1);
-			mTo = new Mark(sura, app.metaData.getSura(sura).ayas);
+			mFrom = new Mark(mSura, 1);
+			mTo = new Mark(mSura, app.metaData.getSura(mSura).ayas);
 			break;
 		case Config.PAGING_MODE_PAGE:
-			pos = app.metaData.findPage(sura, aya);
+			pos = app.metaData.findPage(mSura, mAya);
 			mFrom = new Mark(app.metaData.getPage(pos));
 			if (pos < app.metaData.getPageCount()) {
 				mTo = new Mark(app.metaData.getPage(pos + 1));
@@ -76,7 +81,7 @@ public class QuranFragment extends SherlockListFragment {
 			}
 			break;
 		case Config.PAGING_MODE_JUZ:
-			pos = app.metaData.findJuz(sura, aya);
+			pos = app.metaData.findJuz(mSura, mAya);
 			mFrom = new Mark(app.metaData.getJuz(pos));
 			if (pos < app.metaData.getJuzCount()) {
 				mTo = new Mark(app.metaData.getJuz(pos + 1));
@@ -86,7 +91,7 @@ public class QuranFragment extends SherlockListFragment {
 			}
 			break;
 		case Config.PAGING_MODE_HIZB:
-			pos = app.metaData.findHizb(sura, aya);
+			pos = app.metaData.findHizb(mSura, mAya);
 			mFrom = new Mark(app.metaData.getHizb(pos));
 			if (pos < app.metaData.getHizbCount()) {
 				mTo = new Mark(app.metaData.getHizb(pos + 1));
@@ -100,7 +105,7 @@ public class QuranFragment extends SherlockListFragment {
 		setListAdapter(mAdapter);
 		getListView().setOnScrollListener(onScroll);
 		getListView().setFastScrollEnabled(true);
-		getListView().setSelection(findPosition(sura, aya));
+		getListView().setSelection(findPosition(mSura, mAya));
 		getListView().setOnItemLongClickListener(onItemLongClick);
 
 		setHasOptionsMenu(true);
@@ -176,6 +181,9 @@ public class QuranFragment extends SherlockListFragment {
 		}
 	}
 
+	public void setup() {
+	}
+
 	public Mark getCurrentPosition() {
 		int pos = getListView().getFirstVisiblePosition();
 		Mark mark = (Mark) mAdapter.getItem(pos);
@@ -192,7 +200,7 @@ public class QuranFragment extends SherlockListFragment {
 
 		@Override
 		public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-			if (getUserVisibleHint()) {
+			if (app.loaded && getUserVisibleHint()) {
 				updateTitle(firstVisibleItem);
 			}
 		}
@@ -333,9 +341,13 @@ public class QuranFragment extends SherlockListFragment {
 		if (app.config.internalReshaper) {
 			s = ArabicShaper.shape(s);
 		}
-		Spannable span = new SpannableString("\n" + s);
-		span.setSpan(new RelativeSizeSpan(0.25f), 0, 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-		tv.setText(span, BufferType.SPANNABLE);
+		if (app.config.fontArabic == Config.FONT_DEFAULT) {
+			Spannable span = new SpannableString("\n" + s);
+			span.setSpan(new RelativeSizeSpan(0.4f), 0, 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+			tv.setText(span, BufferType.SPANNABLE);
+		} else {
+			tv.setText(s);
+		}
 	}
 
 	private static class SuraRowHolder {
@@ -358,6 +370,10 @@ public class QuranFragment extends SherlockListFragment {
 
 		@Override
 		public int getCount() {
+			if (!app.loaded) {
+				return 0;
+			}
+
 			int count = 0;
 			int start = mFrom.aya == 1 ? 0 : mFrom.aya;
 			for (int i = mFrom.sura; i < mTo.sura; i++) {

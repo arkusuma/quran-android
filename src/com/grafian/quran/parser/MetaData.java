@@ -1,4 +1,4 @@
-package com.grafian.quran;
+package com.grafian.quran.parser;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -19,30 +19,30 @@ public class MetaData {
 	public static class Sura {
 		final public static int MECCAN = 0;
 		final public static int MEDINAN = 1;
-		int index;
-		int ayas;
-		int start;
-		String name;
-		String tname;
-		String ename;
-		int type;
-		int order;
-		int rukus;
+		public int index;
+		public int ayas;
+		public int start;
+		public String name;
+		public String tname;
+		public String ename;
+		public int type;
+		public int order;
+		public int rukus;
 	}
 
 	public static class Mark {
-		int sura;
-		int aya;
+		public int sura;
+		public int aya;
 
-		Mark() {
+		public Mark() {
 		}
 
-		Mark(Mark m) {
+		public Mark(Mark m) {
 			this.sura = m.sura;
 			this.aya = m.aya;
 		}
 
-		Mark(int sura, int aya) {
+		public Mark(int sura, int aya) {
 			this.sura = sura;
 			this.aya = aya;
 		}
@@ -60,12 +60,12 @@ public class MetaData {
 	public static class Sajda extends Mark {
 		final public static int RECOMMENDED = 0;
 		final public static int OBLIGATORY = 1;
-		int type;
+		public int type;
 
-		Sajda() {
+		public Sajda() {
 		}
 
-		Sajda(Mark mark) {
+		public Sajda(Mark mark) {
 			super(mark.sura, mark.aya);
 		}
 	}
@@ -73,16 +73,8 @@ public class MetaData {
 	final private ArrayList<Sura> mSuras = new ArrayList<Sura>();
 	final private ArrayList<Mark> mJuzs = new ArrayList<Mark>();
 	final private ArrayList<Mark> mHizbs = new ArrayList<Mark>();
-	final private ArrayList<Mark> mManzils = new ArrayList<Mark>();
-	final private ArrayList<Mark> mRukus = new ArrayList<Mark>();
 	final private ArrayList<Mark> mPages = new ArrayList<Mark>();
 	final private ArrayList<Sajda> mSajdas = new ArrayList<Sajda>();
-
-	private ProgressListener mProgressListener;
-
-	public MetaData(ProgressListener listener) {
-		mProgressListener = listener;
-	}
 
 	public void load(Context context, int resid) {
 		try {
@@ -119,35 +111,18 @@ public class MetaData {
 				sura.order = Integer.parseInt(attributes.getValue("", "order"));
 				sura.rukus = Integer.parseInt(attributes.getValue("", "rukus"));
 				mSuras.add(sura);
-				updateProgress();
 			} else if ("juz".equals(localName)) {
 				mJuzs.add(getMark(attributes));
-				updateProgress();
 			} else if ("quarter".equals(localName)) {
 				mHizbs.add(getMark(attributes));
-				updateProgress();
-			} else if ("manzil".equals(localName)) {
-				mManzils.add(getMark(attributes));
-				updateProgress();
-			} else if ("ruku".equals(localName)) {
-				mRukus.add(getMark(attributes));
-				updateProgress();
 			} else if ("page".equals(localName)) {
 				mPages.add(getMark(attributes));
-				updateProgress();
 			} else if ("sajda".equals(localName)) {
 				Sajda sajda = new Sajda(getMark(attributes));
 				sajda.type = "recommended".equals(attributes.getValue("", "type")) ?
 						Sajda.RECOMMENDED : Sajda.OBLIGATORY;
 				mSajdas.add(sajda);
-				updateProgress();
 			}
-		}
-	}
-
-	private void updateProgress() {
-		if (mProgressListener != null) {
-			mProgressListener.onProgress();
 		}
 	}
 
@@ -173,22 +148,6 @@ public class MetaData {
 
 	public Mark getHizb(int hizb) {
 		return mHizbs.get(hizb - 1);
-	}
-
-	public int getManzilCount() {
-		return mManzils.size();
-	}
-
-	public Mark getManzil(int manzil) {
-		return mManzils.get(manzil - 1);
-	}
-
-	public int getRukuCount() {
-		return mRukus.size();
-	}
-
-	public Mark getRuku(int ruku) {
-		return mRukus.get(ruku - 1);
 	}
 
 	public int getPageCount() {

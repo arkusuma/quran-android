@@ -1,4 +1,4 @@
-package com.grafian.quran;
+package com.grafian.quran.parser;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -7,18 +7,14 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.zip.GZIPInputStream;
 
+import com.grafian.quran.ProgressListener;
+
 import android.content.Context;
 
 public class Quran {
 	final private ArrayList<ArrayList<String>> mSuras = new ArrayList<ArrayList<String>>(114);
 
-	private ProgressListener mListener;
-
-	public Quran(ProgressListener listener) {
-		mListener = listener;
-	}
-
-	public void load(Context context, int resid, MetaData metaData, boolean strip) {
+	public void load(Context context, int resid, MetaData metaData, boolean strip, ProgressListener listener) {
 		try {
 			mSuras.clear();
 			InputStream in = context.getResources().openRawResource(resid);
@@ -44,13 +40,13 @@ public class Quran {
 						mSuras.add(list);
 					}
 					list.add(text);
-					if (mListener != null) {
-						mListener.onProgress();
+					if (listener != null) {
+						listener.onProgress();
 					}
 				}
 			}
-			if (mListener != null) {
-				mListener.onFinish();
+			if (listener != null) {
+				listener.onFinish();
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

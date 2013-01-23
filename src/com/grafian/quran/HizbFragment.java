@@ -9,8 +9,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockListFragment;
-import com.grafian.quran.MetaData.Mark;
-import com.grafian.quran.MetaData.Sura;
+import com.grafian.quran.parser.MetaData.Mark;
+import com.grafian.quran.parser.MetaData.Sura;
+import com.grafian.quran.prefs.Config;
 
 public class HizbFragment extends SherlockListFragment {
 
@@ -47,7 +48,7 @@ public class HizbFragment extends SherlockListFragment {
 
 		@Override
 		public int getCount() {
-			return app.loaded ? app.metaData.getHizbCount() : 0;
+			return app.metaData.getHizbCount();
 		}
 
 		@Override
