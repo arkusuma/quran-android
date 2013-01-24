@@ -46,12 +46,11 @@
         android:paddingRight="8dp"
         android:paddingTop="8dp" >
 
-        <TextView
+        <com.grafian.quran.text.ArabicTextView
             android:id="@+id/arabic"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="right"
-            android:lineSpacingMultiplier="1.5"
             android:textSize="20sp" />
 
         <TextView

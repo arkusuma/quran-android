@@ -5,7 +5,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
-import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -15,13 +14,10 @@ import android.widget.TextView;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
-import com.grafian.quran.prefs.Config;
 
 public class BaseActivity extends SherlockFragmentActivity {
 
 	protected App mApp;
-	private Typeface mFont;
-	private int mLoadedFont = -1;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -40,40 +36,12 @@ public class BaseActivity extends SherlockFragmentActivity {
 		super.onResume();
 
 		mApp.config.load(this);
-		if (mLoadedFont != mApp.config.fontArabic) {
-			loadFont();
-		}
+		mApp.loadFont();
 		if (mApp.loaded) {
 			if (mApp.needDataReload()) {
 				reloadData();
 			}
 		}
-	}
-
-	private void loadFont() {
-		try {
-			switch (mApp.config.fontArabic) {
-			case Config.FONT_ME_QURAN:
-				mFont = Typeface.createFromAsset(getAssets(), "me_quran.ttf");
-				break;
-			case Config.FONT_NOOREHIRA:
-				mFont = Typeface.createFromAsset(getAssets(), "noorehira.ttf");
-				break;
-			case Config.FONT_NOOREHUDA:
-				mFont = Typeface.createFromAsset(getAssets(), "noorehuda.ttf");
-				break;
-			default:
-				mFont = Typeface.DEFAULT;
-			}
-			mLoadedFont = mApp.config.fontArabic;
-		} catch (Exception e) {
-			mFont = Typeface.DEFAULT;
-			mLoadedFont = mApp.config.fontArabic;
-		}
-	}
-
-	public Typeface getFont() {
-		return mFont;
 	}
 
 	@Override

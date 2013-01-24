@@ -1,9 +1,6 @@
 package com.grafian.quran;
 
-import com.grafian.quran.parser.MetaData;
-import com.grafian.quran.parser.Quran;
-import com.grafian.quran.prefs.Bookmark;
-import com.grafian.quran.prefs.Config;
+import java.io.IOException;
 
 import android.annotation.TargetApi;
 import android.app.Application;
@@ -12,6 +9,12 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.widget.Toast;
+
+import com.grafian.quran.parser.MetaData;
+import com.grafian.quran.parser.Quran;
+import com.grafian.quran.prefs.Bookmark;
+import com.grafian.quran.prefs.Config;
+import com.grafian.quran.text.NativeRenderer;
 
 public class App extends Application {
 
@@ -24,8 +27,10 @@ public class App extends Application {
 	final public Quran quran = new Quran();
 	final public Quran translation = new Quran();
 
-	public boolean loaded = false;
 	public static App app;
+
+	public boolean loaded = false;
+	private int loadedFont = -1;
 	private int loadedQuran = -1;
 	private int loadedTranslation = -1;
 
@@ -60,7 +65,33 @@ public class App extends Application {
 		return true;
 	}
 
-	public boolean loadAllData(final Context context, final ProgressListener listener) {
+	public void loadFont() {
+		if (loadedFont != config.fontArabic) {
+			loadedFont = config.fontArabic;
+			String name = "me_quran.ttf";
+			switch (loadedFont) {
+			case Config.FONT_UTHMAN:
+				name = "uthman.otf";
+				break;
+			case Config.FONT_SALEEM:
+				name = "saleem.ttf";
+				break;
+			case Config.FONT_NOOREHIRA:
+				name = "noorehira.ttf";
+				break;
+			case Config.FONT_NOOREHUDA:
+				name = "noorehuda.ttf";
+				break;
+			}
+			try {
+				NativeRenderer.loadFont(getAssets().open(name));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public void loadAllData(final Context context, final ProgressListener listener) {
 		loaded = false;
 		new AsyncTask<Void, Integer, Void>() {
 			int tick;
@@ -132,8 +163,6 @@ public class App extends Application {
 				}
 			}
 		}.execute();
-
-		return true;
 	}
 
 	public static String getSuraName(int i) {

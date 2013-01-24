@@ -1,0 +1,17 @@
+APP_PLATFORM := android-8
+
+BASE_PATH := $(call my-dir)
+LOCAL_PATH := $(call my-dir)
+
+include $(CLEAR_VARS)
+
+LOCAL_ARM_MODE := arm
+LOCAL_MODULE := render
+LOCAL_C_INCLUDES := $(LOCAL_PATH)/freetype/include $(LOCAL_PATH)/harfbuzz-ng/src
+LOCAL_SRC_FILES := render.c
+LOCAL_STATIC_LIBRARIES := harfbuzz_ng ft2
+LOCAL_LDLIBS := -llog -ljnigraphics
+
+include $(BUILD_SHARED_LIBRARY)
+include $(BASE_PATH)/freetype/Android.mk
+include $(BASE_PATH)/harfbuzz-ng/Android.mk

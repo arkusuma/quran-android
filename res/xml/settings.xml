@@ -35,10 +35,6 @@
             android:entryValues="@array/translation_font_sizes"
             android:key="fontSizeTranslation"
             android:title="Translation Font Size" />
-
-        <CheckBoxPreference
-            android:key="internalReshaper"
-            android:title="Use Internal Reshaper" />
     </PreferenceCategory>
 
 </PreferenceScreen>

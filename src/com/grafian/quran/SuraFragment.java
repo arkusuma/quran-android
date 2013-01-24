@@ -12,7 +12,6 @@ import android.widget.TextView;
 import com.actionbarsherlock.app.SherlockListFragment;
 import com.grafian.quran.parser.MetaData.Sura;
 import com.grafian.quran.prefs.Config;
-import com.grafian.quran.text.ArabicShaper;
 
 public class SuraFragment extends SherlockListFragment {
 
@@ -86,14 +85,10 @@ public class SuraFragment extends SherlockListFragment {
 			Sura sura = (Sura) getItem(position);
 
 			String arabic = sura.name;
-			if (mApp.config.internalReshaper) {
-				arabic = ArabicShaper.shape(arabic);
-			}
 			holder.suraNumber.setText("" + sura.index + ".");
 			holder.suraName.setText(App.getSuraName(sura.index));
 			holder.suraNameArabic.setText(arabic);
 			holder.suraNameArabic.setTextSize(TypedValue.COMPLEX_UNIT_SP, mApp.config.fontSizeArabic);
-			holder.suraNameArabic.setTypeface(((BaseActivity) getActivity()).getFont());
 
 			return convertView;
 		}

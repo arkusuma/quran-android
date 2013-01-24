@@ -7,9 +7,6 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.text.ClipboardManager;
-import android.text.Spannable;
-import android.text.SpannableString;
-import android.text.style.RelativeSizeSpan;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,7 +18,6 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.RadioGroup;
 import android.widget.TextView;
-import android.widget.TextView.BufferType;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.ActionBar;
@@ -32,10 +28,9 @@ import com.actionbarsherlock.view.MenuItem;
 import com.grafian.quran.parser.MetaData.Mark;
 import com.grafian.quran.parser.MetaData.Sura;
 import com.grafian.quran.prefs.Bookmark;
-import com.grafian.quran.prefs.Config;
 import com.grafian.quran.prefs.Bookmark.Folder;
 import com.grafian.quran.prefs.Bookmark.Item;
-import com.grafian.quran.text.ArabicShaper;
+import com.grafian.quran.prefs.Config;
 
 @SuppressWarnings("deprecation")
 public class QuranFragment extends SherlockListFragment {
@@ -336,20 +331,6 @@ public class QuranFragment extends SherlockListFragment {
 		ab.setSubtitle(title);
 	}
 
-	private void setArabic(TextView tv, String s) {
-		s = s.replace("\u064E\u0670", "\u0670");
-		if (app.config.internalReshaper) {
-			s = ArabicShaper.shape(s);
-		}
-		if (app.config.fontArabic == Config.FONT_DEFAULT) {
-			Spannable span = new SpannableString("\n" + s);
-			span.setSpan(new RelativeSizeSpan(0.4f), 0, 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-			tv.setText(span, BufferType.SPANNABLE);
-		} else {
-			tv.setText(s);
-		}
-	}
-
 	private static class SuraRowHolder {
 		public TextView suraName;
 		public TextView suraTranslation;
@@ -425,10 +406,8 @@ public class QuranFragment extends SherlockListFragment {
 					holder.bismillah.setVisibility(View.GONE);
 				} else {
 					holder.bismillah.setVisibility(View.VISIBLE);
-					setArabic(holder.bismillah, app.quran.get(1, 1));
-
+					holder.bismillah.setText(app.quran.get(1, 1));
 					holder.bismillah.setTextSize(TypedValue.COMPLEX_UNIT_SP, app.config.fontSizeArabic);
-					holder.bismillah.setTypeface(((BaseActivity) getActivity()).getFont());
 				}
 
 				mark.aya = 1;
@@ -458,7 +437,7 @@ public class QuranFragment extends SherlockListFragment {
 				}
 
 				holder.ayaNumber.setText("(" + mark.aya + ")");
-				setArabic(holder.arabic, app.quran.get(mark.sura, mark.aya));
+				holder.arabic.setText(app.quran.get(mark.sura, mark.aya));
 				holder.translation.setText(app.translation.get(mark.sura, mark.aya));
 
 				holder.arabic.setTextSize(TypedValue.COMPLEX_UNIT_SP, app.config.fontSizeArabic);
@@ -466,8 +445,6 @@ public class QuranFragment extends SherlockListFragment {
 
 				holder.arabic.setVisibility(app.config.showArabic ? View.VISIBLE : View.GONE);
 				holder.translation.setVisibility(app.config.showTranslation ? View.VISIBLE : View.GONE);
-
-				holder.arabic.setTypeface(((BaseActivity) getActivity()).getFont());
 
 				if (app.config.fontArabic == 0) {
 					holder.arabic.setLineSpacing(0f, 1.5f);
