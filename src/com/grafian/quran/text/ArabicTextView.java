@@ -8,8 +8,8 @@ import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.util.AttributeSet;
-import android.util.TypedValue;
 import android.view.Gravity;
 import android.widget.TextView;
 
@@ -23,7 +23,7 @@ public class ArabicTextView extends TextView {
 		int yOffset;
 	}
 
-	final private ArrayList<Line> mPlan = new ArrayList<Line>();
+	final private ArrayList<Line> mLayout = new ArrayList<Line>();
 	final private Paint mPaint = new Paint();
 	private String[] mWords = null;
 	private int mLineHeight;
@@ -76,13 +76,13 @@ public class ArabicTextView extends TextView {
 		line.end = end;
 		line.width = ext[0];
 		line.height = ext[1];
-		line.yOffset = (mPlan.size() * ext[3]) + (ext[4] - ext[2]);
-		mPlan.add(line);
+		line.yOffset = (mLayout.size() * ext[3]) + (ext[4] - ext[2]);
+		mLayout.add(line);
 		return end + 1;
 	}
 
-	private void createPlan(int width) {
-		mPlan.clear();
+	private void createLayout(int width) {
+		mLayout.clear();
 		for (int start = 0; start < mWords.length;) {
 			start = consumeLine(start, width);
 		}
@@ -90,7 +90,7 @@ public class ArabicTextView extends TextView {
 
 	private void createDefaultPlan() {
 		int width = getWidth() - getCompoundPaddingLeft() - getCompoundPaddingRight();
-		createPlan(width);
+		createLayout(width);
 	}
 
 	@Override
@@ -113,7 +113,7 @@ public class ArabicTextView extends TextView {
 
 	@Override
 	public int getLineCount() {
-		return mPlan.size();
+		return mLayout.size();
 	}
 
 	@Override
@@ -148,8 +148,8 @@ public class ArabicTextView extends TextView {
 			height = heightSize;
 		} else {
 			int usableWidth = width -= getCompoundPaddingLeft() + getCompoundPaddingRight();
-			createPlan(usableWidth);
-			height = mPlan.size() * mLineHeight;
+			createLayout(usableWidth);
+			height = mLayout.size() * mLineHeight;
 			height += getCompoundPaddingTop() + getCompoundPaddingBottom();
 			if (heightMode == MeasureSpec.AT_MOST) {
 				height = Math.min(height, heightSize);
@@ -164,9 +164,10 @@ public class ArabicTextView extends TextView {
 	protected void onDraw(Canvas canvas) {
 		int usableWidth = getWidth() - getCompoundPaddingLeft() - getCompoundPaddingRight();
 		int usableHeight = getHeight() - getCompoundPaddingTop() - getCompoundPaddingBottom();
-		int totalHeight = mLineHeight * mPlan.size();
+		int totalHeight = mLineHeight * mLayout.size();
 		StringBuffer sb = new StringBuffer();
-		for (Line line : mPlan) {
+		Rect clip = canvas.getClipBounds();
+		for (Line line : mLayout) {
 			int x = getCompoundPaddingLeft();
 			int gravity = getGravity() & Gravity.HORIZONTAL_GRAVITY_MASK;
 			if (gravity == Gravity.RIGHT) {
@@ -181,6 +182,10 @@ public class ArabicTextView extends TextView {
 				y += usableHeight - totalHeight;
 			} else if (gravity == Gravity.CENTER_VERTICAL) {
 				y += (usableHeight - totalHeight) / 2;
+			}
+
+			if (!clip.intersects(x, y, x + line.width, y + line.height)) {
+				continue;
 			}
 
 			joinWords(sb, line.start, line.end);

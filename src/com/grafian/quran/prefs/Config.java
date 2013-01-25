@@ -19,7 +19,6 @@ public class Config {
 
 	final private static String LANG = "lang";
 	final private static String RTL = "rtl";
-	final private static String SHOW_ARABIC = "showArabic";
 	final private static String SHOW_TRANSLATION = "showTranslation";
 	final private static String QURAN_TEXT = "quranText";
 	final private static String FONT_ARABIC = "fontArabic";
@@ -28,7 +27,6 @@ public class Config {
 
 	public String lang;
 	public boolean rtl;
-	public boolean showArabic;
 	public boolean showTranslation;
 	public int quranText;
 	public int fontArabic;
@@ -38,7 +36,6 @@ public class Config {
 	public void loadDefaults() {
 		lang = "en";
 		rtl = true;
-		showArabic = true;
 		showTranslation = true;
 		quranText = QURAN_TEXT_SIMPLE;
 		fontArabic = FONT_ME_QURAN;
@@ -56,7 +53,6 @@ public class Config {
 			loadDefaults();
 			lang = sp.getString(LANG, lang);
 			rtl = sp.getBoolean(RTL, rtl);
-			showArabic = sp.getBoolean(SHOW_ARABIC, showArabic);
 			showTranslation = sp.getBoolean(SHOW_TRANSLATION, showTranslation);
 			quranText = Integer.parseInt(sp.getString(QURAN_TEXT, Integer.toString(quranText)));
 			fontArabic = Integer.parseInt(sp.getString(FONT_ARABIC, Integer.toString(fontArabic)));
@@ -71,11 +67,6 @@ public class Config {
 		if (!lang.equals("en") && !lang.equals("id")) {
 			lang = "en";
 		}
-
-		if (!showArabic && !showTranslation) {
-			showArabic = true;
-			showTranslation = true;
-		}
 	}
 
 	public void save(Context context) {
@@ -84,7 +75,6 @@ public class Config {
 		ed.clear();
 		ed.putString(LANG, lang);
 		ed.putBoolean(RTL, rtl);
-		ed.putBoolean(SHOW_ARABIC, showArabic);
 		ed.putBoolean(SHOW_TRANSLATION, showTranslation);
 		ed.putString(QURAN_TEXT, "" + quranText);
 		ed.putString(FONT_ARABIC, "" + fontArabic);

@@ -109,7 +109,6 @@ public class QuranFragment extends SherlockListFragment {
 	public void onResume() {
 		super.onResume();
 		mAdapter.notifyDataSetChanged();
-		getListView().invalidateViews();
 	}
 
 	@Override
@@ -441,16 +440,14 @@ public class QuranFragment extends SherlockListFragment {
 				}
 
 				holder.ayaNumber.setText("(" + mark.aya + ")");
+
 				holder.arabic.setText(fix(app.quran.get(mark.sura, mark.aya)));
-				holder.translation.setText(app.translation.get(mark.sura, mark.aya));
-
 				holder.arabic.setTextSize(TypedValue.COMPLEX_UNIT_SP, app.config.fontSizeArabic);
-				holder.translation.setTextSize(TypedValue.COMPLEX_UNIT_SP, app.config.fontSizeTranslation);
-
-				holder.arabic.setVisibility(app.config.showArabic ? View.VISIBLE : View.GONE);
-				holder.translation.setVisibility(app.config.showTranslation ? View.VISIBLE : View.GONE);
-
 				holder.arabic.setGravity(Gravity.RIGHT);
+
+				holder.translation.setText(app.translation.get(mark.sura, mark.aya));
+				holder.translation.setTextSize(TypedValue.COMPLEX_UNIT_SP, app.config.fontSizeTranslation);
+				holder.translation.setVisibility(app.config.showTranslation ? View.VISIBLE : View.GONE);
 
 				int index = app.metaData.findHizb(mark.sura, mark.aya);
 				Mark hizb = app.metaData.getHizb(index);

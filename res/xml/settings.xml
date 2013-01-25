@@ -7,17 +7,13 @@
             android:entryValues="@array/lang_codes"
             android:key="lang"
             android:title="Translation" />
-    </PreferenceCategory>
-    <PreferenceCategory android:title="Display" >
-        <CheckBoxPreference
-            android:key="rtl"
-            android:title="Right to Left" />
-        <CheckBoxPreference
-            android:key="showArabic"
-            android:title="Show Arabic" />
+
         <CheckBoxPreference
             android:key="showTranslation"
             android:title="Show Translation" />
+        <CheckBoxPreference
+            android:key="rtl"
+            android:title="Right to Left" />
     </PreferenceCategory>
     <PreferenceCategory android:title="Font" >
         <ListPreference
