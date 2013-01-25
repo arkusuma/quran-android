@@ -7,12 +7,6 @@ import android.preference.PreferenceManager;
 
 public class Config {
 
-	final public static int PAGING_MODE_SURA = 0;
-	final public static int PAGING_MODE_PAGE = 1;
-	final public static int PAGING_MODE_JUZ = 2;
-	final public static int PAGING_MODE_HIZB = 3;
-	final public static int PAGING_MODE_MAX = 3;
-
 	final public static int QURAN_TEXT_SIMPLE = 0;
 	final public static int QURAN_TEXT_MAX = 0;
 
@@ -23,7 +17,6 @@ public class Config {
 	final public static int FONT_NOOREHUDA = 4;
 	final public static int FONT_MAX = 4;
 
-	final private static String PAGING_MODE = "pagingMode";
 	final private static String LANG = "lang";
 	final private static String RTL = "rtl";
 	final private static String SHOW_ARABIC = "showArabic";
@@ -33,7 +26,6 @@ public class Config {
 	final private static String FONT_SIZE_ARABIC = "fontSizeArabic";
 	final private static String FONT_SIZE_TRANSLATION = "fontSizeTranslation";
 
-	public int pagingMode;
 	public String lang;
 	public boolean rtl;
 	public boolean showArabic;
@@ -44,15 +36,14 @@ public class Config {
 	public int fontSizeTranslation;
 
 	public void loadDefaults() {
-		pagingMode = PAGING_MODE_SURA;
 		lang = "en";
 		rtl = true;
 		showArabic = true;
 		showTranslation = true;
 		quranText = QURAN_TEXT_SIMPLE;
 		fontArabic = FONT_ME_QURAN;
-		fontSizeArabic = 16;
-		fontSizeTranslation = 16;
+		fontSizeArabic = 20;
+		fontSizeTranslation = 14;
 	}
 
 	private int validate(int val, int min, int max, int def) {
@@ -63,7 +54,6 @@ public class Config {
 		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
 		try {
 			loadDefaults();
-			pagingMode = sp.getInt(PAGING_MODE, pagingMode);
 			lang = sp.getString(LANG, lang);
 			rtl = sp.getBoolean(RTL, rtl);
 			showArabic = sp.getBoolean(SHOW_ARABIC, showArabic);
@@ -76,7 +66,6 @@ public class Config {
 			loadDefaults();
 		}
 
-		pagingMode = validate(pagingMode, 0, PAGING_MODE_MAX, PAGING_MODE_SURA);
 		quranText = validate(quranText, 0, QURAN_TEXT_MAX, QURAN_TEXT_SIMPLE);
 		fontArabic = validate(fontArabic, 0, FONT_MAX, FONT_ME_QURAN);
 		if (!lang.equals("en") && !lang.equals("id")) {
@@ -92,7 +81,7 @@ public class Config {
 	public void save(Context context) {
 		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
 		Editor ed = sp.edit();
-		ed.putInt(PAGING_MODE, pagingMode);
+		ed.clear();
 		ed.putString(LANG, lang);
 		ed.putBoolean(RTL, rtl);
 		ed.putBoolean(SHOW_ARABIC, showArabic);

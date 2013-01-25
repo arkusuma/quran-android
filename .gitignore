@@ -13,6 +13,8 @@ bin/
 gen/
 obj/
 libs/armeabi/
+libs/mips/
+libs/x86/
 
 # Local configuration file (sdk path, etc)
 local.properties

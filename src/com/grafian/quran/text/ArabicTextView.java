@@ -1,5 +1,7 @@
 package com.grafian.quran.text;
 
+import java.util.ArrayList;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -7,113 +9,121 @@ import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.widget.TextView;
 
 public class ArabicTextView extends TextView {
+
+	private static class Line {
+		int start;
+		int end;
+		int width;
+		int height;
+		int yOffset;
+	}
+
+	final private ArrayList<Line> mPlan = new ArrayList<Line>();
+	final private Paint mPaint = new Paint();
+	private String[] mWords = null;
+	private int mLineHeight;
 
 	public ArabicTextView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		setGravity(Gravity.RIGHT);
 	}
 
-	private boolean mNativeRenderer = true;
-	final private Paint mPaint = new Paint();
-
-	public boolean isNativeRenderer() {
-		return mNativeRenderer;
-	}
-
-	public void setNativeRenderer(boolean nativeRenderer) {
-		if (mNativeRenderer != nativeRenderer) {
-			mNativeRenderer = nativeRenderer;
-			requestLayout();
-			invalidate();
+	private void joinWords(StringBuffer sb, int start, int end) {
+		sb.setLength(0);
+		for (int i = start; i <= end; i++) {
+			if (i > start) {
+				sb.append(" ");
+			}
+			sb.append(mWords[i]);
 		}
 	}
 
-	private int getFontSize() {
-		float scaledDensity = getContext().getResources().getDisplayMetrics().scaledDensity;
-		return (int) (getTextSize() * scaledDensity);
+	private int consumeLine(int start, int width) {
+		Line line = new Line();
+		line.start = start;
+
+		StringBuffer sb = new StringBuffer();
+		int end = mWords.length - 1;
+
+		// Scan full words first
+		joinWords(sb, start, end);
+		int ext[] = NativeRenderer.getTextExtent(sb.toString(), (int) getTextSize());
+		mLineHeight = ext[3];
+		if (width < ext[0] && start < end) {
+			int validExt[] = null;
+			end = end - 1;
+			while (end > start) {
+				int mid = (start + end + 1) / 2;
+				joinWords(sb, line.start, mid);
+				ext = NativeRenderer.getTextExtent(sb.toString(), (int) getTextSize());
+				if (width < ext[0]) {
+					end = mid - 1;
+				} else {
+					start = mid;
+					validExt = ext;
+				}
+			}
+			if (validExt != null) {
+				ext = validExt;
+			}
+		}
+
+		line.end = end;
+		line.width = ext[0];
+		line.height = ext[1];
+		line.yOffset = (mPlan.size() * ext[3]) + (ext[4] - ext[2]);
+		mPlan.add(line);
+		return end + 1;
+	}
+
+	private void createPlan(int width) {
+		mPlan.clear();
+		for (int start = 0; start < mWords.length;) {
+			start = consumeLine(start, width);
+		}
+	}
+
+	private void createDefaultPlan() {
+		int width = getWidth() - getCompoundPaddingLeft() - getCompoundPaddingRight();
+		createPlan(width);
+	}
+
+	@Override
+	public void setTextSize(float size) {
+		super.setTextSize(size);
+		requestLayout();
+	}
+
+	@Override
+	public void setText(CharSequence text, BufferType type) {
+		super.setText(text, type);
+		mWords = text.toString().trim().split(" +");
+		requestLayout();
 	}
 
 	@Override
 	public int getLineHeight() {
-		if (!mNativeRenderer) {
-			return super.getLineHeight();
-		}
-
-		int[] ext = NativeRenderer.getTextExtent("M", getFontSize());
-		return ext[2];
+		return mLineHeight;
 	}
 
 	@Override
 	public int getLineCount() {
-		if (!mNativeRenderer) {
-			return super.getLineHeight();
-		}
-
-		int usableWidth = getWidth() - getCompoundPaddingLeft() - getCompoundPaddingRight();
-		int ext[] = measureText(usableWidth);
-		return ext[2];
+		return mPlan.size();
 	}
 
-	private int[] measureText(int width) {
-		int w = 0;
-		int h = 0;
-		int lines = 0;
-
-		String text = getText().toString().trim();
-		String[] words = text.split(" +");
-		int[] lastExt = null;
-		int start = 0;
-		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < words.length; i++) {
-			if (i == start) {
-				sb.setLength(0);
-			} else {
-				sb.append(" ");
-			}
-			sb.append(words[i]);
-			if (width == 0 && i != words.length - 1) {
-				continue;
-			}
-			boolean full = false;
-			int[] ext = NativeRenderer.getTextExtent(sb.toString(), getFontSize());
-			if (width < ext[0]) {
-				full = true;
-				if (i == start) {
-					start = i + 1;
-				} else {
-					start = i;
-					ext = lastExt;
-					i--;
-				}
-			} else if (i == words.length - 1) {
-				full = true;
-			}
-			if (full) {
-				w = Math.max(w, ext[0]);
-				h += ext[3];
-				lines++;
-			}
-			lastExt = ext;
-		}
-
-		int[] result = new int[3];
-		result[0] = w;
-		result[1] = h;
-		result[2] = lines;
-		return result;
+	@Override
+	protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+		super.onSizeChanged(w, h, oldw, oldh);
+		createDefaultPlan();
 	}
 
 	@Override
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-		if (!mNativeRenderer) {
-			super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-			return;
-		}
-
 		int widthMode = MeasureSpec.getMode(widthMeasureSpec);
 		int heightMode = MeasureSpec.getMode(heightMeasureSpec);
 		int widthSize = MeasureSpec.getSize(widthMeasureSpec);
@@ -125,7 +135,7 @@ public class ArabicTextView extends TextView {
 		if (widthMode == MeasureSpec.EXACTLY) {
 			width = widthSize;
 		} else {
-			int[] ext = NativeRenderer.getTextExtent(getText().toString(), getFontSize());
+			int[] ext = NativeRenderer.getTextExtent(getText().toString(), (int) getTextSize());
 			width = ext[0];
 			width += getCompoundPaddingLeft() + getCompoundPaddingRight();
 			width = Math.max(width, getSuggestedMinimumWidth());
@@ -138,8 +148,8 @@ public class ArabicTextView extends TextView {
 			height = heightSize;
 		} else {
 			int usableWidth = width -= getCompoundPaddingLeft() + getCompoundPaddingRight();
-			int[] ext = measureText(usableWidth);
-			height = ext[1];
+			createPlan(usableWidth);
+			height = mPlan.size() * mLineHeight;
 			height += getCompoundPaddingTop() + getCompoundPaddingBottom();
 			if (heightMode == MeasureSpec.AT_MOST) {
 				height = Math.min(height, heightSize);
@@ -152,68 +162,33 @@ public class ArabicTextView extends TextView {
 	@SuppressLint("DrawAllocation")
 	@Override
 	protected void onDraw(Canvas canvas) {
-		if (!mNativeRenderer) {
-			super.onDraw(canvas);
-			return;
-		}
-
 		int usableWidth = getWidth() - getCompoundPaddingLeft() - getCompoundPaddingRight();
 		int usableHeight = getHeight() - getCompoundPaddingTop() - getCompoundPaddingBottom();
-		int[] ext = measureText(usableWidth);
-		int totalHeight = ext[1];
-
-		String[] words = getText().toString().split(" +");
-		int line = 0;
-		int[] lastExt = null;
-		int start = 0;
-		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < words.length; i++) {
-			if (i == start) {
-				sb.setLength(0);
-			} else {
-				sb.append(" ");
+		int totalHeight = mLineHeight * mPlan.size();
+		StringBuffer sb = new StringBuffer();
+		for (Line line : mPlan) {
+			int x = getCompoundPaddingLeft();
+			int gravity = getGravity() & Gravity.HORIZONTAL_GRAVITY_MASK;
+			if (gravity == Gravity.RIGHT) {
+				x += usableWidth - line.width;
+			} else if (gravity == Gravity.CENTER_HORIZONTAL) {
+				x += (usableWidth - line.width) / 2;
 			}
-			sb.append(words[i]);
-			boolean full = false;
-			ext = NativeRenderer.getTextExtent(sb.toString(), getFontSize());
-			if (usableWidth < ext[0]) {
-				full = true;
-				if (i == start) {
-					start = i + 1;
-				} else {
-					start = i;
-					ext = lastExt;
-					sb.setLength(sb.length() - words[i].length() - 1);
-					i--;
-				}
-			} else if (i == words.length - 1) {
-				full = true;
+
+			int y = getCompoundPaddingTop() + line.yOffset;
+			gravity = getGravity() & Gravity.VERTICAL_GRAVITY_MASK;
+			if (gravity == Gravity.BOTTOM) {
+				y += usableHeight - totalHeight;
+			} else if (gravity == Gravity.CENTER_VERTICAL) {
+				y += (usableHeight - totalHeight) / 2;
 			}
-			if (full) {
-				Bitmap bitmap = Bitmap.createBitmap(ext[0], ext[1], Config.ALPHA_8);
-				NativeRenderer.renderText(sb.toString(), getFontSize(), bitmap);
 
-				int x = getCompoundPaddingLeft();
-				if ((getGravity() & Gravity.RIGHT) == Gravity.RIGHT) {
-					x += usableWidth - ext[0];
-				} else if ((getGravity() & Gravity.CENTER_HORIZONTAL) == Gravity.CENTER_HORIZONTAL) {
-					x += (usableWidth - ext[0]) / 2;
-				}
+			joinWords(sb, line.start, line.end);
+			Bitmap bitmap = Bitmap.createBitmap(line.width, line.height, Config.ALPHA_8);
+			NativeRenderer.renderText(sb.toString(), (int) getTextSize(), bitmap);
 
-				int y = getCompoundPaddingTop() + line * ext[3];
-				if ((getGravity() & Gravity.BOTTOM) == Gravity.BOTTOM) {
-					y += usableHeight - totalHeight;
-				} else if ((getGravity() & Gravity.CENTER_VERTICAL) == Gravity.CENTER_VERTICAL) {
-					y += (usableHeight - totalHeight) / 2;
-				}
-				y += ext[4] - ext[2];
-
-				mPaint.setColor(getCurrentTextColor());
-				canvas.drawBitmap(bitmap, x, y, mPaint);
-
-				line++;
-			}
-			lastExt = ext;
+			mPaint.setColor(getCurrentTextColor());
+			canvas.drawBitmap(bitmap, x, y, mPaint);
 		}
 	}
 }

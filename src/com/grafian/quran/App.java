@@ -8,7 +8,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Build;
-import android.widget.Toast;
 
 import com.grafian.quran.parser.MetaData;
 import com.grafian.quran.parser.Quran;
@@ -141,7 +140,6 @@ public class App extends Application {
 					translation.load(App.this, getTranslationID(), metaData, false, onProgress);
 					loadedTranslation = getTranslationID();
 				}
-				loaded = true;
 				return null;
 			}
 
@@ -155,12 +153,9 @@ public class App extends Application {
 
 			@Override
 			protected void onPostExecute(Void result) {
-				dialog.dismiss();
 				loaded = true;
+				dialog.dismiss();
 				listener.onFinish();
-				if (tick != dialog.getMax()) {
-					Toast.makeText(context, "" + tick, Toast.LENGTH_LONG).show();
-				}
 			}
 		}.execute();
 	}

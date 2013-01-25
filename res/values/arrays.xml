@@ -14,18 +14,20 @@
         <item>Share</item>
     </string-array>
     <string-array name="arabic_font_sizes">
-        <item>14</item>
-        <item>16</item>
         <item>18</item>
         <item>20</item>
         <item>22</item>
         <item>24</item>
+        <item>26</item>
+        <item>28</item>
+        <item>30</item>
+        <item>32</item>
     </string-array>
     <string-array name="translation_font_sizes">
+        <item>12</item>
         <item>14</item>
         <item>16</item>
         <item>18</item>
-        <item>20</item>
     </string-array>
     <string-array name="font_names">
         <item>KFGQPC Uthman</item>

@@ -8,6 +8,7 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import android.text.ClipboardManager;
 import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
@@ -30,7 +31,6 @@ import com.grafian.quran.parser.MetaData.Sura;
 import com.grafian.quran.prefs.Bookmark;
 import com.grafian.quran.prefs.Bookmark.Folder;
 import com.grafian.quran.prefs.Bookmark.Item;
-import com.grafian.quran.prefs.Config;
 
 @SuppressWarnings("deprecation")
 public class QuranFragment extends SherlockListFragment {
@@ -57,15 +57,14 @@ public class QuranFragment extends SherlockListFragment {
 		mPagingMode = args.getInt(PAGING_MODE);
 		mSura = args.getInt(SURA);
 		mAya = args.getInt(AYA);
-		app.config.pagingMode = mPagingMode;
 
 		int pos;
 		switch (mPagingMode) {
-		case Config.PAGING_MODE_SURA:
+		case PagingMode.SURA:
 			mFrom = new Mark(mSura, 1);
 			mTo = new Mark(mSura, app.metaData.getSura(mSura).ayas);
 			break;
-		case Config.PAGING_MODE_PAGE:
+		case PagingMode.PAGE:
 			pos = app.metaData.findPage(mSura, mAya);
 			mFrom = new Mark(app.metaData.getPage(pos));
 			if (pos < app.metaData.getPageCount()) {
@@ -75,7 +74,7 @@ public class QuranFragment extends SherlockListFragment {
 				mTo = app.metaData.lastAya();
 			}
 			break;
-		case Config.PAGING_MODE_JUZ:
+		case PagingMode.JUZ:
 			pos = app.metaData.findJuz(mSura, mAya);
 			mFrom = new Mark(app.metaData.getJuz(pos));
 			if (pos < app.metaData.getJuzCount()) {
@@ -85,7 +84,7 @@ public class QuranFragment extends SherlockListFragment {
 				mTo = app.metaData.lastAya();
 			}
 			break;
-		case Config.PAGING_MODE_HIZB:
+		case PagingMode.HIZB:
 			pos = app.metaData.findHizb(mSura, mAya);
 			mFrom = new Mark(app.metaData.getHizb(pos));
 			if (pos < app.metaData.getHizbCount()) {
@@ -110,6 +109,7 @@ public class QuranFragment extends SherlockListFragment {
 	public void onResume() {
 		super.onResume();
 		mAdapter.notifyDataSetChanged();
+		getListView().invalidateViews();
 	}
 
 	@Override
@@ -123,16 +123,16 @@ public class QuranFragment extends SherlockListFragment {
 		int pagingMode = 0;
 		switch (item.getItemId()) {
 		case R.id.view_as_sura:
-			pagingMode = Config.PAGING_MODE_SURA;
+			pagingMode = PagingMode.SURA;
 			break;
 		case R.id.view_as_page:
-			pagingMode = Config.PAGING_MODE_PAGE;
+			pagingMode = PagingMode.PAGE;
 			break;
 		case R.id.view_as_juz:
-			pagingMode = Config.PAGING_MODE_JUZ;
+			pagingMode = PagingMode.JUZ;
 			break;
 		case R.id.view_as_hizb:
-			pagingMode = Config.PAGING_MODE_HIZB;
+			pagingMode = PagingMode.HIZB;
 			break;
 		default:
 			return super.onOptionsItemSelected(item);
@@ -331,6 +331,10 @@ public class QuranFragment extends SherlockListFragment {
 		ab.setSubtitle(title);
 	}
 
+	private String fix(String s) {
+		return s.replace("\u064E\u0670", "\u0670");
+	}
+
 	private static class SuraRowHolder {
 		public TextView suraName;
 		public TextView suraTranslation;
@@ -406,7 +410,7 @@ public class QuranFragment extends SherlockListFragment {
 					holder.bismillah.setVisibility(View.GONE);
 				} else {
 					holder.bismillah.setVisibility(View.VISIBLE);
-					holder.bismillah.setText(app.quran.get(1, 1));
+					holder.bismillah.setText(fix(app.quran.get(1, 1)));
 					holder.bismillah.setTextSize(TypedValue.COMPLEX_UNIT_SP, app.config.fontSizeArabic);
 				}
 
@@ -437,7 +441,7 @@ public class QuranFragment extends SherlockListFragment {
 				}
 
 				holder.ayaNumber.setText("(" + mark.aya + ")");
-				holder.arabic.setText(app.quran.get(mark.sura, mark.aya));
+				holder.arabic.setText(fix(app.quran.get(mark.sura, mark.aya)));
 				holder.translation.setText(app.translation.get(mark.sura, mark.aya));
 
 				holder.arabic.setTextSize(TypedValue.COMPLEX_UNIT_SP, app.config.fontSizeArabic);
@@ -446,20 +450,16 @@ public class QuranFragment extends SherlockListFragment {
 				holder.arabic.setVisibility(app.config.showArabic ? View.VISIBLE : View.GONE);
 				holder.translation.setVisibility(app.config.showTranslation ? View.VISIBLE : View.GONE);
 
-				if (app.config.fontArabic == 0) {
-					holder.arabic.setLineSpacing(0f, 1.5f);
-				} else {
-					holder.arabic.setLineSpacing(0f, 1f);
-				}
+				holder.arabic.setGravity(Gravity.RIGHT);
 
 				int index = app.metaData.findHizb(mark.sura, mark.aya);
 				Mark hizb = app.metaData.getHizb(index);
 				if (mark.equals(hizb)) {
-					String s[] = { "", "⅛", "¼", "⅜", "½", "⅝", "¾", "⅞" };
+					String parts[] = { "", "⅛", "¼", "⅜", "½", "⅝", "¾", "⅞" };
 					index--;
 					int juz = (index / 8) + 1;
 					index %= 8;
-					holder.juzNumber.setText("Juz\n" + juz + s[index]);
+					holder.juzNumber.setText("Juz\n" + juz + parts[index]);
 					holder.juzNumber.setVisibility(View.VISIBLE);
 				} else {
 					holder.juzNumber.setVisibility(View.INVISIBLE);

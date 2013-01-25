@@ -11,6 +11,9 @@ static FT_Library ft_library;
 static FT_Face ft_face;
 
 static jbyte *font_blob = 0;
+static hb_font_t *hb_font = 0;
+static int hb_font_size = 0;
+static hb_buffer_t *hb_buffer = 0;
 
 extern hb_unicode_funcs_t *hb_ucdn_get_unicode_funcs(void);
 
@@ -129,6 +132,39 @@ static void shape(const jchar *text, int start, int len, hb_font_t *font, hb_buf
 	hb_shape(font, buf, NULL, 0);
 }
 
+static void cleanup(void)
+{
+	if (hb_buffer) {
+		hb_buffer_destroy(hb_buffer);
+		hb_buffer = 0;
+	}
+
+	if (hb_font) {
+		hb_font_destroy(hb_font);
+		hb_font = 0;
+	}
+
+	if (font_blob) {
+		FT_Done_Face(ft_face);
+		free(font_blob);
+		font_blob = 0;
+	}
+}
+
+static void init_cache(int fontSize)
+{
+	if (!hb_font || hb_font_size != fontSize) {
+		if (hb_font) hb_font_destroy(hb_font);
+		FT_Set_Pixel_Sizes(ft_face, 0, fontSize);
+		hb_font = hb_ft_font_create(ft_face, NULL);
+	}
+
+	if (!hb_buffer) {
+		hb_buffer = hb_buffer_create();
+		hb_buffer_set_unicode_funcs(hb_buffer, hb_ucdn_get_unicode_funcs());
+	}
+}
+
 JNIEXPORT void JNICALL Java_com_grafian_quran_text_NativeRenderer_loadFont
   (JNIEnv *env, jclass cls, jbyteArray blob)
 {
@@ -141,12 +177,7 @@ JNIEXPORT void JNICALL Java_com_grafian_quran_text_NativeRenderer_loadFont
 		ft_ready = 1;
 	}
 
-	// Release previous font
-	if (font_blob) {
-		FT_Done_Face(ft_face);
-		free(font_blob);
-		font_blob = 0;
-	}
+	cleanup();
 
 	// Clone blob
 	int size = (*env)->GetArrayLength(env, blob);
@@ -174,27 +205,19 @@ JNIEXPORT jintArray JNICALL Java_com_grafian_quran_text_NativeRenderer_getTextEx
 	jint array[6];
 	jintArray result;
 	jboolean iscopy;
-	hb_buffer_t *buf;
-	hb_font_t *font;
 	FT_BBox bbox;
 
-	FT_Set_Pixel_Sizes(ft_face, 0, fontSize);
-	font = hb_ft_font_create(ft_face, NULL);
-
-	buf = hb_buffer_create();
-	hb_buffer_set_unicode_funcs(buf, hb_ucdn_get_unicode_funcs());
+	init_cache(fontSize);
 
 	ctext = (*env)->GetStringChars(env, text, &iscopy);
 	len = (*env)->GetStringLength(env, text);
 
-	shape(ctext, 0, len, font, buf);
-	compute_bbox(buf, &bbox);
+	shape(ctext, 0, len, hb_font, hb_buffer);
+	compute_bbox(hb_buffer, &bbox);
 	w = bbox.xMax - bbox.xMin + 1;
 	h = bbox.yMax - bbox.yMin + 1;
 
 	(*env)->ReleaseStringChars(env, text, ctext);
-	hb_buffer_destroy(buf);
-	hb_font_destroy(font);
 
 	array[0] = w;
 	array[1] = h;
@@ -215,31 +238,23 @@ JNIEXPORT void JNICALL Java_com_grafian_quran_text_NativeRenderer_renderText
 	const jchar *ctext;
 	int len, y;
 	jboolean iscopy;
-	hb_buffer_t *buf;
-	hb_font_t *font;
 	FT_BBox bbox;
 
-	FT_Set_Pixel_Sizes(ft_face, 0, fontSize);
-	font = hb_ft_font_create(ft_face, NULL);
+	init_cache(fontSize);
 
 	AndroidBitmap_getInfo(env, bitmap, &abi);
 	AndroidBitmap_lockPixels(env, bitmap, &pixels);
 
 	memset(pixels, 0 , abi.height * abi.stride);
 
-	buf = hb_buffer_create();
-	hb_buffer_set_unicode_funcs(buf, hb_ucdn_get_unicode_funcs());
-
 	ctext = (*env)->GetStringChars(env, text, &iscopy);
 	len = (*env)->GetStringLength(env, text);
 
-	shape(ctext, 0, len, font, buf);
-	compute_bbox(buf, &bbox);
-	render_glyphs(buf, pixels, &abi, 0, bbox.yMax);
+	shape(ctext, 0, len, hb_font, hb_buffer);
+	compute_bbox(hb_buffer, &bbox);
+	render_glyphs(hb_buffer, pixels, &abi, 0, bbox.yMax);
 
 	(*env)->ReleaseStringChars(env, text, ctext);
-	hb_buffer_destroy(buf);
-	hb_font_destroy(font);
 
 	AndroidBitmap_unlockPixels(env, bitmap);
 }

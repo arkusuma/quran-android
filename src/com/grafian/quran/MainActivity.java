@@ -29,7 +29,7 @@ public class MainActivity extends BaseActivity {
 		if (savedInstanceState != null) {
 			mPage = savedInstanceState.getInt(PAGE);
 		} else {
-			mPage = mApp.config.pagingMode + 1;
+			mPage = PagingMode.SURA;
 		}
 
 		mPager.setCurrentItem(mPage);

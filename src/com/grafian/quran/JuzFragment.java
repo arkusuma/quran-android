@@ -10,8 +10,8 @@ import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockListFragment;
 import com.grafian.quran.parser.MetaData.Mark;
+import com.grafian.quran.parser.MetaData.Sajda;
 import com.grafian.quran.parser.MetaData.Sura;
-import com.grafian.quran.prefs.Config;
 
 public class JuzFragment extends SherlockListFragment {
 
@@ -31,7 +31,7 @@ public class JuzFragment extends SherlockListFragment {
 	public void onListItemClick(ListView l, View v, int position, long id) {
 		Intent intent = new Intent(getActivity(), ViewerActivity.class);
 		Mark mark = app.metaData.getJuz(position + 1);
-		intent.putExtra(QuranFragment.PAGING_MODE, Config.PAGING_MODE_JUZ);
+		intent.putExtra(QuranFragment.PAGING_MODE, PagingMode.JUZ);
 		intent.putExtra(QuranFragment.SURA, mark.sura);
 		intent.putExtra(QuranFragment.AYA, mark.aya);
 		startActivity(intent);
@@ -75,7 +75,7 @@ public class JuzFragment extends SherlockListFragment {
 				holder = (JuzRowHolder) convertView.getTag();
 			}
 
-			Mark mark = (Mark) getItem(position);
+			Sajda mark = (Sajda) getItem(position);
 			Sura sura = app.metaData.getSura(mark.sura);
 
 			holder.juzNumber.setText("" + (position + 1));

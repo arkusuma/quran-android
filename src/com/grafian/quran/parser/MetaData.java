@@ -1,16 +1,11 @@
 package com.grafian.quran.parser;
 
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-
-import org.xml.sax.Attributes;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.DefaultHandler;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserFactory;
 
 import android.content.Context;
 
@@ -49,8 +44,8 @@ public class MetaData {
 
 		@Override
 		public boolean equals(Object o) {
-			if (o instanceof Mark) {
-				Mark m = (Mark) o;
+			if (o instanceof Sajda) {
+				Sajda m = (Sajda) o;
 				return m.sura == sura && m.aya == aya;
 			}
 			return false;
@@ -65,7 +60,7 @@ public class MetaData {
 		public Sajda() {
 		}
 
-		public Sajda(Mark mark) {
+		public Sajda(Sajda mark) {
 			super(mark.sura, mark.aya);
 		}
 	}
@@ -79,51 +74,87 @@ public class MetaData {
 	public void load(Context context, int resid) {
 		try {
 			InputStream in = context.getResources().openRawResource(resid);
-			SAXParserFactory spf = SAXParserFactory.newInstance();
-			SAXParser sp = spf.newSAXParser();
-			XMLReader xr = sp.getXMLReader();
-			xr.setContentHandler(new XMLHandler());
-			xr.parse(new InputSource(in));
+			XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
+			XmlPullParser xpp = factory.newPullParser();
+			xpp.setInput(new InputStreamReader(in));
+			int event = xpp.getEventType();
+			while (event != XmlPullParser.END_DOCUMENT) {
+				if (event == XmlPullParser.START_TAG) {
+					String localName = xpp.getName();
+					if ("sura".equals(localName)) {
+						mSuras.add(parseSura(xpp));
+					} else if ("juz".equals(localName)) {
+						mJuzs.add(parseMark(xpp));
+					} else if ("quarter".equals(localName)) {
+						mHizbs.add(parseMark(xpp));
+					} else if ("page".equals(localName)) {
+						mPages.add(parseMark(xpp));
+					} else if ("sajda".equals(localName)) {
+						mSajdas.add(parseSajda(xpp));
+					}
+				}
+				event = xpp.next();
+			}
 		} catch (Exception e) {
 		}
 	}
 
-	private Mark getMark(Attributes attributes) {
-		Mark mark = new Mark();
-		mark.sura = Integer.parseInt(attributes.getValue("sura"));
-		mark.aya = Integer.parseInt(attributes.getValue("aya"));
+	private Sura parseSura(XmlPullParser xpp) {
+		Sura sura = new Sura();
+		for (int i = 0; i < xpp.getAttributeCount(); i++) {
+			String k = xpp.getAttributeName(i);
+			String v = xpp.getAttributeValue(i);
+			if ("index".equals(k)) {
+				sura.index = Integer.parseInt(v);
+			} else if ("ayas".equals(k)) {
+				sura.ayas = Integer.parseInt(v);
+			} else if ("start".equals(k)) {
+				sura.start = Integer.parseInt(v);
+			} else if ("name".equals(k)) {
+				sura.name = v;
+			} else if ("tname".equals(k)) {
+				sura.tname = v;
+			} else if ("ename".equals(k)) {
+				sura.ename = v;
+			} else if ("type".equals(k)) {
+				sura.type = "Meccan".equals(v) ? Sura.MECCAN : Sura.MEDINAN;
+			} else if ("order".equals(k)) {
+				sura.order = Integer.parseInt(v);
+			} else if ("rukus".equals(k)) {
+				sura.rukus = Integer.parseInt(v);
+			}
+		}
+		return sura;
+	}
+
+	private Sajda parseMark(XmlPullParser xpp) {
+		Sajda mark = new Sajda();
+		for (int i = 0; i < xpp.getAttributeCount(); i++) {
+			String k = xpp.getAttributeName(i);
+			String v = xpp.getAttributeValue(i);
+			if ("sura".equals(k)) {
+				mark.sura = Integer.parseInt(v);
+			} else if ("aya".equals(k)) {
+				mark.aya = Integer.parseInt(v);
+			}
+		}
 		return mark;
 	}
 
-	class XMLHandler extends DefaultHandler {
-		@Override
-		public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
-			if ("sura".equals(localName)) {
-				Sura sura = new Sura();
-				sura.index = Integer.parseInt(attributes.getValue("index"));
-				sura.ayas = Integer.parseInt(attributes.getValue("ayas"));
-				sura.start = Integer.parseInt(attributes.getValue("start"));
-				sura.name = attributes.getValue("name");
-				sura.tname = attributes.getValue("tname");
-				sura.ename = attributes.getValue("ename");
-				sura.type = "Meccan".equals(attributes.getValue("type")) ?
-						Sura.MECCAN : Sura.MEDINAN;
-				sura.order = Integer.parseInt(attributes.getValue("", "order"));
-				sura.rukus = Integer.parseInt(attributes.getValue("", "rukus"));
-				mSuras.add(sura);
-			} else if ("juz".equals(localName)) {
-				mJuzs.add(getMark(attributes));
-			} else if ("quarter".equals(localName)) {
-				mHizbs.add(getMark(attributes));
-			} else if ("page".equals(localName)) {
-				mPages.add(getMark(attributes));
-			} else if ("sajda".equals(localName)) {
-				Sajda sajda = new Sajda(getMark(attributes));
-				sajda.type = "recommended".equals(attributes.getValue("", "type")) ?
-						Sajda.RECOMMENDED : Sajda.OBLIGATORY;
-				mSajdas.add(sajda);
+	private Sajda parseSajda(XmlPullParser xpp) {
+		Sajda sajda = new Sajda();
+		for (int i = 0; i < xpp.getAttributeCount(); i++) {
+			String k = xpp.getAttributeName(i);
+			String v = xpp.getAttributeValue(i);
+			if ("sura".equals(k)) {
+				sajda.sura = Integer.parseInt(v);
+			} else if ("aya".equals(k)) {
+				sajda.aya = Integer.parseInt(v);
+			} else if ("type".equals(k)) {
+				sajda.type = "recommended".equals(v) ? Sajda.RECOMMENDED : Sajda.OBLIGATORY;
 			}
 		}
+		return sajda;
 	}
 
 	public int getSuraCount() {

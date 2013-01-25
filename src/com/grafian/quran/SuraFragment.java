@@ -11,7 +11,6 @@ import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockListFragment;
 import com.grafian.quran.parser.MetaData.Sura;
-import com.grafian.quran.prefs.Config;
 
 public class SuraFragment extends SherlockListFragment {
 
@@ -38,7 +37,7 @@ public class SuraFragment extends SherlockListFragment {
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
 		Intent intent = new Intent(getActivity(), ViewerActivity.class);
-		intent.putExtra(QuranFragment.PAGING_MODE, Config.PAGING_MODE_SURA);
+		intent.putExtra(QuranFragment.PAGING_MODE, PagingMode.SURA);
 		intent.putExtra(QuranFragment.SURA, position + 1);
 		intent.putExtra(QuranFragment.AYA, 1);
 		startActivity(intent);
