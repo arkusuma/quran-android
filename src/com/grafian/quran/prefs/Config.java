@@ -10,16 +10,15 @@ public class Config {
 	final public static int QURAN_TEXT_SIMPLE = 0;
 	final public static int QURAN_TEXT_MAX = 0;
 
-	final public static int FONT_UTHMAN = 0;
-	final public static int FONT_SALEEM = 1;
-	final public static int FONT_ME_QURAN = 2;
-	final public static int FONT_NOOREHIRA = 3;
-	final public static int FONT_NOOREHUDA = 4;
-	final public static int FONT_MAX = 4;
+	final public static int FONT_QALAM_MAJEED = 0;
+	final public static int FONT_NASKH = 1;
+	final public static int FONT_NOOREHUDA = 2;
+	final public static int FONT_MAX = 2;
 
 	final private static String LANG = "lang";
 	final private static String RTL = "rtl";
 	final private static String SHOW_TRANSLATION = "showTranslation";
+	final private static String FULL_WIDTH = "fullWidth";
 	final private static String QURAN_TEXT = "quranText";
 	final private static String FONT_ARABIC = "fontArabic";
 	final private static String FONT_SIZE_ARABIC = "fontSizeArabic";
@@ -28,6 +27,7 @@ public class Config {
 	public String lang;
 	public boolean rtl;
 	public boolean showTranslation;
+	public boolean fullWidth;
 	public int quranText;
 	public int fontArabic;
 	public int fontSizeArabic;
@@ -37,9 +37,10 @@ public class Config {
 		lang = "en";
 		rtl = true;
 		showTranslation = true;
+		fullWidth = false;
 		quranText = QURAN_TEXT_SIMPLE;
-		fontArabic = FONT_ME_QURAN;
-		fontSizeArabic = 20;
+		fontArabic = FONT_QALAM_MAJEED;
+		fontSizeArabic = 26;
 		fontSizeTranslation = 14;
 	}
 
@@ -54,6 +55,7 @@ public class Config {
 			lang = sp.getString(LANG, lang);
 			rtl = sp.getBoolean(RTL, rtl);
 			showTranslation = sp.getBoolean(SHOW_TRANSLATION, showTranslation);
+			fullWidth = sp.getBoolean(FULL_WIDTH, fullWidth);
 			quranText = Integer.parseInt(sp.getString(QURAN_TEXT, Integer.toString(quranText)));
 			fontArabic = Integer.parseInt(sp.getString(FONT_ARABIC, Integer.toString(fontArabic)));
 			fontSizeArabic = Integer.parseInt(sp.getString(FONT_SIZE_ARABIC, Integer.toString(fontSizeArabic)));
@@ -63,7 +65,7 @@ public class Config {
 		}
 
 		quranText = validate(quranText, 0, QURAN_TEXT_MAX, QURAN_TEXT_SIMPLE);
-		fontArabic = validate(fontArabic, 0, FONT_MAX, FONT_ME_QURAN);
+		fontArabic = validate(fontArabic, 0, FONT_MAX, FONT_QALAM_MAJEED);
 		if (!lang.equals("en") && !lang.equals("id")) {
 			lang = "en";
 		}
@@ -76,6 +78,7 @@ public class Config {
 		ed.putString(LANG, lang);
 		ed.putBoolean(RTL, rtl);
 		ed.putBoolean(SHOW_TRANSLATION, showTranslation);
+		ed.putBoolean(FULL_WIDTH, fullWidth);
 		ed.putString(QURAN_TEXT, "" + quranText);
 		ed.putString(FONT_ARABIC, "" + fontArabic);
 		ed.putString(FONT_SIZE_ARABIC, "" + fontSizeArabic);

@@ -42,9 +42,7 @@
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/left_side"
         android:orientation="vertical"
-        android:paddingBottom="8dp"
-        android:paddingRight="8dp"
-        android:paddingTop="8dp" >
+        android:padding="8dp" >
 
         <com.grafian.quran.text.ArabicTextView
             android:id="@+id/arabic"

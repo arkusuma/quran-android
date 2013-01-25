@@ -67,16 +67,10 @@ public class App extends Application {
 	public void loadFont() {
 		if (loadedFont != config.fontArabic) {
 			loadedFont = config.fontArabic;
-			String name = "me_quran.ttf";
+			String name = "qalam.ttf";
 			switch (loadedFont) {
-			case Config.FONT_UTHMAN:
-				name = "uthman.otf";
-				break;
-			case Config.FONT_SALEEM:
-				name = "saleem.ttf";
-				break;
-			case Config.FONT_NOOREHIRA:
-				name = "noorehira.ttf";
+			case Config.FONT_NASKH:
+				name = "naskh.otf";
 				break;
 			case Config.FONT_NOOREHUDA:
 				name = "noorehuda.ttf";

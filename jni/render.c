@@ -55,7 +55,7 @@ static void render_glyphs(hb_buffer_t *buf, void *pixels, AndroidBitmapInfo *abi
 				(y - pos->y_offset >> 6) - slot->bitmap_top);
 
 		x += pos->x_advance;
-		y -= pos->y_advance;
+		y += pos->y_advance;
 
 		info++;
 		pos++;
@@ -75,35 +75,25 @@ static void compute_bbox(hb_buffer_t *buf, FT_BBox *bbox)
 	int x = 0;
 	int y = 0;
 	for (i = 0; i < len; i++) {
-		FT_BBox glyph_bbox;
-		FT_Glyph glyph;
+		FT_BBox gbox;
 
 		FT_Load_Glyph(ft_face, info->codepoint, FT_LOAD_DEFAULT);
-		FT_Get_Glyph(slot, &glyph);
-		FT_Glyph_Get_CBox(glyph, FT_GLYPH_BBOX_PIXELS, &glyph_bbox);
-		FT_Done_Glyph(glyph);
+		gbox.xMin = x + slot->metrics.horiBearingX + pos->x_offset;
+		gbox.yMax = y + slot->metrics.horiBearingY + pos->y_offset;
+		gbox.xMax = gbox.xMin + slot->metrics.width;
+		gbox.yMin = gbox.yMax - slot->metrics.height;
 
-		glyph_bbox.xMin <<= 6;
-		glyph_bbox.xMax <<= 6;
-		glyph_bbox.yMin <<= 6;
-		glyph_bbox.yMax <<= 6;
-
-		glyph_bbox.xMin += x + pos->x_offset;
-		glyph_bbox.xMax += x + pos->x_offset;
-		glyph_bbox.yMin += y + pos->y_offset;
-		glyph_bbox.yMax += y + pos->y_offset;
-
-		if (bbox->xMin > glyph_bbox.xMin)
-			bbox->xMin = glyph_bbox.xMin;
-		if (bbox->yMin > glyph_bbox.yMin)
-			bbox->yMin = glyph_bbox.yMin;
-		if (bbox->xMax < glyph_bbox.xMax)
-			bbox->xMax = glyph_bbox.xMax;
-		if (bbox->yMax < glyph_bbox.yMax)
-			bbox->yMax = glyph_bbox.yMax;
+		if (bbox->xMin > gbox.xMin)
+			bbox->xMin = gbox.xMin;
+		if (bbox->yMin > gbox.yMin)
+			bbox->yMin = gbox.yMin;
+		if (bbox->xMax < gbox.xMax)
+			bbox->xMax = gbox.xMax;
+		if (bbox->yMax < gbox.yMax)
+			bbox->yMax = gbox.yMax;
 
 		x += pos->x_advance;
-		y -= pos->y_advance;
+		y += pos->y_advance;
 
 		info++;
 		pos++;
@@ -122,13 +112,13 @@ static void compute_bbox(hb_buffer_t *buf, FT_BBox *bbox)
 	}
 }
 
-static void shape(const jchar *text, int start, int len, hb_font_t *font, hb_buffer_t *buf)
+static void shape(const jchar *text, int text_length, int offset, int length, hb_font_t *font, hb_buffer_t *buf)
 {
 	hb_buffer_clear_contents(buf);
 	hb_buffer_set_direction(buf, HB_DIRECTION_RTL);
 	hb_buffer_set_script(buf, HB_SCRIPT_ARABIC);
 	hb_buffer_set_language(buf, hb_language_from_string("ar", 2));
-	hb_buffer_add_utf16(buf, text, len, start, len);
+	hb_buffer_add_utf16(buf, text, text_length, offset, length);
 	hb_shape(font, buf, NULL, 0);
 }
 
@@ -212,7 +202,7 @@ JNIEXPORT jintArray JNICALL Java_com_grafian_quran_text_NativeRenderer_getTextEx
 	ctext = (*env)->GetStringChars(env, text, &iscopy);
 	len = (*env)->GetStringLength(env, text);
 
-	shape(ctext, 0, len, hb_font, hb_buffer);
+	shape(ctext, len, 0, len, hb_font, hb_buffer);
 	compute_bbox(hb_buffer, &bbox);
 	w = bbox.xMax - bbox.xMin + 1;
 	h = bbox.yMax - bbox.yMin + 1;
@@ -236,7 +226,7 @@ JNIEXPORT void JNICALL Java_com_grafian_quran_text_NativeRenderer_renderText
 	AndroidBitmapInfo abi;
 	void *pixels;
 	const jchar *ctext;
-	int len, y;
+	int len;
 	jboolean iscopy;
 	FT_BBox bbox;
 
@@ -245,14 +235,12 @@ JNIEXPORT void JNICALL Java_com_grafian_quran_text_NativeRenderer_renderText
 	AndroidBitmap_getInfo(env, bitmap, &abi);
 	AndroidBitmap_lockPixels(env, bitmap, &pixels);
 
-	memset(pixels, 0 , abi.height * abi.stride);
-
 	ctext = (*env)->GetStringChars(env, text, &iscopy);
 	len = (*env)->GetStringLength(env, text);
 
-	shape(ctext, 0, len, hb_font, hb_buffer);
+	shape(ctext, len, 0, len, hb_font, hb_buffer);
 	compute_bbox(hb_buffer, &bbox);
-	render_glyphs(hb_buffer, pixels, &abi, 0, bbox.yMax);
+	render_glyphs(hb_buffer, pixels, &abi, -bbox.xMin, bbox.yMax);
 
 	(*env)->ReleaseStringChars(env, text, ctext);
 

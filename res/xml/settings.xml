@@ -11,9 +11,6 @@
         <CheckBoxPreference
             android:key="showTranslation"
             android:title="Show Translation" />
-        <CheckBoxPreference
-            android:key="rtl"
-            android:title="Right to Left" />
     </PreferenceCategory>
     <PreferenceCategory android:title="Font" >
         <ListPreference
@@ -31,6 +28,14 @@
             android:entryValues="@array/translation_font_sizes"
             android:key="fontSizeTranslation"
             android:title="Translation Font Size" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Layout" >
+        <CheckBoxPreference
+            android:key="rtl"
+            android:title="Right to Left" />
+        <CheckBoxPreference
+            android:key="fullWidth"
+            android:title="Full Width" />
     </PreferenceCategory>
 
 </PreferenceScreen>

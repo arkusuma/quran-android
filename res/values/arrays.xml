@@ -30,18 +30,14 @@
         <item>18</item>
     </string-array>
     <string-array name="font_names">
-        <item>KFGQPC Uthman</item>
-        <item>PDMS Saleem</item>
-        <item>Me-Quran</item>
-        <item>NooreHira</item>
+        <item>Qalam Majeed</item>
+        <item>KFGQPC Naskh</item>
         <item>NooreHuda</item>
     </string-array>
     <string-array name="font_codes">
         <item>0</item>
         <item>1</item>
         <item>2</item>
-        <item>3</item>
-        <item>4</item>
     </string-array>
 
 </resources>

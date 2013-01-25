@@ -348,6 +348,7 @@ public class QuranFragment extends SherlockListFragment {
 		public TextView juzNumber;
 		public TextView pageNumber;
 		View pageSeparator;
+		View leftSide;
 	}
 
 	private class QuranAdapter extends BaseAdapter {
@@ -433,47 +434,60 @@ public class QuranFragment extends SherlockListFragment {
 					holder.juzNumber = (TextView) convertView.findViewById(R.id.juz_number);
 					holder.pageNumber = (TextView) convertView.findViewById(R.id.page_number);
 					holder.pageSeparator = convertView.findViewById(R.id.page_separator);
+					holder.leftSide = convertView.findViewById(R.id.left_side);
 
 					convertView.setTag(holder);
 				} else {
 					holder = (AyaRowHolder) convertView.getTag();
 				}
 
-				holder.ayaNumber.setText("(" + mark.aya + ")");
+				String ayaNumber = "(" + mark.aya + ")";
 
 				holder.arabic.setText(fix(app.quran.get(mark.sura, mark.aya)));
 				holder.arabic.setTextSize(TypedValue.COMPLEX_UNIT_SP, app.config.fontSizeArabic);
 				holder.arabic.setGravity(Gravity.RIGHT);
 
-				holder.translation.setText(app.translation.get(mark.sura, mark.aya));
+				String translation = app.translation.get(mark.sura, mark.aya);
+				if (app.config.fullWidth) {
+					translation = ayaNumber + " " + translation;
+				}
+				holder.translation.setText(translation);
 				holder.translation.setTextSize(TypedValue.COMPLEX_UNIT_SP, app.config.fontSizeTranslation);
 				holder.translation.setVisibility(app.config.showTranslation ? View.VISIBLE : View.GONE);
 
-				int index = app.metaData.findHizb(mark.sura, mark.aya);
-				Mark hizb = app.metaData.getHizb(index);
-				if (mark.equals(hizb)) {
-					String parts[] = { "", "⅛", "¼", "⅜", "½", "⅝", "¾", "⅞" };
-					index--;
-					int juz = (index / 8) + 1;
-					index %= 8;
-					holder.juzNumber.setText("Juz\n" + juz + parts[index]);
-					holder.juzNumber.setVisibility(View.VISIBLE);
-				} else {
-					holder.juzNumber.setVisibility(View.INVISIBLE);
-				}
-
-				index = app.metaData.findPage(mark.sura, mark.aya);
-				Mark page = app.metaData.getPage(index);
-				if (mark.equals(page)) {
-					holder.pageNumber.setText("Page\n" + index);
-					holder.pageNumber.setVisibility(View.VISIBLE);
-				} else {
-					holder.pageNumber.setVisibility(View.INVISIBLE);
-				}
+				int pageNumber = app.metaData.findPage(mark.sura, mark.aya);
+				Mark page = app.metaData.getPage(pageNumber);
 				if (mark.equals(page) && mark.aya != 1) {
 					holder.pageSeparator.setVisibility(View.VISIBLE);
 				} else {
 					holder.pageSeparator.setVisibility(View.INVISIBLE);
+				}
+
+				if (app.config.fullWidth) {
+					holder.leftSide.setVisibility(View.GONE);
+				} else {
+					holder.leftSide.setVisibility(View.VISIBLE);
+					holder.ayaNumber.setText("(" + mark.aya + ")");
+
+					int hizbNumber = app.metaData.findHizb(mark.sura, mark.aya);
+					Mark hizb = app.metaData.getHizb(hizbNumber);
+					if (mark.equals(hizb)) {
+						String parts[] = { "", "⅛", "¼", "⅜", "½", "⅝", "¾", "⅞" };
+						hizbNumber--;
+						int juz = (hizbNumber / 8) + 1;
+						hizbNumber %= 8;
+						holder.juzNumber.setText("Juz\n" + juz + parts[hizbNumber]);
+						holder.juzNumber.setVisibility(View.VISIBLE);
+					} else {
+						holder.juzNumber.setVisibility(View.INVISIBLE);
+					}
+
+					if (mark.equals(page)) {
+						holder.pageNumber.setText("Page\n" + pageNumber);
+						holder.pageNumber.setVisibility(View.VISIBLE);
+					} else {
+						holder.pageNumber.setVisibility(View.INVISIBLE);
+					}
 				}
 			}
 			return convertView;
