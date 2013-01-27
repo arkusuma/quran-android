@@ -11,6 +11,8 @@ LOCAL_C_INCLUDES := $(LOCAL_PATH)/freetype/include $(LOCAL_PATH)/harfbuzz-ng/src
 LOCAL_SRC_FILES := render.c
 LOCAL_STATIC_LIBRARIES := harfbuzz_ng ft2
 LOCAL_LDLIBS := -llog -ljnigraphics
+LOCAL_CFLAGS += -W -Wall
+LOCAL_CFLAGS += -fPIC -DPIC
 
 include $(BUILD_SHARED_LIBRARY)
 include $(BASE_PATH)/freetype/Android.mk

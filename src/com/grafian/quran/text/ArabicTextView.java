@@ -1,5 +1,6 @@
 package com.grafian.quran.text;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
 import android.annotation.SuppressLint;
@@ -10,12 +11,14 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.AttributeSet;
+import android.util.SparseArray;
 import android.view.Gravity;
 import android.widget.TextView;
 
 public class ArabicTextView extends TextView {
 
 	private static class Line {
+		int index;
 		int start;
 		int end;
 		int width;
@@ -26,10 +29,15 @@ public class ArabicTextView extends TextView {
 	final private ArrayList<Line> mLayout = new ArrayList<Line>();
 	final private Paint mPaint = new Paint();
 	final private StringBuffer mBuffer = new StringBuffer();
+	final private SparseArray<WeakReference<Bitmap>> mBitmaps = new SparseArray<WeakReference<Bitmap>>();
 
 	private String[] mWords = null;
+	private int mTopOverflow;
+	private int mBottomOverflow;
+	private int mFontHeight;
+	private int mFontAscend;
 	private int mTotalWidth;
-	private int mLineHeight;
+	private int mTotalHeight;
 
 	public ArabicTextView(Context context) {
 		super(context);
@@ -82,11 +90,12 @@ public class ArabicTextView extends TextView {
 		}
 
 		Line line = new Line();
+		line.index = mLayout.size();
 		line.start = realStart;
 		line.end = end;
 		line.width = goodExt[0];
 		line.height = goodExt[1];
-		line.ascend = (mLayout.size() * mLineHeight) + (goodExt[4] - goodExt[2]);
+		line.ascend = mFontAscend - goodExt[2];
 		mLayout.add(line);
 		return end + 1;
 	}
@@ -96,11 +105,26 @@ public class ArabicTextView extends TextView {
 		for (int start = 0; start < mWords.length;) {
 			start = consumeLine(start, width);
 		}
+
+		// Calculate overflow
+		mTopOverflow = 0;
+		mBottomOverflow = 0;
+		if (mLayout.size() > 0) {
+			Line top = mLayout.get(0);
+			if (top.ascend < 0) {
+				mTopOverflow = -top.ascend;
+			}
+			Line bottom = mLayout.get(mLayout.size() - 1);
+			if (bottom.ascend + bottom.height > mFontHeight) {
+				mBottomOverflow = (bottom.ascend + bottom.height) - mFontHeight;
+			}
+		}
+		mTotalHeight = mTopOverflow + mBottomOverflow + mFontHeight * mLayout.size();
 	}
 
 	@Override
-	public void setTextSize(float size) {
-		super.setTextSize(size);
+	public void setTextSize(int unit, float size) {
+		super.setTextSize(unit, size);
 		requestLayout();
 	}
 
@@ -113,7 +137,7 @@ public class ArabicTextView extends TextView {
 
 	@Override
 	public int getLineHeight() {
-		return mLineHeight;
+		return mFontHeight;
 	}
 
 	@Override
@@ -133,7 +157,8 @@ public class ArabicTextView extends TextView {
 		String text = joinWords(mBuffer, 0, mWords.length - 1);
 		int[] ext = NativeRenderer.getTextExtent(text, (int) getTextSize());
 		mTotalWidth = ext[0];
-		mLineHeight = ext[3];
+		mFontHeight = ext[3];
+		mFontAscend = ext[4];
 
 		if (widthMode == MeasureSpec.EXACTLY) {
 			width = widthSize;
@@ -145,13 +170,13 @@ public class ArabicTextView extends TextView {
 			}
 		}
 
-		int usableWidth = width - getCompoundPaddingLeft() + getCompoundPaddingRight();
+		int usableWidth = width - getCompoundPaddingLeft() - getCompoundPaddingRight();
 		createLayout(usableWidth);
 
 		if (heightMode == MeasureSpec.EXACTLY) {
 			height = heightSize;
 		} else {
-			height = mLayout.size() * mLineHeight + getCompoundPaddingTop() + getCompoundPaddingBottom();
+			height = mTotalHeight + getCompoundPaddingTop() + getCompoundPaddingBottom();
 			height = Math.max(height, getSuggestedMinimumHeight());
 			if (heightMode == MeasureSpec.AT_MOST) {
 				height = Math.min(height, heightSize);
@@ -161,12 +186,22 @@ public class ArabicTextView extends TextView {
 		setMeasuredDimension(width, height);
 	}
 
+	private Bitmap getBitmapCache(int index, int width, int height) {
+		WeakReference<Bitmap> ref = mBitmaps.get(index);
+		Bitmap bitmap = ref != null ? ref.get() : null;
+		if (bitmap == null || width > bitmap.getWidth() || height > bitmap.getHeight()) {
+			bitmap = Bitmap.createBitmap(width, height, Config.ALPHA_8);
+			mBitmaps.put(index, new WeakReference<Bitmap>(bitmap));
+		}
+		return bitmap;
+	}
+
 	@SuppressLint("DrawAllocation")
 	@Override
 	protected void onDraw(Canvas canvas) {
 		int usableWidth = getWidth() - getCompoundPaddingLeft() - getCompoundPaddingRight();
 		int usableHeight = getHeight() - getCompoundPaddingTop() - getCompoundPaddingBottom();
-		int totalHeight = mLineHeight * mLayout.size();
+		mPaint.setColor(getCurrentTextColor());
 		Rect clip = canvas.getClipBounds();
 		for (Line line : mLayout) {
 			int x = getCompoundPaddingLeft();
@@ -177,12 +212,12 @@ public class ArabicTextView extends TextView {
 				x += (usableWidth - line.width) / 2;
 			}
 
-			int y = getCompoundPaddingTop() + line.ascend;
+			int y = getCompoundPaddingTop() + mTopOverflow + line.index * mFontHeight + line.ascend;
 			gravity = getGravity() & Gravity.VERTICAL_GRAVITY_MASK;
 			if (gravity == Gravity.BOTTOM) {
-				y += usableHeight - totalHeight;
+				y += usableHeight - mTotalHeight;
 			} else if (gravity == Gravity.CENTER_VERTICAL) {
-				y += (usableHeight - totalHeight) / 2;
+				y += (usableHeight - mTotalHeight) / 2;
 			}
 
 			if (!clip.intersects(x, y, x + line.width, y + line.height)) {
@@ -190,11 +225,12 @@ public class ArabicTextView extends TextView {
 			}
 
 			String text = joinWords(mBuffer, line.start, line.end);
-			Bitmap bitmap = Bitmap.createBitmap(line.width, line.height, Config.ALPHA_8);
+			Bitmap bitmap = getBitmapCache(line.index, line.width, line.height);
 			NativeRenderer.renderText(text, (int) getTextSize(), bitmap);
 
-			mPaint.setColor(getCurrentTextColor());
-			canvas.drawBitmap(bitmap, x, y, mPaint);
+			Rect src = new Rect(0, 0, line.width, line.height);
+			Rect dst = new Rect(x, y, x + line.width, y + line.height);
+			canvas.drawBitmap(bitmap, src, dst, mPaint);
 		}
 	}
 }

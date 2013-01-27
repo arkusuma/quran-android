@@ -3,11 +3,13 @@ package com.grafian.quran;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.view.ViewGroup;
 
 public class MainActivity extends BaseActivity {
 
@@ -15,7 +17,6 @@ public class MainActivity extends BaseActivity {
 
 	private ViewPager mPager;
 	private PagerAdapter mAdapter;
-	private int mPage;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -26,13 +27,11 @@ public class MainActivity extends BaseActivity {
 		mPager = (ViewPager) findViewById(R.id.pager);
 		mPager.setAdapter(mAdapter);
 
+		int page = PagingMode.SURA;
 		if (savedInstanceState != null) {
-			mPage = savedInstanceState.getInt(PAGE);
-		} else {
-			mPage = PagingMode.SURA;
+			page = savedInstanceState.getInt(PAGE);
 		}
-
-		mPager.setCurrentItem(mPage);
+		mPager.setCurrentItem(page);
 
 		if (!mApp.loaded) {
 			mApp.loadAllData(this, new ProgressListener() {
@@ -45,6 +44,14 @@ public class MainActivity extends BaseActivity {
 				}
 			});
 		}
+	}
+
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+		super.onConfigurationChanged(newConfig);
+		ViewGroup container = (ViewGroup) findViewById(R.id.ad_container);
+		container.removeAllViews();
+		getLayoutInflater().inflate(R.layout.ad_smart_banner, container);
 	}
 
 	@Override
