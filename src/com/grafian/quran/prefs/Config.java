@@ -13,12 +13,15 @@ public class Config {
 	final public static int FONT_QALAM_MAJEED = 0;
 	final public static int FONT_NASKH = 1;
 	final public static int FONT_NOOREHUDA = 2;
-	final public static int FONT_MAX = 2;
+	final public static int FONT_ME_QURAN = 3;
+	final public static int FONT_MAX = 3;
 
 	final private static String LANG = "lang";
 	final private static String RTL = "rtl";
 	final private static String SHOW_TRANSLATION = "showTranslation";
 	final private static String FULL_WIDTH = "fullWidth";
+	final private static String DARK_THEME = "darkTheme";
+	final private static String ENABLE_ANALYTICS = "enableAnalytics";
 	final private static String QURAN_TEXT = "quranText";
 	final private static String FONT_ARABIC = "fontArabic";
 	final private static String FONT_SIZE_ARABIC = "fontSizeArabic";
@@ -28,6 +31,8 @@ public class Config {
 	public boolean rtl;
 	public boolean showTranslation;
 	public boolean fullWidth;
+	public boolean darkTheme;
+	public boolean enableAnalytics;
 	public int quranText;
 	public int fontArabic;
 	public int fontSizeArabic;
@@ -38,6 +43,8 @@ public class Config {
 		rtl = true;
 		showTranslation = true;
 		fullWidth = false;
+		darkTheme = false;
+		enableAnalytics = true;
 		quranText = QURAN_TEXT_SIMPLE;
 		fontArabic = FONT_QALAM_MAJEED;
 		fontSizeArabic = 26;
@@ -56,6 +63,8 @@ public class Config {
 			rtl = sp.getBoolean(RTL, rtl);
 			showTranslation = sp.getBoolean(SHOW_TRANSLATION, showTranslation);
 			fullWidth = sp.getBoolean(FULL_WIDTH, fullWidth);
+			darkTheme = sp.getBoolean(DARK_THEME, darkTheme);
+			enableAnalytics = sp.getBoolean(ENABLE_ANALYTICS, enableAnalytics);
 			quranText = Integer.parseInt(sp.getString(QURAN_TEXT, Integer.toString(quranText)));
 			fontArabic = Integer.parseInt(sp.getString(FONT_ARABIC, Integer.toString(fontArabic)));
 			fontSizeArabic = Integer.parseInt(sp.getString(FONT_SIZE_ARABIC, Integer.toString(fontSizeArabic)));
@@ -79,6 +88,8 @@ public class Config {
 		ed.putBoolean(RTL, rtl);
 		ed.putBoolean(SHOW_TRANSLATION, showTranslation);
 		ed.putBoolean(FULL_WIDTH, fullWidth);
+		ed.putBoolean(DARK_THEME, darkTheme);
+		ed.putBoolean(ENABLE_ANALYTICS, enableAnalytics);
 		ed.putString(QURAN_TEXT, "" + quranText);
 		ed.putString(FONT_ARABIC, "" + fontArabic);
 		ed.putString(FONT_SIZE_ARABIC, "" + fontSizeArabic);

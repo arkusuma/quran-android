@@ -75,6 +75,9 @@ public class App extends Application {
 			case Config.FONT_NOOREHUDA:
 				name = "noorehuda.ttf";
 				break;
+			case Config.FONT_ME_QURAN:
+				name = "me_quran.ttf";
+				break;
 			}
 			try {
 				NativeRenderer.loadFont(getAssets().open(name));
@@ -149,7 +152,9 @@ public class App extends Application {
 			protected void onPostExecute(Void result) {
 				loaded = true;
 				dialog.dismiss();
-				listener.onFinish();
+				if (listener != null) {
+					listener.onFinish();
+				}
 			}
 		}.execute();
 	}

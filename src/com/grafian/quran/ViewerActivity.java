@@ -8,6 +8,7 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 
 import com.actionbarsherlock.view.MenuItem;
+import com.google.analytics.tracking.android.EasyTracker;
 import com.grafian.quran.parser.MetaData.Mark;
 
 public class ViewerActivity extends BaseActivity {
@@ -21,7 +22,7 @@ public class ViewerActivity extends BaseActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.viewer);
+		setContentView(R.layout.pager);
 
 		mAdapter = new ViewerAdapter(getSupportFragmentManager());
 		mPager = (ViewPager) findViewById(R.id.pager);
@@ -38,10 +39,10 @@ public class ViewerActivity extends BaseActivity {
 			mAya = intent.getIntExtra(QuranFragment.AYA, 1);
 		}
 
-		if (mApp.loaded) {
+		if (App.app.loaded) {
 			showPage(mPagingMode, mSura, mAya);
 		} else {
-			mApp.loadAllData(this, new ProgressListener() {
+			App.app.loadAllData(this, new ProgressListener() {
 				@Override
 				public void onProgress() {
 				}
@@ -54,6 +55,22 @@ public class ViewerActivity extends BaseActivity {
 		}
 
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+	}
+
+	@Override
+	protected void onStart() {
+		super.onStart();
+		if (App.app.config.enableAnalytics) {
+			EasyTracker.getInstance().activityStart(this);
+		}
+	}
+
+	@Override
+	protected void onStop() {
+		super.onStop();
+		if (App.app.config.enableAnalytics) {
+			EasyTracker.getInstance().activityStop(this);
+		}
 	}
 
 	@Override
@@ -108,7 +125,7 @@ public class ViewerActivity extends BaseActivity {
 	}
 
 	private int transformPosition(int position) {
-		if (mApp.config.rtl) {
+		if (App.app.config.rtl) {
 			return mAdapter.getCount() - position - 1;
 		}
 		return position;
@@ -121,13 +138,13 @@ public class ViewerActivity extends BaseActivity {
 			item = sura - 1;
 			break;
 		case PagingMode.PAGE:
-			item = mApp.metaData.findPage(sura, aya) - 1;
+			item = App.app.metaData.findPage(sura, aya) - 1;
 			break;
 		case PagingMode.JUZ:
-			item = mApp.metaData.findJuz(sura, aya) - 1;
+			item = App.app.metaData.findJuz(sura, aya) - 1;
 			break;
 		case PagingMode.HIZB:
-			item = mApp.metaData.findHizb(sura, aya) - 1;
+			item = App.app.metaData.findHizb(sura, aya) - 1;
 			break;
 		}
 		return transformPosition(item);
@@ -147,13 +164,13 @@ public class ViewerActivity extends BaseActivity {
 				mark = new Mark(page + 1, 1);
 				break;
 			case PagingMode.PAGE:
-				mark = new Mark(mApp.metaData.getPage(page + 1));
+				mark = new Mark(App.app.metaData.getPage(page + 1));
 				break;
 			case PagingMode.JUZ:
-				mark = new Mark(mApp.metaData.getJuz(page + 1));
+				mark = new Mark(App.app.metaData.getJuz(page + 1));
 				break;
 			case PagingMode.HIZB:
-				mark = new Mark(mApp.metaData.getHizb(page + 1));
+				mark = new Mark(App.app.metaData.getHizb(page + 1));
 				break;
 			}
 			return mark;
@@ -177,16 +194,16 @@ public class ViewerActivity extends BaseActivity {
 
 		@Override
 		public int getCount() {
-			if (mApp.loaded) {
+			if (App.app.loaded) {
 				switch (mPagingMode) {
 				case PagingMode.SURA:
-					return mApp.metaData.getSuraCount();
+					return App.app.metaData.getSuraCount();
 				case PagingMode.PAGE:
-					return mApp.metaData.getPageCount();
+					return App.app.metaData.getPageCount();
 				case PagingMode.JUZ:
-					return mApp.metaData.getJuzCount();
+					return App.app.metaData.getJuzCount();
 				case PagingMode.HIZB:
-					return mApp.metaData.getHizbCount();
+					return App.app.metaData.getHizbCount();
 				}
 			}
 			return 0;

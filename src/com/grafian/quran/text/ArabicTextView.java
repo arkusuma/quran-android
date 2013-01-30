@@ -8,7 +8,11 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.util.SparseArray;
@@ -201,7 +205,14 @@ public class ArabicTextView extends TextView {
 	protected void onDraw(Canvas canvas) {
 		int usableWidth = getWidth() - getCompoundPaddingLeft() - getCompoundPaddingRight();
 		int usableHeight = getHeight() - getCompoundPaddingTop() - getCompoundPaddingBottom();
-		mPaint.setColor(getCurrentTextColor());
+		int color = getCurrentTextColor();
+		float[] matrix = {
+				0, 0, 0, 0, Color.red(color),
+				0, 0, 0, 0, Color.green(color),
+				0, 0, 0, 0, Color.blue(color),
+				0, 0, 0, 1, 0
+		};
+		mPaint.setColorFilter(new ColorMatrixColorFilter(matrix));
 		Rect clip = canvas.getClipBounds();
 		for (Line line : mLayout) {
 			int x = getCompoundPaddingLeft();

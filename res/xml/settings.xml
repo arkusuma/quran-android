@@ -37,5 +37,13 @@
             android:key="fullWidth"
             android:title="Full Width" />
     </PreferenceCategory>
+    <PreferenceCategory android:title="Other" >
+        <CheckBoxPreference
+            android:key="darkTheme"
+            android:title="Dark Theme" />
+        <CheckBoxPreference
+            android:key="enableAnalytics"
+            android:title="Enable Analytics" />
+    </PreferenceCategory>
 
 </PreferenceScreen>

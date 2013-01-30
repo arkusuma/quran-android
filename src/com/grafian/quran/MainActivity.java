@@ -3,13 +3,13 @@ package com.grafian.quran;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.view.ViewGroup;
+
+import com.google.analytics.tracking.android.EasyTracker;
 
 public class MainActivity extends BaseActivity {
 
@@ -21,7 +21,7 @@ public class MainActivity extends BaseActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.main);
+		setContentView(R.layout.pager);
 
 		mAdapter = new PagerAdapter(getSupportFragmentManager());
 		mPager = (ViewPager) findViewById(R.id.pager);
@@ -33,25 +33,25 @@ public class MainActivity extends BaseActivity {
 		}
 		mPager.setCurrentItem(page);
 
-		if (!mApp.loaded) {
-			mApp.loadAllData(this, new ProgressListener() {
-				@Override
-				public void onProgress() {
-				}
-
-				@Override
-				public void onFinish() {
-				}
-			});
+		if (!App.app.loaded) {
+			App.app.loadAllData(this, null);
 		}
 	}
 
 	@Override
-	public void onConfigurationChanged(Configuration newConfig) {
-		super.onConfigurationChanged(newConfig);
-		ViewGroup container = (ViewGroup) findViewById(R.id.ad_container);
-		container.removeAllViews();
-		getLayoutInflater().inflate(R.layout.ad_smart_banner, container);
+	protected void onStart() {
+		super.onStart();
+		if (App.app.config.enableAnalytics) {
+			EasyTracker.getInstance().activityStart(this);
+		}
+	}
+
+	@Override
+	protected void onStop() {
+		super.onStop();
+		if (App.app.config.enableAnalytics) {
+			EasyTracker.getInstance().activityStop(this);
+		}
 	}
 
 	@Override

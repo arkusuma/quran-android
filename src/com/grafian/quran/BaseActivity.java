@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -17,28 +18,42 @@ import com.actionbarsherlock.view.MenuItem;
 
 public class BaseActivity extends SherlockFragmentActivity {
 
-	protected App mApp;
+	private boolean mDarkTheme;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		mDarkTheme = App.app.config.darkTheme;
+		if (App.app.config.darkTheme) {
+			setTheme(R.style.Theme_Sherlock);
+		}
 		super.onCreate(savedInstanceState);
-		mApp = (App) getApplication();
 	}
 
 	@Override
 	protected void onPause() {
 		super.onPause();
-		mApp.config.save(this);
+		App.app.config.save(this);
 	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
 
-		mApp.config.load(this);
-		mApp.loadFont();
-		if (mApp.loaded) {
-			if (mApp.needDataReload()) {
+		App.app.config.load(this);
+		if (mDarkTheme != App.app.config.darkTheme) {
+			restart();
+		}
+
+		if (mDarkTheme) {
+			findViewById(R.id.pager_title_strip).setBackgroundColor(Color.BLACK);
+			findViewById(R.id.pager).setBackgroundColor(Color.BLACK);
+		} else {
+			findViewById(R.id.pager).setBackgroundColor(Color.WHITE);
+		}
+
+		App.app.loadFont();
+		if (App.app.loaded) {
+			if (App.app.needDataReload()) {
 				reloadData();
 			}
 		}
@@ -54,7 +69,7 @@ public class BaseActivity extends SherlockFragmentActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.settings:
-			mApp.config.save(this);
+			App.app.config.save(this);
 			startActivity(new Intent(this, SettingsActivity.class));
 			return true;
 		case R.id.about:
@@ -64,21 +79,26 @@ public class BaseActivity extends SherlockFragmentActivity {
 		return super.onOptionsItemSelected(item);
 	}
 
+	private void restart() {
+		if (Build.VERSION.SDK_INT >= 11) {
+			recreate();
+		} else {
+			finish();
+			startActivity(getIntent());
+		}
+	}
+
 	private void reloadData() {
-		mApp.loadAllData(BaseActivity.this, new ProgressListener() {
+		App.app.loadAllData(BaseActivity.this, new ProgressListener() {
 			@Override
 			public void onProgress() {
 			}
 
 			@Override
 			public void onFinish() {
-				if (Build.VERSION.SDK_INT >= 11) {
-					recreate();
-				} else {
-					finish();
-					startActivity(getIntent());
-				}
+				restart();
 			}
+
 		});
 	}
 
