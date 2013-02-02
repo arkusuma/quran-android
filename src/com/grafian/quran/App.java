@@ -46,7 +46,11 @@ public class App extends Application {
 	}
 
 	private int getQuranID() {
-		return R.raw.quran_simple;
+		if (config.quranText == Config.QURAN_TEXT_SIMPLE) {
+			return R.raw.quran_simple;
+		} else {
+			return R.raw.quran_uthmani;
+		}
 	}
 
 	private int getTranslationID() {
@@ -177,6 +181,17 @@ public class App extends Application {
 			items = app.getResources().getStringArray(R.array.sura_translation_id);
 		}
 		return items[i - 1];
+	}
+
+	public static int getThemeID() {
+		switch (app.config.theme) {
+		case Config.THEME_WHITE:
+			return R.style.White;
+		case Config.THEME_BLACK:
+			return R.style.Black;
+		default:
+			return R.style.Paper;
+		}
 	}
 
 }

@@ -8,7 +8,6 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 
 import com.actionbarsherlock.view.MenuItem;
-import com.google.analytics.tracking.android.EasyTracker;
 import com.grafian.quran.parser.MetaData.Mark;
 
 public class ViewerActivity extends BaseActivity {
@@ -55,22 +54,6 @@ public class ViewerActivity extends BaseActivity {
 		}
 
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-	}
-
-	@Override
-	protected void onStart() {
-		super.onStart();
-		if (App.app.config.enableAnalytics) {
-			EasyTracker.getInstance().activityStart(this);
-		}
-	}
-
-	@Override
-	protected void onStop() {
-		super.onStop();
-		if (App.app.config.enableAnalytics) {
-			EasyTracker.getInstance().activityStop(this);
-		}
 	}
 
 	@Override

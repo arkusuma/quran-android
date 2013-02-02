@@ -9,8 +9,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 
-import com.google.analytics.tracking.android.EasyTracker;
-
 public class MainActivity extends BaseActivity {
 
 	final private static String PAGE = "page";
@@ -35,22 +33,6 @@ public class MainActivity extends BaseActivity {
 
 		if (!App.app.loaded) {
 			App.app.loadAllData(this, null);
-		}
-	}
-
-	@Override
-	protected void onStart() {
-		super.onStart();
-		if (App.app.config.enableAnalytics) {
-			EasyTracker.getInstance().activityStart(this);
-		}
-	}
-
-	@Override
-	protected void onStop() {
-		super.onStop();
-		if (App.app.config.enableAnalytics) {
-			EasyTracker.getInstance().activityStop(this);
 		}
 	}
 

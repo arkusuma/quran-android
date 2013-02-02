@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
 
-    <PreferenceCategory android:title="Language" >
+    <PreferenceCategory android:title="Text &amp; Language" >
+        <ListPreference
+            android:entries="@array/quran_text_names"
+            android:entryValues="@array/quran_text_codes"
+            android:key="quranText"
+            android:title="Quran Text" />
         <ListPreference
             android:entries="@array/lang_names"
             android:entryValues="@array/lang_codes"
@@ -12,7 +17,12 @@
             android:key="showTranslation"
             android:title="Show Translation" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="Font" >
+    <PreferenceCategory android:title="Appearance" >
+        <ListPreference
+            android:entries="@array/theme_names"
+            android:entryValues="@array/theme_codes"
+            android:key="theme"
+            android:title="Theme" />
         <ListPreference
             android:entries="@array/font_names"
             android:entryValues="@array/font_codes"
@@ -38,9 +48,6 @@
             android:title="Full Width" />
     </PreferenceCategory>
     <PreferenceCategory android:title="Other" >
-        <CheckBoxPreference
-            android:key="darkTheme"
-            android:title="Dark Theme" />
         <CheckBoxPreference
             android:key="enableAnalytics"
             android:title="Enable Analytics" />

@@ -5,15 +5,12 @@ import android.os.Bundle;
 
 import com.actionbarsherlock.app.SherlockPreferenceActivity;
 import com.actionbarsherlock.view.MenuItem;
-import com.google.analytics.tracking.android.EasyTracker;
 
 public class SettingsActivity extends SherlockPreferenceActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		if (App.app.config.darkTheme) {
-			setTheme(R.style.Theme_Sherlock);
-		}
+		setTheme(App.getThemeID());
 		super.onCreate(savedInstanceState);
 	}
 
@@ -33,22 +30,6 @@ public class SettingsActivity extends SherlockPreferenceActivity {
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
-		}
-	}
-
-	@Override
-	protected void onStart() {
-		super.onStart();
-		if (App.app.config.enableAnalytics) {
-			EasyTracker.getInstance().activityStart(this);
-		}
-	}
-
-	@Override
-	protected void onStop() {
-		super.onStop();
-		if (App.app.config.enableAnalytics) {
-			EasyTracker.getInstance().activityStop(this);
 		}
 	}
 

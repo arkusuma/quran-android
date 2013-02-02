@@ -5,7 +5,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -15,18 +14,36 @@ import android.widget.TextView;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
+import com.google.analytics.tracking.android.EasyTracker;
 
 public class BaseActivity extends SherlockFragmentActivity {
 
-	private boolean mDarkTheme;
+	private int mTheme;
+	private boolean mAnalyticsStarted = false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		mDarkTheme = App.app.config.darkTheme;
-		if (App.app.config.darkTheme) {
-			setTheme(R.style.Theme_Sherlock);
-		}
+		mTheme = App.app.config.theme;
+		setTheme(App.getThemeID());
 		super.onCreate(savedInstanceState);
+	}
+
+	@Override
+	protected void onStart() {
+		super.onStart();
+		if (App.app.config.enableAnalytics) {
+			EasyTracker.getInstance().activityStart(this);
+			mAnalyticsStarted = true;
+		}
+	}
+
+	@Override
+	protected void onStop() {
+		super.onStop();
+		if (mAnalyticsStarted) {
+			EasyTracker.getInstance().activityStop(this);
+			mAnalyticsStarted = false;
+		}
 	}
 
 	@Override
@@ -40,15 +57,8 @@ public class BaseActivity extends SherlockFragmentActivity {
 		super.onResume();
 
 		App.app.config.load(this);
-		if (mDarkTheme != App.app.config.darkTheme) {
+		if (mTheme != App.app.config.theme) {
 			restart();
-		}
-
-		if (mDarkTheme) {
-			findViewById(R.id.pager_title_strip).setBackgroundColor(Color.BLACK);
-			findViewById(R.id.pager).setBackgroundColor(Color.BLACK);
-		} else {
-			findViewById(R.id.pager).setBackgroundColor(Color.WHITE);
 		}
 
 		App.app.loadFont();

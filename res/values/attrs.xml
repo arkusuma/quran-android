@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <attr name="pagerTitleStripTextColor" format="reference|color" />
+    <attr name="pagerTitleStripBackground" format="reference|color" />
+
+</resources>
