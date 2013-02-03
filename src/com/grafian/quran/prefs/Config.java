@@ -26,6 +26,7 @@ public class Config {
 	final private static String RTL = "rtl";
 	final private static String SHOW_TRANSLATION = "showTranslation";
 	final private static String FULL_WIDTH = "fullWidth";
+	final private static String KEEP_SCREEN_ON = "keepScreenOn";
 	final private static String THEME = "theme";
 	final private static String ENABLE_ANALYTICS = "enableAnalytics";
 	final private static String QURAN_TEXT = "quranText";
@@ -37,6 +38,7 @@ public class Config {
 	public boolean rtl;
 	public boolean showTranslation;
 	public boolean fullWidth;
+	public boolean keepScreenOn;
 	public boolean enableAnalytics;
 	public int quranText;
 	public int fontArabic;
@@ -49,6 +51,7 @@ public class Config {
 		rtl = true;
 		showTranslation = true;
 		fullWidth = false;
+		keepScreenOn = true;
 		enableAnalytics = true;
 		quranText = QURAN_TEXT_SIMPLE;
 		fontArabic = FONT_QALAM_MAJEED;
@@ -73,6 +76,7 @@ public class Config {
 			rtl = sp.getBoolean(RTL, rtl);
 			showTranslation = sp.getBoolean(SHOW_TRANSLATION, showTranslation);
 			fullWidth = sp.getBoolean(FULL_WIDTH, fullWidth);
+			keepScreenOn = sp.getBoolean(KEEP_SCREEN_ON, keepScreenOn);
 			enableAnalytics = sp.getBoolean(ENABLE_ANALYTICS, enableAnalytics);
 			quranText = getStringInt(sp, QURAN_TEXT, quranText);
 			fontArabic = getStringInt(sp, FONT_ARABIC, fontArabic);
@@ -99,6 +103,7 @@ public class Config {
 		ed.putBoolean(RTL, rtl);
 		ed.putBoolean(SHOW_TRANSLATION, showTranslation);
 		ed.putBoolean(FULL_WIDTH, fullWidth);
+		ed.putBoolean(KEEP_SCREEN_ON, keepScreenOn);
 		ed.putBoolean(ENABLE_ANALYTICS, enableAnalytics);
 		ed.putString(QURAN_TEXT, "" + quranText);
 		ed.putString(FONT_ARABIC, "" + fontArabic);

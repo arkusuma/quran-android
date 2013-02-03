@@ -2,15 +2,21 @@ package com.grafian.quran;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.view.WindowManager;
 
 import com.actionbarsherlock.view.MenuItem;
 import com.grafian.quran.parser.MetaData.Mark;
 
 public class ViewerActivity extends BaseActivity {
+
+	final private static int SCREEN_TIMEOUT = 600;
+
+	final private Handler mHandler = new Handler();
 
 	private ViewPager mPager;
 	private ViewerAdapter mAdapter;
@@ -60,11 +66,34 @@ public class ViewerActivity extends BaseActivity {
 	protected void onResume() {
 		super.onResume();
 
+		if (App.app.config.keepScreenOn) {
+			getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+		} else {
+			getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+		}
+
 		// Check if reading direction is still valid
 		QuranFragment fragment = getCurrentFragment();
 		if (fragment != null && fragment.getUserVisibleHint()) {
 			Mark m = fragment.getCurrentPosition();
 			showPage(mPagingMode, m.sura, m.aya);
+		}
+	}
+
+	private Runnable clearScreenOn = new Runnable() {
+		@Override
+		public void run() {
+			getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+		}
+	};
+
+	@Override
+	public void onUserInteraction() {
+		super.onUserInteraction();
+		if (App.app.config.keepScreenOn) {
+			mHandler.removeCallbacks(clearScreenOn);
+			mHandler.postDelayed(clearScreenOn, SCREEN_TIMEOUT * 1000);
+			getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 		}
 	}
 

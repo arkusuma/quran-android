@@ -49,6 +49,9 @@
     </PreferenceCategory>
     <PreferenceCategory android:title="Other" >
         <CheckBoxPreference
+            android:key="keepScreenOn"
+            android:title="Keep Screen On" />
+        <CheckBoxPreference
             android:key="enableAnalytics"
             android:title="Enable Analytics" />
     </PreferenceCategory>
