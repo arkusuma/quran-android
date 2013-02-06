@@ -10,14 +10,18 @@ end
 source = ARGV[0]
 target = source.gsub(/\.[^.]*$/, '')
 
-def xform(s)
+def xform(s, type)
   s = String.new(s)
+  if type == 5
+    s.gsub!("\u066E", "\u0649") # DOTLESS BEH => ALEF MAKSURA
+    s.gsub!("\u064E\u06E2", "\u064B\u06E2") # FATHA + SMALL MEEM => FATHATAN + SMALL MEEM
+    s.gsub!("\u064F\u06E2", "\u064C\u06E2") # DAMMAH + SMALL MEEM => DAMMATAN + SMALL MEEM
+    s.gsub!("\u0650\u06ED", "\u064D\u06ED") # KASRA + SMALL LOW MEEM => KASRATAN + SMALL LOW MEEM
+  end
   s.gsub!(/[\u0640\u06DF]/, '') # TATWEEL | SMALL HIGH ROUNDED ZERO
-  s.gsub!("\u066E", "\u0649") # DOTLESS BEH => ALEF MAKSURA
   s.gsub!(/\u064E([\u0648\u0649]?)[\u0670\u0672]/, "\u0670\\1") # FATHAH + (SS ALEF | ALEF WAVY HAMZA)
   s.gsub!("\u0671", "\u0627") # ALEF WASLA => ALEF
   s.gsub!("\u0627\u0652", "\u0627") # ALEF + SUKUN => ALEF
-  s.gsub!("\u064F\u06E2", "\u064C\u06E2") # DAMMAH + SMALL MEEM => DAMMATAIN + SMALL MEEM
   return s
 end
 
@@ -48,7 +52,7 @@ File.readlines(source).each do |line|
         text.strip!
       end
     end
-    db.execute 'INSERT INTO quran VALUES (?,?,?)', sura, aya, xform(text)
+    db.execute 'INSERT INTO quran VALUES (?,?,?)', sura, aya, xform(text, type)
   elsif f.length == 5
     if first
       first = false
@@ -58,7 +62,7 @@ File.readlines(source).each do |line|
     end
     type = f.length
     sura, aya, word, ar, tr = f
-    db.execute 'INSERT INTO quran VALUES (?,?,?,?,?)', sura, aya, word, xform(ar), tr
+    db.execute 'INSERT INTO quran VALUES (?,?,?,?,?)', sura, aya, word, xform(ar, type), tr
   end
 end
 db.execute 'COMMIT TRANSACTION'
