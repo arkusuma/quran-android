@@ -59,7 +59,7 @@ public class BaseActivity extends SherlockFragmentActivity {
 		App.app.config.load(this);
 		if (mTheme != App.app.config.theme) {
 			restart();
-		} else {
+		} else if (!App.app.loadAllData()) {
 			Extractor.extractAll(this, new Runnable() {
 				@Override
 				public void run() {

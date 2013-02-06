@@ -13,9 +13,11 @@ target = source.gsub(/\.[^.]*$/, '')
 def xform(s)
   s = String.new(s)
   s.gsub!(/[\u0640\u06DF]/, '') # TATWEEL | SMALL HIGH ROUNDED ZERO
-  s.gsub!(/[\u0671\u06E5]/, "\u0627") # ALEF WASLA | SMALL WAW => ALEF
+  s.gsub!("\u066E", "\u0649") # DOTLESS BEH => ALEF MAKSURA
   s.gsub!(/\u064E([\u0648\u0649]?)[\u0670\u0672]/, "\u0670\\1") # FATHAH + (SS ALEF | ALEF WAVY HAMZA)
+  s.gsub!("\u0671", "\u0627") # ALEF WASLA => ALEF
   s.gsub!("\u0627\u0652", "\u0627") # ALEF + SUKUN => ALEF
+  s.gsub!("\u064F\u06E2", "\u064C\u06E2") # DAMMAH + SMALL MEEM => DAMMATAIN + SMALL MEEM
   return s
 end
 

@@ -55,8 +55,8 @@ public class App extends Application {
 
 	public boolean loadFont() {
 		if (loadedFont != config.fontArabic) {
-			String name = "qalam.ttf";
-			switch (loadedFont) {
+			String name;
+			switch (config.fontArabic) {
 			case Config.FONT_NASKH:
 				name = "naskh.otf";
 				break;
@@ -66,12 +66,15 @@ public class App extends Application {
 			case Config.FONT_ME_QURAN:
 				name = "me_quran.ttf";
 				break;
+			default:
+				name = "qalam.ttf";
 			}
 			try {
 				NativeRenderer.loadFont(getAssets().open(name));
 				loadedFont = config.fontArabic;
 			} catch (IOException e) {
 				e.printStackTrace();
+				loadedFont = -1;
 				return false;
 			}
 		}

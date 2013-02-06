@@ -316,6 +316,15 @@ public class QuranFragment extends SherlockListFragment {
 		return sb.reverse().toString();
 	}
 
+	private String fixArabic(String s) {
+		switch (app.config.fontArabic) {
+		case Config.FONT_QALAM_MAJEED:
+		case Config.FONT_NASKH:
+			s = s.replaceAll("[\u06E5\u06E6]\u0653?", ""); // (Small Waw | Small Yeh) + Maddah
+		}
+		return s;
+	}
+
 	private static class SuraRowHolder {
 		public TextView suraName;
 		public TextView suraTranslation;
@@ -433,7 +442,7 @@ public class QuranFragment extends SherlockListFragment {
 						final View view = inflater.inflate(R.layout.word_by_word, null);
 						final TextView arabic = (TextView) view.findViewById(R.id.arabic);
 						final TextView translation = (TextView) view.findViewById(R.id.translation);
-						arabic.setText(words[i][0]);
+						arabic.setText(fixArabic(words[i][0]));
 						arabic.setTextSize(TypedValue.COMPLEX_UNIT_SP, app.config.fontSizeArabic);
 						translation.setText(words[i][1]);
 						translation.setTextSize(TypedValue.COMPLEX_UNIT_SP, app.config.fontSizeTranslation - 4);
@@ -451,7 +460,7 @@ public class QuranFragment extends SherlockListFragment {
 					}
 					holder.wordByWord.setVisibility(View.VISIBLE);
 				} else {
-					String arabic = app.quranText.get(mark.sura, mark.aya);
+					String arabic = fixArabic(app.quranText.get(mark.sura, mark.aya));
 					if (app.config.fullWidth) {
 						arabic = arabic + " \uFD3F" + intToArabic(mark.aya) + "\uFD3E";
 					}
