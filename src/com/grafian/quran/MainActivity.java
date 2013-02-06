@@ -32,13 +32,6 @@ public class MainActivity extends BaseActivity {
 			page = savedInstanceState.getInt(PAGE);
 		}
 		mPager.setCurrentItem(page);
-
-		Extractor.extractAll(this, new Runnable() {
-			@Override
-			public void run() {
-				App.app.loadAllData();
-			}
-		});
 	}
 
 	@Override

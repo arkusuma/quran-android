@@ -37,6 +37,8 @@ public class App extends Application {
 
 		config.load(this);
 		bookmark.load(this);
+
+		loadFont();
 	}
 
 	private String getQuranTextPath() {
@@ -51,9 +53,8 @@ public class App extends Application {
 		return new File(getExternalFilesDir(null), "words_en").toString();
 	}
 
-	public void loadAllData() {
+	public boolean loadFont() {
 		if (loadedFont != config.fontArabic) {
-			loadedFont = config.fontArabic;
 			String name = "qalam.ttf";
 			switch (loadedFont) {
 			case Config.FONT_NASKH:
@@ -68,13 +69,20 @@ public class App extends Application {
 			}
 			try {
 				NativeRenderer.loadFont(getAssets().open(name));
+				loadedFont = config.fontArabic;
 			} catch (IOException e) {
 				e.printStackTrace();
+				return false;
 			}
 		}
-		quranText.load(this, getQuranTextPath());
-		translation.load(this, getTranslationPath());
-		quranWord.load(this, getQuranWordPath());
+		return true;
+	}
+
+	public boolean loadAllData() {
+		return loadFont()
+				&& quranText.load(this, getQuranTextPath())
+				&& translation.load(this, getTranslationPath())
+				&& quranWord.load(this, getQuranWordPath());
 	}
 
 	public static String getSuraName(int i) {

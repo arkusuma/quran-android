@@ -34,7 +34,7 @@ public class Extractor {
 		}
 	}
 
-	private static void extractFromAsset(Context context, String[] srcs, String dest, final ProgressListener listener) {
+	private static boolean extractFromAsset(Context context, String[] srcs, File dest, final ProgressListener listener) {
 		MyGZIPInputStream gzip = null;
 		OutputStream out = null;
 		try {
@@ -49,7 +49,7 @@ public class Extractor {
 			Enumeration<InputStream> en = Collections.enumeration(ins);
 			gzip = new MyGZIPInputStream(new SequenceInputStream(en));
 			out = new FileOutputStream(dest);
-			byte[] buf = new byte[8192];
+			byte[] buf = new byte[128 * 1024];
 			int len;
 			while ((len = gzip.read(buf)) > 0) {
 				out.write(buf, 0, len);
@@ -59,6 +59,7 @@ public class Extractor {
 			}
 			out.close();
 			gzip.close();
+			return true;
 		} catch (IOException e) {
 			e.printStackTrace();
 			try {
@@ -70,12 +71,13 @@ public class Extractor {
 				}
 			} catch (IOException e1) {
 			}
-			new File(dest).delete();
+			dest.delete();
+			return false;
 		}
 	}
 
 	public static void extractAll(final Context context, final Runnable onFinished) {
-		new AsyncTask<String, String, Void>() {
+		new AsyncTask<String, String, Boolean>() {
 
 			private long mProgress;
 			private long mTotal;
@@ -110,7 +112,7 @@ public class Extractor {
 			};
 
 			@Override
-			protected Void doInBackground(String... params) {
+			protected Boolean doInBackground(String... params) {
 				final AssetManager assets = context.getAssets();
 				String[] files = {};
 				try {
@@ -120,6 +122,10 @@ public class Extractor {
 				}
 
 				File dir = context.getExternalFilesDir(null);
+				if (dir == null) {
+					return false;
+				}
+
 				for (String file : files) {
 					if (!file.endsWith(".png")) {
 						continue;
@@ -131,21 +137,25 @@ public class Extractor {
 					File dest = new File(dir, base);
 					if (!dest.exists()) {
 						publishProgress(dest.getName());
-						extractFromAsset(context, new String[] { file }, dest.toString(), onProgress);
+						if (!extractFromAsset(context, new String[] { file }, dest, onProgress)) {
+							return false;
+						}
 					}
 				}
 
 				File dest = new File(dir, "words_en");
 				if (!dest.exists()) {
 					publishProgress(dest.getName());
-					extractFromAsset(context, new String[] { "words_en1.png", "words_en2.png" }, dest.toString(), onProgress);
+					if (!extractFromAsset(context, new String[] { "words_en1.png", "words_en2.png" }, dest, onProgress)) {
+						return false;
+					}
 				}
 
-				return null;
+				return true;
 			}
 
 			@Override
-			protected void onPostExecute(Void result) {
+			protected void onPostExecute(Boolean result) {
 				if (mDialog != null) {
 					mDialog.dismiss();
 				}

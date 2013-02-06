@@ -60,7 +60,24 @@ public class BaseActivity extends SherlockFragmentActivity {
 		if (mTheme != App.app.config.theme) {
 			restart();
 		} else {
-			App.app.loadAllData();
+			Extractor.extractAll(this, new Runnable() {
+				@Override
+				public void run() {
+					if (!App.app.loadAllData()) {
+						DialogInterface.OnClickListener onQuit = new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								finish();
+							}
+						};
+						new AlertDialog.Builder(BaseActivity.this)
+								.setMessage(R.string.sdcard_required)
+								.setCancelable(false)
+								.setPositiveButton(R.string.quit, onQuit)
+								.show();
+					}
+				}
+			});
 		}
 	}
 

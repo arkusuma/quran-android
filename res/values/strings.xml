@@ -8,6 +8,7 @@
     <string name="quit">Quit</string>
     <string name="share_via">Share Via</string>
     <string name="delete">Delete</string>
+    <string name="sdcard_required">You need an SD card to run this application!</string>
     <string name="confirm_quit">Do you really want to quit?</string>
 
     <!-- Bookmark -->
