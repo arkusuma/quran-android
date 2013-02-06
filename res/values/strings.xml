@@ -2,7 +2,6 @@
 <resources>
 
     <string name="app_name">Beautiful Quran</string>
-    <string name="loading">Loading data, please wait&#8230;</string>
     <string name="save">Save</string>
     <string name="replace">Replace</string>
     <string name="cancel">Cancel</string>

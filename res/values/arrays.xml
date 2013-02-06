@@ -1,21 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string-array name="quran_text_names">
-        <item>Simple</item>
-        <item>Uthmani</item>
-    </string-array>
-    <string-array name="quran_text_codes">
-        <item>0</item>
-        <item>1</item>
-    </string-array>
     <string-array name="lang_names">
         <item>English</item>
         <item>Indonesia</item>
     </string-array>
     <string-array name="lang_codes">
-        <item>en</item>
-        <item>id</item>
+        <item>en.sahih</item>
+        <item>id.indonesian</item>
     </string-array>
     <string-array name="aya_operations">
         <item>Copy</item>

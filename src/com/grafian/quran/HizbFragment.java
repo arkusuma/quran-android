@@ -9,9 +9,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockListFragment;
-import com.grafian.quran.parser.MetaData.Mark;
-import com.grafian.quran.parser.MetaData.Sajda;
-import com.grafian.quran.parser.MetaData.Sura;
+import com.grafian.quran.model.Paging;
+import com.grafian.quran.model.MetaData.Mark;
+import com.grafian.quran.model.MetaData.Sura;
 
 public class HizbFragment extends SherlockListFragment {
 
@@ -30,8 +30,8 @@ public class HizbFragment extends SherlockListFragment {
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
 		Intent intent = new Intent(getActivity(), ViewerActivity.class);
-		Mark mark = app.metaData.getHizb(position + 1);
-		intent.putExtra(QuranFragment.PAGING_MODE, PagingMode.HIZB);
+		Mark mark = app.metaData.getMarkStart(Paging.HIZB, position + 1);
+		intent.putExtra(QuranFragment.PAGING, Paging.HIZB);
 		intent.putExtra(QuranFragment.SURA, mark.sura);
 		intent.putExtra(QuranFragment.AYA, mark.aya);
 		startActivity(intent);
@@ -48,12 +48,12 @@ public class HizbFragment extends SherlockListFragment {
 
 		@Override
 		public int getCount() {
-			return app.metaData.getHizbCount();
+			return app.metaData.getMarkCount(Paging.HIZB);
 		}
 
 		@Override
 		public Object getItem(int position) {
-			return app.metaData.getHizb(position + 1);
+			return app.metaData.getMarkStart(Paging.HIZB, position + 1);
 		}
 
 		@Override
@@ -77,7 +77,7 @@ public class HizbFragment extends SherlockListFragment {
 				holder = (HizbRowHolder) convertView.getTag();
 			}
 
-			Sajda mark = (Sajda) getItem(position);
+			Mark mark = (Mark) getItem(position);
 			Sura sura = app.metaData.getSura(mark.sura);
 			String s[] = { "", "⅛", "¼", "⅜", "½", "⅝", "¾", "⅞" };
 			int juz = (position / 8) + 1;

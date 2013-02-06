@@ -59,13 +59,8 @@ public class BaseActivity extends SherlockFragmentActivity {
 		App.app.config.load(this);
 		if (mTheme != App.app.config.theme) {
 			restart();
-		}
-
-		App.app.loadFont();
-		if (App.app.loaded) {
-			if (App.app.needDataReload()) {
-				reloadData();
-			}
+		} else {
+			App.app.loadAllData();
 		}
 	}
 
@@ -96,20 +91,6 @@ public class BaseActivity extends SherlockFragmentActivity {
 			finish();
 			startActivity(getIntent());
 		}
-	}
-
-	private void reloadData() {
-		App.app.loadAllData(BaseActivity.this, new ProgressListener() {
-			@Override
-			public void onProgress() {
-			}
-
-			@Override
-			public void onFinish() {
-				restart();
-			}
-
-		});
 	}
 
 	private void doAbout() {

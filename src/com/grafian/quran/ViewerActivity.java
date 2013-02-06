@@ -10,7 +10,8 @@ import android.support.v4.view.ViewPager;
 import android.view.WindowManager;
 
 import com.actionbarsherlock.view.MenuItem;
-import com.grafian.quran.parser.MetaData.Mark;
+import com.grafian.quran.model.Paging;
+import com.grafian.quran.model.MetaData.Mark;
 
 public class ViewerActivity extends BaseActivity {
 
@@ -20,7 +21,7 @@ public class ViewerActivity extends BaseActivity {
 
 	private ViewPager mPager;
 	private ViewerAdapter mAdapter;
-	private int mPagingMode;
+	private int mPaging;
 	private int mSura;
 	private int mAya;
 
@@ -34,31 +35,17 @@ public class ViewerActivity extends BaseActivity {
 		mPager.setAdapter(mAdapter);
 
 		if (savedInstanceState != null) {
-			mPagingMode = savedInstanceState.getInt(QuranFragment.PAGING_MODE);
+			mPaging = savedInstanceState.getInt(QuranFragment.PAGING);
 			mSura = savedInstanceState.getInt(QuranFragment.SURA);
 			mAya = savedInstanceState.getInt(QuranFragment.AYA);
 		} else {
 			Intent intent = getIntent();
-			mPagingMode = intent.getIntExtra(QuranFragment.PAGING_MODE, PagingMode.SURA);
+			mPaging = intent.getIntExtra(QuranFragment.PAGING, Paging.SURA);
 			mSura = intent.getIntExtra(QuranFragment.SURA, 1);
 			mAya = intent.getIntExtra(QuranFragment.AYA, 1);
 		}
 
-		if (App.app.loaded) {
-			showPage(mPagingMode, mSura, mAya);
-		} else {
-			App.app.loadAllData(this, new ProgressListener() {
-				@Override
-				public void onProgress() {
-				}
-
-				@Override
-				public void onFinish() {
-					showPage(mPagingMode, mSura, mAya);
-				}
-			});
-		}
-
+		showPage(mPaging, mSura, mAya);
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 	}
 
@@ -76,7 +63,7 @@ public class ViewerActivity extends BaseActivity {
 		QuranFragment fragment = getCurrentFragment();
 		if (fragment != null && fragment.getUserVisibleHint()) {
 			Mark m = fragment.getCurrentPosition();
-			showPage(mPagingMode, m.sura, m.aya);
+			showPage(mPaging, m.sura, m.aya);
 		}
 	}
 
@@ -103,7 +90,7 @@ public class ViewerActivity extends BaseActivity {
 		QuranFragment fragment = getCurrentFragment();
 		if (fragment != null) {
 			Mark m = fragment.getCurrentPosition();
-			outState.putInt(QuranFragment.PAGING_MODE, mPagingMode);
+			outState.putInt(QuranFragment.PAGING, mPaging);
 			outState.putInt(QuranFragment.SURA, m.sura);
 			outState.putInt(QuranFragment.AYA, m.aya);
 		}
@@ -121,7 +108,7 @@ public class ViewerActivity extends BaseActivity {
 	}
 
 	public void showPage(int pagingMode, int sura, int aya) {
-		mPagingMode = pagingMode;
+		mPaging = pagingMode;
 		mSura = sura;
 		mAya = aya;
 		mAdapter.notifyDataSetChanged();
@@ -145,18 +132,18 @@ public class ViewerActivity extends BaseActivity {
 
 	private int findTransformedPosition(int sura, int aya) {
 		int item = 0;
-		switch (mPagingMode) {
-		case PagingMode.SURA:
+		switch (mPaging) {
+		case Paging.SURA:
 			item = sura - 1;
 			break;
-		case PagingMode.PAGE:
-			item = App.app.metaData.findPage(sura, aya) - 1;
+		case Paging.PAGE:
+			item = App.app.metaData.find(Paging.PAGE, sura, aya) - 1;
 			break;
-		case PagingMode.JUZ:
-			item = App.app.metaData.findJuz(sura, aya) - 1;
+		case Paging.JUZ:
+			item = App.app.metaData.find(Paging.JUZ, sura, aya) - 1;
 			break;
-		case PagingMode.HIZB:
-			item = App.app.metaData.findHizb(sura, aya) - 1;
+		case Paging.HIZB:
+			item = App.app.metaData.find(Paging.HIZB, sura, aya) - 1;
 			break;
 		}
 		return transformPosition(item);
@@ -171,18 +158,18 @@ public class ViewerActivity extends BaseActivity {
 		private Mark getStartMark(int page) {
 			page = transformPosition(page);
 			Mark mark = null;
-			switch (mPagingMode) {
-			case PagingMode.SURA:
+			switch (mPaging) {
+			case Paging.SURA:
 				mark = new Mark(page + 1, 1);
 				break;
-			case PagingMode.PAGE:
-				mark = new Mark(App.app.metaData.getPage(page + 1));
+			case Paging.PAGE:
+				mark = App.app.metaData.getMarkStart(Paging.PAGE, page + 1);
 				break;
-			case PagingMode.JUZ:
-				mark = new Mark(App.app.metaData.getJuz(page + 1));
+			case Paging.JUZ:
+				mark = App.app.metaData.getMarkStart(Paging.JUZ, page + 1);
 				break;
-			case PagingMode.HIZB:
-				mark = new Mark(App.app.metaData.getHizb(page + 1));
+			case Paging.HIZB:
+				mark = App.app.metaData.getMarkStart(Paging.HIZB, page + 1);
 				break;
 			}
 			return mark;
@@ -197,7 +184,7 @@ public class ViewerActivity extends BaseActivity {
 				m.sura = mSura;
 				m.aya = mAya;
 			}
-			args.putInt(QuranFragment.PAGING_MODE, mPagingMode);
+			args.putInt(QuranFragment.PAGING, mPaging);
 			args.putInt(QuranFragment.SURA, m.sura);
 			args.putInt(QuranFragment.AYA, m.aya);
 			fragment.setArguments(args);
@@ -206,33 +193,30 @@ public class ViewerActivity extends BaseActivity {
 
 		@Override
 		public int getCount() {
-			if (App.app.loaded) {
-				switch (mPagingMode) {
-				case PagingMode.SURA:
-					return App.app.metaData.getSuraCount();
-				case PagingMode.PAGE:
-					return App.app.metaData.getPageCount();
-				case PagingMode.JUZ:
-					return App.app.metaData.getJuzCount();
-				case PagingMode.HIZB:
-					return App.app.metaData.getHizbCount();
-				}
+			switch (mPaging) {
+			case Paging.SURA:
+				return App.app.metaData.getSuraCount();
+			case Paging.PAGE:
+				return App.app.metaData.getMarkCount(Paging.PAGE);
+			case Paging.JUZ:
+				return App.app.metaData.getMarkCount(Paging.JUZ);
+			default: //case Paging.HIZB:
+				return App.app.metaData.getMarkCount(Paging.HIZB);
 			}
-			return 0;
 		}
 
 		@Override
 		public CharSequence getPageTitle(int position) {
 			if (position < getCount()) {
 				position = transformPosition(position);
-				switch (mPagingMode) {
-				case PagingMode.SURA:
+				switch (mPaging) {
+				case Paging.SURA:
 					return "" + (position + 1) + ". " + App.getSuraName(position + 1);
-				case PagingMode.PAGE:
+				case Paging.PAGE:
 					return "Page " + (position + 1);
-				case PagingMode.JUZ:
+				case Paging.JUZ:
 					return "Juz " + (position + 1);
-				case PagingMode.HIZB:
+				case Paging.HIZB:
 					return "Hizb " + (position + 1);
 				}
 			}

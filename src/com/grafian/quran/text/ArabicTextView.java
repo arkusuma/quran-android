@@ -33,7 +33,7 @@ public class ArabicTextView extends TextView {
 	final private StringBuffer mBuffer = new StringBuffer();
 	final private SparseArray<WeakReference<Bitmap>> mBitmaps = new SparseArray<WeakReference<Bitmap>>();
 
-	private String[] mWords = null;
+	private String[] mWords = new String[0];
 	private int mTopOverflow;
 	private int mBottomOverflow;
 	private int mFontHeight;
@@ -130,10 +130,29 @@ public class ArabicTextView extends TextView {
 		requestLayout();
 	}
 
+	public static String[] split(String text) {
+		ArrayList<String> words = new ArrayList<String>();
+		String last = null;
+		for (String s : text.trim().split(" +")) {
+			if (s.length() > 0 && s.charAt(0) >= '\u06d6') {
+				if (last == null) {
+					last = s;
+				} else {
+					last = last + ' ' + s;
+					words.remove(words.size() - 1);
+				}
+			} else {
+				last = s;
+			}
+			words.add(last);
+		}
+		return words.toArray(new String[words.size()]);
+	}
+
 	@Override
 	public void setText(CharSequence text, BufferType type) {
 		super.setText(text, type);
-		mWords = text.toString().trim().split(" +");
+		mWords = split(text.toString());
 		requestLayout();
 	}
 

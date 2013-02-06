@@ -1,5 +1,7 @@
 package com.grafian.quran;
 
+import com.grafian.quran.model.Paging;
+
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
@@ -25,15 +27,18 @@ public class MainActivity extends BaseActivity {
 		mPager = (ViewPager) findViewById(R.id.pager);
 		mPager.setAdapter(mAdapter);
 
-		int page = PagingMode.SURA;
+		int page = Paging.SURA;
 		if (savedInstanceState != null) {
 			page = savedInstanceState.getInt(PAGE);
 		}
 		mPager.setCurrentItem(page);
 
-		if (!App.app.loaded) {
-			App.app.loadAllData(this, null);
-		}
+		Extractor.extractAll(this, new Runnable() {
+			@Override
+			public void run() {
+				App.app.loadAllData();
+			}
+		});
 	}
 
 	@Override

@@ -17,7 +17,7 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockListFragment;
-import com.grafian.quran.parser.MetaData.Sura;
+import com.grafian.quran.model.MetaData.Sura;
 import com.grafian.quran.prefs.Bookmark;
 import com.grafian.quran.prefs.Bookmark.Folder;
 import com.grafian.quran.prefs.Bookmark.Item;
@@ -51,7 +51,7 @@ public class BookmarkFragment extends SherlockListFragment {
 		Object obj = getListAdapter().getItem(position);
 		if (obj instanceof Item) {
 			Item item = (Item) obj;
-			intent.putExtra(QuranFragment.PAGING_MODE, item.getMode());
+			intent.putExtra(QuranFragment.PAGING, item.getMode());
 			intent.putExtra(QuranFragment.SURA, item.getSura());
 			intent.putExtra(QuranFragment.AYA, item.getAya());
 			startActivity(intent);
