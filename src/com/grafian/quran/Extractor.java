@@ -95,7 +95,7 @@ public class Extractor {
 			@Override
 			protected void onProgressUpdate(String... values) {
 				if (values.length > 0) {
-					String message = "Extracting " + values[0] + "...";
+					String message = "Extracting " + values[0] + "\u2026";
 					if (mDialog == null) {
 						mDialog = new ProgressDialog(context);
 						mDialog.setCancelable(false);

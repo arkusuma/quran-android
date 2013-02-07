@@ -13,15 +13,16 @@ target = source.gsub(/\.[^.]*$/, '')
 def xform(s, type)
   s = String.new(s)
   if type == 5
-    s.gsub!("\u066E", "\u0649") # DOTLESS BEH => ALEF MAKSURA
+    s.gsub!("\u0640\u0670", "\u0670") # TATWEEL + SS ALEF => SS ALEF
     s.gsub!("\u064E\u06E2", "\u064B\u06E2") # FATHA + SMALL MEEM => FATHATAN + SMALL MEEM
     s.gsub!("\u064F\u06E2", "\u064C\u06E2") # DAMMAH + SMALL MEEM => DAMMATAN + SMALL MEEM
     s.gsub!("\u0650\u06ED", "\u064D\u06ED") # KASRA + SMALL LOW MEEM => KASRATAN + SMALL LOW MEEM
+    s.gsub!("\u066E", "\u0649") # DOTLESS BEH => ALEF MAKSURA
   end
-  s.gsub!(/[\u0640\u06DF]/, '') # TATWEEL | SMALL HIGH ROUNDED ZERO
-  s.gsub!(/\u064E([\u0648\u0649]?)[\u0670\u0672]/, "\u0670\\1") # FATHAH + (SS ALEF | ALEF WAVY HAMZA)
-  s.gsub!("\u0671", "\u0627") # ALEF WASLA => ALEF
   s.gsub!("\u0627\u0652", "\u0627") # ALEF + SUKUN => ALEF
+  s.gsub!("\u0671", "\u0627") # ALEF WASLA => ALEF
+  s.gsub!("\u06DF", '') # SMALL HIGH ROUNDED ZERO
+  s.gsub!(/\u064E([\u0648\u0649]?)[\u0670\u0672]/, "\u0670\\1") # FATHAH + (SS ALEF | ALEF WAVY HAMZA)
   return s
 end
 
@@ -69,9 +70,11 @@ db.execute 'COMMIT TRANSACTION'
 db.close
 
 `gzip -9 -f -S .png #{target}`
-if type == 5
+if type == 3
+  `mv #{target}.png ../assets`
+else
   `split -n2 #{target}.png`
-  `mv xaa #{target}1.png`
-  `mv xab #{target}2.png`
+  `mv xaa ../assets/#{target}1.png`
+  `mv xab ../assets/#{target}2.png`
   `rm #{target}.png`
 end

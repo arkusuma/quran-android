@@ -1,5 +1,7 @@
 package com.grafian.quran.prefs;
 
+import java.util.Locale;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -43,7 +45,12 @@ public class Config {
 	public int theme;
 
 	public void loadDefaults() {
-		lang = "en";
+		lang = Locale.getDefault().getISO3Language();
+		if (lang.equals("ind")) {
+			lang = "id.indonesian";
+		} else {
+			lang = "en.sahih";
+		}
 		rtl = true;
 		showTranslation = true;
 		wordByWord = false;
