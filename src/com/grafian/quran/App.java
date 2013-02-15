@@ -111,11 +111,11 @@ public class App extends Application {
 	public static int getThemeID() {
 		switch (app.config.theme) {
 		case Config.THEME_WHITE:
-			return R.style.White;
+			return R.style.Theme_White;
 		case Config.THEME_BLACK:
-			return R.style.Black;
+			return R.style.Theme_Black;
 		default:
-			return R.style.Paper;
+			return R.style.Theme_Mushaf;
 		}
 	}
 

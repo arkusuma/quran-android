@@ -322,6 +322,7 @@ public class QuranFragment extends SherlockListFragment {
 		case Config.FONT_NASKH:
 			s = s.replaceAll("[\u06E5\u06E6]\u0653?", ""); // (Small Waw | Small Yeh) + Maddah
 		}
+		s = s.replaceAll("([\u0645\u0646])([ \u0627-\u064A]|$)", "$1\u0652$2");
 		return s;
 	}
 

@@ -414,7 +414,7 @@ public class MetaData {
 		}
 
 		if (mark[1] == 1) {
-			return new Mark(mark[0] - 1, mSuras[mark[0] - 1].ayas);
+			return new Mark(mark[0] - 1, mSuras[mark[0] - 2].ayas);
 		}
 		return new Mark(mark[0], mark[1] - 1);
 	}
