@@ -320,9 +320,16 @@ public class QuranFragment extends SherlockListFragment {
 		switch (app.config.fontArabic) {
 		case Config.FONT_QALAM_MAJEED:
 		case Config.FONT_NASKH:
-			s = s.replaceAll("[\u06E5\u06E6]\u0653?", ""); // (Small Waw | Small Yeh) + Maddah
+			// (Small Waw | Small Yeh) + Maddah
+			s = s.replaceAll("[\u06E5\u06E6]\u0653?", "");
 		}
+
+		// Add sukun on mem | nun
 		s = s.replaceAll("([\u0645\u0646])([ \u0627-\u064A]|$)", "$1\u0652$2");
+
+		// Tatweel + Hamza Above (joining chairless hamza) => Yeh With Hamza Above
+		s = s.replaceAll("\u0640\u0654", "\u0626");
+
 		return s;
 	}
 
