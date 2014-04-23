@@ -12,10 +12,10 @@
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <TextView
-        android:id="@+id/juz_number"
+        android:id="@+id/part_number"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
+        android:layout_marginLeft="2dp"
         android:layout_toRightOf="@id/hizb_number"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 

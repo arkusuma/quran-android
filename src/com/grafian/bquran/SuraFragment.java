@@ -1,7 +1,8 @@
-package com.grafian.quran;
+package com.grafian.bquran;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.ListFragment;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,11 +10,10 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.actionbarsherlock.app.SherlockListFragment;
-import com.grafian.quran.model.Paging;
-import com.grafian.quran.model.MetaData.Sura;
+import com.grafian.bquran.model.MetaData.Sura;
+import com.grafian.bquran.model.Paging;
 
-public class SuraFragment extends SherlockListFragment {
+public class SuraFragment extends ListFragment {
 
 	private App mApp;
 	private SuraAdapter mAdapter;

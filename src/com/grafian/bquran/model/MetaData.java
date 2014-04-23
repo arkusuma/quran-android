@@ -1,4 +1,4 @@
-package com.grafian.quran.model;
+package com.grafian.bquran.model;
 
 public class MetaData {
 

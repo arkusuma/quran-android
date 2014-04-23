@@ -1,19 +1,16 @@
-package com.grafian.quran.text;
+package com.grafian.bquran.text;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.AttributeSet;
-import android.util.SparseArray;
 import android.view.Gravity;
 import android.widget.TextView;
 
@@ -31,7 +28,6 @@ public class ArabicTextView extends TextView {
 	final private ArrayList<Line> mLayout = new ArrayList<Line>();
 	final private Paint mPaint = new Paint();
 	final private StringBuffer mBuffer = new StringBuffer();
-	final private SparseArray<WeakReference<Bitmap>> mBitmaps = new SparseArray<WeakReference<Bitmap>>();
 
 	private String[] mWords = new String[0];
 	private int mTopOverflow;
@@ -40,15 +36,18 @@ public class ArabicTextView extends TextView {
 	private int mFontAscend;
 	private int mTotalWidth;
 	private int mTotalHeight;
+	private BitmapCache mCache;
 
 	public ArabicTextView(Context context) {
 		super(context);
 		setGravity(Gravity.RIGHT);
+		mCache = BitmapCache.getInstance();
 	}
 
 	public ArabicTextView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		setGravity(Gravity.RIGHT);
+		mCache = BitmapCache.getInstance();
 	}
 
 	private String joinWords(StringBuffer sb, int start, int end) {
@@ -68,7 +67,8 @@ public class ArabicTextView extends TextView {
 
 		// Scan full words first
 		String text = joinWords(mBuffer, start, end);
-		int goodExt[] = NativeRenderer.getTextExtent(text, (int) getTextSize());
+		int textSize = (int) getTextSize();
+		int goodExt[] = NativeRenderer.getTextExtent(text, textSize);
 		if (width < goodExt[0] && start < end) {
 			int badWidth = goodExt[0];
 			int goodWidth = 0;
@@ -79,7 +79,7 @@ public class ArabicTextView extends TextView {
 				mid += start + 1;
 
 				text = joinWords(mBuffer, realStart, mid);
-				int[] ext = NativeRenderer.getTextExtent(text, (int) getTextSize());
+				int[] ext = NativeRenderer.getTextExtent(text, textSize);
 				if (width < ext[0]) {
 					end = mid - 1;
 					badWidth = ext[0];
@@ -207,16 +207,6 @@ public class ArabicTextView extends TextView {
 		setMeasuredDimension(width, height);
 	}
 
-	private Bitmap getBitmapCache(int index, int width, int height) {
-		WeakReference<Bitmap> ref = mBitmaps.get(index);
-		Bitmap bitmap = ref != null ? ref.get() : null;
-		if (bitmap == null || width > bitmap.getWidth() || height > bitmap.getHeight()) {
-			bitmap = Bitmap.createBitmap(width, height, Config.ALPHA_8);
-			mBitmaps.put(index, new WeakReference<Bitmap>(bitmap));
-		}
-		return bitmap;
-	}
-
 	@SuppressLint("DrawAllocation")
 	@Override
 	protected void onDraw(Canvas canvas) {
@@ -253,8 +243,11 @@ public class ArabicTextView extends TextView {
 			}
 
 			String text = joinWords(mBuffer, line.start, line.end);
-			Bitmap bitmap = getBitmapCache(line.index, line.width, line.height);
-			NativeRenderer.renderText(text, (int) getTextSize(), bitmap);
+			Bitmap bitmap = mCache.getBitmap(text);
+			if (bitmap == null) {
+				bitmap = NativeRenderer.renderText(text, (int) getTextSize());
+				mCache.addBitmap(text, bitmap);
+			}
 
 			Rect src = new Rect(0, 0, line.width, line.height);
 			Rect dst = new Rect(x, y, x + line.width, y + line.height);

@@ -5,8 +5,6 @@
 
 #include "render.h"
 
-static char LOG_TAG[] = "NativeRenderer";
-
 #define CACHE_SIZE 256
 
 typedef struct _cache {
@@ -34,22 +32,20 @@ static context_t *ctx;
 
 extern hb_unicode_funcs_t *hb_ucdn_get_unicode_funcs(void);
 
-#if 0
-#define assert_zero(x)
-#else
-#define assert_zero(x) do { \
-	int ret = (x); \
-	if (ret != 0) { \
-		char s[128], *p = 0; \
-		sprintf(s, "%s:%d (ret=%d)", __func__, __LINE__, ret); \
-		__android_log_print(6, LOG_TAG, s); \
-		*p = 0; \
-	} } while (0)
-#endif
-
-#define assert(x) assert_zero(!(x))
-
 #define round(x) (((x) + 32) >> 6)
+
+static jobject create_bitmap(JNIEnv *env, jint w, jint h)
+{
+	jclass bitmap_class = (jclass) (*env)->FindClass(env, "android/graphics/Bitmap");
+	jmethodID create_bitmap = (*env)->GetStaticMethodID(env, bitmap_class, "createBitmap", "(IILandroid/graphics/Bitmap$Config;)Landroid/graphics/Bitmap;");
+
+	jstring config_name = (*env)->NewStringUTF(env, "ALPHA_8");
+	jclass config_class = (*env)->FindClass(env, "android/graphics/Bitmap$Config");
+	jmethodID value_of = (*env)->GetStaticMethodID(env, config_class, "valueOf", "(Ljava/lang/String;)Landroid/graphics/Bitmap$Config;");
+	jobject bitmap_config = (*env)->CallStaticObjectMethod(env, config_class, value_of, config_name);
+
+	return (*env)->CallStaticObjectMethod(env, bitmap_class, create_bitmap, w, h, bitmap_config);
+}
 
 static void clear_cache()
 {
@@ -67,7 +63,7 @@ static void init_cache(int font_size)
 {
 	if (!ctx->font || ctx->font_size != font_size) {
 		if (ctx->font) hb_font_destroy(ctx->font);
-		assert_zero(FT_Set_Pixel_Sizes(ctx->face, 0, font_size));
+		FT_Set_Pixel_Sizes(ctx->face, 0, font_size);
 		ctx->font = hb_ft_font_create(ctx->face, NULL);
 		ctx->font_size = font_size;
 		clear_cache();
@@ -97,8 +93,8 @@ static int get_cached_glyph(int codepoint, FT_Glyph *glyph, FT_BBox *bbox)
 	if (ctx->cache[i].when)
 		FT_Done_Glyph(ctx->cache[i].glyph);
 
-	assert_zero(FT_Load_Glyph(ctx->face, codepoint, FT_LOAD_DEFAULT));
-	assert_zero(FT_Get_Glyph(ctx->face->glyph, &ctx->cache[i].glyph));
+	FT_Load_Glyph(ctx->face, codepoint, FT_LOAD_DEFAULT);
+	FT_Get_Glyph(ctx->face->glyph, &ctx->cache[i].glyph);
 	FT_Glyph_Get_CBox(ctx->cache[i].glyph, FT_GLYPH_BBOX_UNSCALED, &ctx->cache[i].bbox);
 
 	ctx->cache[i].when = ctx->when++;
@@ -114,7 +110,7 @@ static int get_cached_bitmap(int codepoint, FT_BitmapGlyph *bitmap)
 	FT_Glyph glyph;
 	int i = get_cached_glyph(codepoint, &glyph, 0);
 	if (!ctx->cache[i].rendered) {
-		assert_zero(FT_Glyph_To_Bitmap(&glyph, FT_RENDER_MODE_NORMAL, 0, 1));
+		FT_Glyph_To_Bitmap(&glyph, FT_RENDER_MODE_NORMAL, 0, 1);
 		ctx->cache[i].rendered = 1;
 		ctx->cache[i].glyph = glyph;
 	}
@@ -244,30 +240,18 @@ static void cleanup(void)
 	clear_cache();
 }
 
-static void clear_rect(void *pixels, AndroidBitmapInfo *abi, int width, int height) {
-	unsigned char *row = (unsigned char *) pixels;
-	int i;
-	if (width > (int) abi->width) width = abi->width;
-	if (height > (int) abi->height) height = abi->height;
-	for (i = 0; i < height; i++) {
-		memset(row, 0, width);
-		row += abi->stride;
-	}
-}
-
 #define UNUSED(x) (void)(x)
 
-JNIEXPORT void JNICALL Java_com_grafian_quran_text_NativeRenderer_loadFont
+JNIEXPORT void JNICALL Java_com_grafian_bquran_text_NativeRenderer_loadFont
   (JNIEnv *env, jclass cls, jbyteArray blob)
 {
 	UNUSED(cls);
 
 	// Initialize FreeType library for the first time
 	if (!ctx) {
-		assert(ctx = (context_t *) calloc(1, sizeof(*ctx)));
-		assert_zero(FT_Init_FreeType(&ctx->lib));
+		ctx = (context_t *) calloc(1, sizeof(*ctx));
+		FT_Init_FreeType(&ctx->lib);
 	}
-
 	cleanup();
 
 	// Clone blob
@@ -278,34 +262,17 @@ JNIEXPORT void JNICALL Java_com_grafian_quran_text_NativeRenderer_loadFont
 	(*env)->ReleaseByteArrayElements(env, blob, bytes, JNI_ABORT);
 
 	// Actual font loading
-	assert_zero(FT_New_Memory_Face(ctx->lib, ctx->blob, size, 0, &ctx->face));
+	FT_New_Memory_Face(ctx->lib, ctx->blob, size, 0, &ctx->face);
 }
 
-JNIEXPORT jintArray JNICALL Java_com_grafian_quran_text_NativeRenderer_getTextExtent
-  (JNIEnv *env, jclass cls, jstring text, jint font_size)
+static jintArray createExtent(JNIEnv *env, const FT_BBox *bbox)
 {
-	const jchar *ctext;
-	int len;
 	jint array[6];
 	jintArray result;
-	jboolean iscopy;
-	FT_BBox bbox;
 
-	UNUSED(cls);
-
-	init_cache(font_size);
-
-	ctext = (*env)->GetStringChars(env, text, &iscopy);
-	len = (*env)->GetStringLength(env, text);
-
-	shape(ctext, len, 0, len, ctx->font, ctx->buf);
-	compute_bbox(ctx->buf, &bbox);
-
-	(*env)->ReleaseStringChars(env, text, ctext);
-
-	array[0] = bbox.xMax - bbox.xMin;
-	array[1] = bbox.yMax - bbox.yMin;
-	array[2] = bbox.yMax;
+	array[0] = bbox->xMax - bbox->xMin;
+	array[1] = bbox->yMax - bbox->yMin;
+	array[2] = bbox->yMax;
 	array[3] = round(ctx->face->size->metrics.height);
 	array[4] = round(ctx->face->size->metrics.ascender);
 	array[5] = round(ctx->face->size->metrics.descender);
@@ -314,11 +281,9 @@ JNIEXPORT jintArray JNICALL Java_com_grafian_quran_text_NativeRenderer_getTextEx
 	return result;
 }
 
-JNIEXPORT void JNICALL Java_com_grafian_quran_text_NativeRenderer_renderText
-  (JNIEnv *env, jclass cls, jstring text, jint font_size, jobject bitmap)
+JNIEXPORT jintArray JNICALL Java_com_grafian_bquran_text_NativeRenderer_getTextExtent
+  (JNIEnv *env, jclass cls, jstring text, jint font_size)
 {
-	AndroidBitmapInfo abi;
-	void *pixels;
 	const jchar *ctext;
 	int len;
 	jboolean iscopy;
@@ -328,18 +293,45 @@ JNIEXPORT void JNICALL Java_com_grafian_quran_text_NativeRenderer_renderText
 
 	init_cache(font_size);
 
-	AndroidBitmap_getInfo(env, bitmap, &abi);
-	AndroidBitmap_lockPixels(env, bitmap, &pixels);
+	ctext = (*env)->GetStringChars(env, text, &iscopy);
+	len = (*env)->GetStringLength(env, text);
+
+	shape(ctext, len, 0, len, ctx->font, ctx->buf);
+	compute_bbox(ctx->buf, &bbox);
+
+	(*env)->ReleaseStringChars(env, text, ctext);
+
+	return createExtent(env, &bbox);
+}
+
+JNIEXPORT jobject JNICALL Java_com_grafian_bquran_text_NativeRenderer_renderText
+  (JNIEnv *env, jclass cls, jstring text, jint font_size)
+{
+	AndroidBitmapInfo abi;
+	void *pixels;
+	const jchar *ctext;
+	int len;
+	jobject bitmap;
+	jboolean iscopy;
+	FT_BBox bbox;
+
+	UNUSED(cls);
+
+	init_cache(font_size);
 
 	ctext = (*env)->GetStringChars(env, text, &iscopy);
 	len = (*env)->GetStringLength(env, text);
 
 	shape(ctext, len, 0, len, ctx->font, ctx->buf);
 	compute_bbox(ctx->buf, &bbox);
-	clear_rect(pixels, &abi, bbox.xMax - bbox.xMin, bbox.yMax - bbox.yMin);
+
+	bitmap = create_bitmap(env, bbox.xMax - bbox.xMin, bbox.yMax - bbox.yMin);
+	AndroidBitmap_getInfo(env, bitmap, &abi);
+	AndroidBitmap_lockPixels(env, bitmap, &pixels);
 	render_glyphs(ctx->buf, pixels, &abi, -bbox.xMin, bbox.yMax);
+	AndroidBitmap_unlockPixels(env, bitmap);
 
 	(*env)->ReleaseStringChars(env, text, ctext);
 
-	AndroidBitmap_unlockPixels(env, bitmap);
+	return bitmap;
 }

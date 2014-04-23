@@ -28,7 +28,6 @@
     <string name="english">English</string>
     <string name="indonesia">Indonesia</string>
     <string name="settings">Settings</string>
-    <string name="about">About</string>
 
     <!-- Viewer Menu -->
     <string name="view_as_sura">View as Sura</string>
@@ -38,10 +37,20 @@
 
     <!-- About Dialog -->
     <string name="about">About</string>
-    <string name="visit_web">Visit us</string>
     <string name="more_apps">More apps</string>
-    <string name="okay">Okay cool!</string>
-    <string name="copyright">Grafian Software Crafter 2013\nBandung, Indonesia</string>
-    <string name="website">Website: http://grafian.com</string>
+    <string name="okay">Close</string>
+    <string name="copyright">Grafian Software Crafter 2013&#8211;2014\nBandung, Indonesia</string>
+    <string name="website">http://grafian.com</string>
+
+    <!-- Credits -->
+    <string name="credit_quran_title">Quran text and translations</string>
+    <string name="credit_quran_author">Tanzil Project</string>
+    <string name="credit_quran_website">http://tanzil.net</string>
+    <string name="credit_en_wbw_title">English word by word translation</string>
+    <string name="credit_en_wbw_author">Dr. Shehnaz Shaikh M.D. &amp; Ms. Kausar Khatri</string>
+    <string name="credit_en_wbw_website">http://emuslim.com/Quran/Translation_English.asp</string>
+    <string name="credit_id_wbw_title">Indonesian word by word translation</string>
+    <string name="credit_id_wbw_author">Quranterjemah.com</string>
+    <string name="credit_id_wbw_website">http://www.quranterjemah.com</string>
 
 </resources>

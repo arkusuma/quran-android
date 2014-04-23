@@ -1,16 +1,20 @@
-package com.grafian.quran;
+package com.grafian.bquran;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 
 import android.app.Application;
+import android.view.ViewConfiguration;
 
-import com.grafian.quran.model.MetaData;
-import com.grafian.quran.model.QuranText;
-import com.grafian.quran.model.QuranWord;
-import com.grafian.quran.prefs.Bookmark;
-import com.grafian.quran.prefs.Config;
-import com.grafian.quran.text.NativeRenderer;
+import com.grafian.bquran.R;
+import com.grafian.bquran.model.MetaData;
+import com.grafian.bquran.model.QuranText;
+import com.grafian.bquran.model.QuranWord;
+import com.grafian.bquran.prefs.Bookmark;
+import com.grafian.bquran.prefs.Config;
+import com.grafian.bquran.text.BitmapCache;
+import com.grafian.bquran.text.NativeRenderer;
 
 public class App extends Application {
 
@@ -27,6 +31,7 @@ public class App extends Application {
 	public static App app;
 
 	private int loadedFont = -1;
+	private int loadedFontSize = -1;
 
 	@Override
 	public void onCreate() {
@@ -38,7 +43,20 @@ public class App extends Application {
 		config.load(this);
 		bookmark.load(this);
 
+		forceOverflowMenu();
 		loadFont();
+	}
+
+	private void forceOverflowMenu() {
+		try {
+			ViewConfiguration config = ViewConfiguration.get(this);
+			Field menuKeyField = ViewConfiguration.class.getDeclaredField("sHasPermanentMenuKey");
+			if (menuKeyField != null) {
+				menuKeyField.setAccessible(true);
+				menuKeyField.setBoolean(config, false);
+			}
+		} catch (Exception ex) {
+		}
 	}
 
 	private String getQuranTextPath() {
@@ -50,7 +68,11 @@ public class App extends Application {
 	}
 
 	private String getQuranWordPath() {
-		return new File(getExternalFilesDir(null), "words_en").toString();
+		if (config.lang.startsWith("id.")) {
+			return new File(getExternalFilesDir(null), "words_id").toString();
+		} else {
+			return new File(getExternalFilesDir(null), "words_en").toString();
+		}
 	}
 
 	public boolean loadFont() {
@@ -71,12 +93,17 @@ public class App extends Application {
 			}
 			try {
 				NativeRenderer.loadFont(getAssets().open(name));
+				BitmapCache.getInstance().clearCache();
 				loadedFont = config.fontArabic;
 			} catch (IOException e) {
 				e.printStackTrace();
 				loadedFont = -1;
 				return false;
 			}
+		}
+		if (loadedFontSize != config.fontSizeArabic) {
+			loadedFontSize = config.fontSizeArabic;
+			BitmapCache.getInstance().clearCache();
 		}
 		return true;
 	}

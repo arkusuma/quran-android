@@ -1,4 +1,4 @@
-package com.grafian.quran;
+package com.grafian.bquran;
 
 import java.util.Date;
 
@@ -6,6 +6,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.ListFragment;
 import android.text.format.DateFormat;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,13 +17,12 @@ import android.widget.ListView;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
-import com.actionbarsherlock.app.SherlockListFragment;
-import com.grafian.quran.model.MetaData.Sura;
-import com.grafian.quran.prefs.Bookmark;
-import com.grafian.quran.prefs.Bookmark.Folder;
-import com.grafian.quran.prefs.Bookmark.Item;
+import com.grafian.bquran.model.MetaData.Sura;
+import com.grafian.bquran.prefs.Bookmark;
+import com.grafian.bquran.prefs.Bookmark.Folder;
+import com.grafian.bquran.prefs.Bookmark.Item;
 
-public class BookmarkFragment extends SherlockListFragment {
+public class BookmarkFragment extends ListFragment {
 
 	private BookmarkAdapter mAdapter;
 	private App app;

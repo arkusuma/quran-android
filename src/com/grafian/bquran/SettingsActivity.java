@@ -1,12 +1,13 @@
-package com.grafian.quran;
+package com.grafian.bquran;
 
+import android.annotation.TargetApi;
 import android.app.backup.BackupManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceActivity;
+import android.view.MenuItem;
 
-import com.actionbarsherlock.app.SherlockPreferenceActivity;
-import com.actionbarsherlock.view.MenuItem;
-
-public class SettingsActivity extends SherlockPreferenceActivity {
+public class SettingsActivity extends PreferenceActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -14,12 +15,15 @@ public class SettingsActivity extends SherlockPreferenceActivity {
 		super.onCreate(savedInstanceState);
 	}
 
+	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	@SuppressWarnings("deprecation")
 	@Override
 	protected void onPostCreate(Bundle savedInstanceState) {
 		super.onPostCreate(savedInstanceState);
 		addPreferencesFromResource(R.xml.settings);
-		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+		    getActionBar().setDisplayHomeAsUpEnabled(true);
+		}
 	}
 
 	@Override

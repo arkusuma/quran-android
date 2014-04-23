@@ -1,4 +1,4 @@
-package com.grafian.quran;
+package com.grafian.bquran;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -147,6 +147,14 @@ public class Extractor {
 				if (!dest.exists()) {
 					publishProgress(dest.getName());
 					if (!extractFromAsset(context, new String[] { "words_en1.png", "words_en2.png" }, dest, onProgress)) {
+						return false;
+					}
+				}
+
+				dest = new File(dir, "words_id");
+				if (!dest.exists()) {
+					publishProgress(dest.getName());
+					if (!extractFromAsset(context, new String[] { "words_id1.png", "words_id2.png" }, dest, onProgress)) {
 						return false;
 					}
 				}

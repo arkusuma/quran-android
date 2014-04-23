@@ -45,13 +45,10 @@ File.readlines(source).each do |line|
     end
     type = f.length
     sura, aya, text = f
-    if aya == '1'
-      if sura == '1'
-        bismillah = text
-      else
-        text.gsub!(bismillah, '')
-        text.strip!
-      end
+    if aya == '1' and sura != '1' and sura != 9
+      text.gsub!(/^([^ ]+ ){4}/, '')
+      puts sura
+      puts text
     end
     db.execute 'INSERT INTO quran VALUES (?,?,?)', sura, aya, xform(text, type)
   elsif f.length == 5

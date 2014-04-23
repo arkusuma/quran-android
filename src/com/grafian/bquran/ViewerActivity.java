@@ -1,4 +1,4 @@
-package com.grafian.quran;
+package com.grafian.bquran;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -7,11 +7,11 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.view.MenuItem;
 import android.view.WindowManager;
 
-import com.actionbarsherlock.view.MenuItem;
-import com.grafian.quran.model.Paging;
-import com.grafian.quran.model.MetaData.Mark;
+import com.grafian.bquran.model.MetaData.Mark;
+import com.grafian.bquran.model.Paging;
 
 public class ViewerActivity extends BaseActivity {
 
@@ -217,7 +217,10 @@ public class ViewerActivity extends BaseActivity {
 				case Paging.JUZ:
 					return "Juz " + (position + 1);
 				case Paging.HIZB:
-					return "Hizb " + (position + 1);
+					String parts[] = { "", "¼", "½", "¾" };
+					int hizb = (position / 4) + 1;
+					int part = position % 4;
+					return "Hizb " + hizb + parts[part];
 				}
 			}
 			return "";

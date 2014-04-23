@@ -1,19 +1,19 @@
-package com.grafian.quran;
+package com.grafian.bquran;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.ListFragment;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.actionbarsherlock.app.SherlockListFragment;
-import com.grafian.quran.model.Paging;
-import com.grafian.quran.model.MetaData.Mark;
-import com.grafian.quran.model.MetaData.Sura;
+import com.grafian.bquran.model.MetaData.Mark;
+import com.grafian.bquran.model.MetaData.Sura;
+import com.grafian.bquran.model.Paging;
 
-public class HizbFragment extends SherlockListFragment {
+public class HizbFragment extends ListFragment {
 
 	private App app;
 
@@ -39,7 +39,7 @@ public class HizbFragment extends SherlockListFragment {
 
 	private static class HizbRowHolder {
 		public TextView hizbNumber;
-		public TextView juzNumber;
+		public TextView partNumber;
 		public TextView suraName;
 		public TextView ayaNumber;
 	}
@@ -69,7 +69,7 @@ public class HizbFragment extends SherlockListFragment {
 
 				holder = new HizbRowHolder();
 				holder.hizbNumber = (TextView) convertView.findViewById(R.id.hizb_number);
-				holder.juzNumber = (TextView) convertView.findViewById(R.id.juz_number);
+				holder.partNumber = (TextView) convertView.findViewById(R.id.part_number);
 				holder.suraName = (TextView) convertView.findViewById(R.id.sura_name);
 				holder.ayaNumber = (TextView) convertView.findViewById(R.id.aya_number);
 				convertView.setTag(holder);
@@ -79,14 +79,14 @@ public class HizbFragment extends SherlockListFragment {
 
 			Mark mark = (Mark) getItem(position);
 			Sura sura = app.metaData.getSura(mark.sura);
-			String s[] = { "", "⅛", "¼", "⅜", "½", "⅝", "¾", "⅞" };
-			int juz = (position / 8) + 1;
-			int part = position % 8;
+			String parts[] = { "", "¼", "½", "¾" };
+			int hizb = (position / 4) + 1;
+			int part = position % 4;
 
-			holder.hizbNumber.setText("" + (position + 1));
+			holder.hizbNumber.setText("" + hizb);
+			holder.partNumber.setText(parts[part]);
 			holder.suraName.setText("" + sura.index + ". " + App.getSuraName(sura.index) + " :");
 			holder.ayaNumber.setText("" + mark.aya);
-			holder.juzNumber.setText("Juz " + juz + s[part]);
 
 			return convertView;
 		}

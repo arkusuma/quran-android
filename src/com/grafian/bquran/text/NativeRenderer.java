@@ -1,4 +1,4 @@
-package com.grafian.quran.text;
+package com.grafian.bquran.text;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
@@ -14,7 +14,7 @@ public class NativeRenderer {
 
 	public static native int[] getTextExtent(String text, int fontSize);
 
-	public static native void renderText(String text, int fontSize, Bitmap bitmap);
+	public static native Bitmap renderText(String text, int fontSize);
 
 	public static void loadFont(InputStream is) {
 		ByteArrayOutputStream os = new ByteArrayOutputStream();

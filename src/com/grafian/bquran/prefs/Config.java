@@ -1,4 +1,4 @@
-package com.grafian.quran.prefs;
+package com.grafian.bquran.prefs;
 
 import java.util.Locale;
 
@@ -54,7 +54,7 @@ public class Config {
 		rtl = true;
 		showTranslation = true;
 		wordByWord = false;
-		fullWidth = false;
+		fullWidth = true;
 		keepScreenOn = true;
 		enableAnalytics = true;
 		fontArabic = FONT_QALAM_MAJEED;

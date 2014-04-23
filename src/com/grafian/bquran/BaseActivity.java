@@ -1,5 +1,6 @@
-package com.grafian.quran;
+package com.grafian.bquran;
 
+import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -8,15 +9,15 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
 import com.google.analytics.tracking.android.EasyTracker;
 
-public class BaseActivity extends SherlockFragmentActivity {
+public class BaseActivity extends ActionBarActivity {
 
 	private int mTheme;
 	private boolean mAnalyticsStarted = false;
@@ -83,7 +84,7 @@ public class BaseActivity extends SherlockFragmentActivity {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		getSupportMenuInflater().inflate(R.menu.base, menu);
+		getMenuInflater().inflate(R.menu.base, menu);
 		return true;
 	}
 
@@ -101,8 +102,9 @@ public class BaseActivity extends SherlockFragmentActivity {
 		return super.onOptionsItemSelected(item);
 	}
 
+	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	private void restart() {
-		if (Build.VERSION.SDK_INT >= 11) {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 			recreate();
 		} else {
 			finish();
@@ -120,8 +122,7 @@ public class BaseActivity extends SherlockFragmentActivity {
 		}
 		new AlertDialog.Builder(this)
 				.setCustomTitle(about)
-				.setPositiveButton(R.string.visit_web, onAboutDialog)
-				.setNeutralButton(R.string.more_apps, onAboutDialog)
+				.setPositiveButton(R.string.more_apps, onAboutDialog)
 				.setNegativeButton(R.string.okay, onAboutDialog)
 				.setCancelable(true)
 				.show();
@@ -132,11 +133,7 @@ public class BaseActivity extends SherlockFragmentActivity {
 			Intent intent;
 			switch (which) {
 			case DialogInterface.BUTTON_POSITIVE:
-				intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://grafian.com"));
-				startActivity(intent);
-				break;
-			case DialogInterface.BUTTON_NEUTRAL:
-				intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://play.google.com/store/search?q=pub:Grafian%20Software%20Crafter"));
+				intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://play.google.com/store/search?q=pub:Grafian"));
 				startActivity(intent);
 				break;
 			}

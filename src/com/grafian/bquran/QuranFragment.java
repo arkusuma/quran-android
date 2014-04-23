@@ -1,15 +1,22 @@
-package com.grafian.quran;
+package com.grafian.bquran;
 
+import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.ListFragment;
+import android.support.v7.app.ActionBar;
 import android.text.ClipboardManager;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
@@ -22,22 +29,17 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockListFragment;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
-import com.grafian.quran.layout.FlowLayout;
-import com.grafian.quran.model.MetaData.Mark;
-import com.grafian.quran.model.MetaData.Sura;
-import com.grafian.quran.model.Paging;
-import com.grafian.quran.prefs.Bookmark;
-import com.grafian.quran.prefs.Bookmark.Folder;
-import com.grafian.quran.prefs.Bookmark.Item;
-import com.grafian.quran.prefs.Config;
+import com.grafian.bquran.layout.FlowLayout;
+import com.grafian.bquran.model.MetaData.Mark;
+import com.grafian.bquran.model.MetaData.Sura;
+import com.grafian.bquran.model.Paging;
+import com.grafian.bquran.prefs.Bookmark;
+import com.grafian.bquran.prefs.Bookmark.Folder;
+import com.grafian.bquran.prefs.Bookmark.Item;
+import com.grafian.bquran.prefs.Config;
 
 @SuppressWarnings("deprecation")
-public class QuranFragment extends SherlockListFragment {
+public class QuranFragment extends ListFragment {
 	final public static String PAGING = "PAGING";
 	final public static String SURA = "SURA";
 	final public static String AYA = "AYA";
@@ -51,6 +53,7 @@ public class QuranFragment extends SherlockListFragment {
 	private int mSura;
 	private int mAya;
 
+	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
@@ -71,6 +74,9 @@ public class QuranFragment extends SherlockListFragment {
 		getListView().setFastScrollEnabled(true);
 		getListView().setSelection(findPosition(mSura, mAya));
 		getListView().setOnItemLongClickListener(onItemLongClick);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+			getListView().setVerticalScrollbarPosition(View.SCROLLBAR_POSITION_LEFT);
+		}
 
 		setHasOptionsMenu(true);
 	}
@@ -287,14 +293,16 @@ public class QuranFragment extends SherlockListFragment {
 		int actionBarTitle = Resources.getSystem().getIdentifier("action_bar_subtitle", "id", "android");
 		TextView tv = (TextView) getActivity().getWindow().findViewById(actionBarTitle);
 		if (tv == null) {
-			tv = (TextView) getActivity().getWindow().findViewById(R.id.abs__action_bar_subtitle);
+			tv = (TextView) getActivity().getWindow().findViewById(R.id.action_bar_subtitle);
 		}
 		if (tv != null) {
 			tv.setMinEms(title.length());
 		}
 
 		ActionBar ab = ((ViewerActivity) getActivity()).getSupportActionBar();
-		ab.setSubtitle(title);
+		if (!title.equals(ab.getSubtitle())) {
+			ab.setSubtitle(title);
+		}
 	}
 
 	private String intToArabic(int n) {
@@ -442,31 +450,42 @@ public class QuranFragment extends SherlockListFragment {
 
 				if (App.app.config.wordByWord) {
 					holder.arabic.setVisibility(View.GONE);
-					holder.wordByWord.setVisibility(View.GONE);
-					holder.wordByWord.removeAllViews();
-					final String[][] words = App.app.quranWord.get(mark.sura, mark.aya);
-					final LayoutInflater inflater = getActivity().getLayoutInflater();
-					for (int i = 0; i < words.length; i++) {
-						final View view = inflater.inflate(R.layout.word_by_word, null);
-						final TextView arabic = (TextView) view.findViewById(R.id.arabic);
-						final TextView translation = (TextView) view.findViewById(R.id.translation);
-						arabic.setText(fixArabic(words[i][0]));
+					holder.wordByWord.setVisibility(View.VISIBLE);
+					String[][] words = App.app.quranWord.get(mark.sura,
+							mark.aya);
+
+					// Make sure we have sufficient childs
+					LayoutInflater inflater = getActivity().getLayoutInflater();
+					for (int i = holder.wordByWord.getChildCount(); i < words.length + 1; i++) {
+						View view = inflater.inflate(R.layout.word_by_word, null);
+						TextView arabic = (TextView) view.findViewById(R.id.arabic);
+						TextView translation = (TextView) view.findViewById(R.id.translation);
 						arabic.setTextSize(TypedValue.COMPLEX_UNIT_SP, app.config.fontSizeArabic);
-						translation.setText(words[i][1]);
 						translation.setTextSize(TypedValue.COMPLEX_UNIT_SP, app.config.fontSizeTranslation - 4);
+						view.setVisibility(View.GONE);
 						holder.wordByWord.addView(view);
+					}
+
+					for (int i = 0; i < words.length; i++) {
+						View view = holder.wordByWord.getChildAt(i);
+						TextView arabic = (TextView) view.findViewById(R.id.arabic);
+						TextView translation = (TextView) view.findViewById(R.id.translation);
+						arabic.setText(fixArabic(words[i][0]));
+						translation.setText(words[i][1]);
+						view.setVisibility(View.VISIBLE);
 					}
 					if (app.config.fullWidth) {
-						final View view = inflater.inflate(R.layout.word_by_word, null);
-						final TextView arabic = (TextView) view.findViewById(R.id.arabic);
-						final TextView translation = (TextView) view.findViewById(R.id.translation);
+						View view = holder.wordByWord.getChildAt(words.length);
+						TextView arabic = (TextView) view.findViewById(R.id.arabic);
+						TextView translation = (TextView) view.findViewById(R.id.translation);
 						arabic.setText("\uFD3F" + intToArabic(mark.aya) + "\uFD3E");
-						arabic.setTextSize(TypedValue.COMPLEX_UNIT_SP, app.config.fontSizeArabic);
-						translation.setText(" ");
-						translation.setTextSize(TypedValue.COMPLEX_UNIT_SP, app.config.fontSizeTranslation - 4);
-						holder.wordByWord.addView(view);
+						translation.setText("(" + Integer.toString(mark.aya) + ")");
+						view.setVisibility(View.VISIBLE);
 					}
-					holder.wordByWord.setVisibility(View.VISIBLE);
+					int len = app.config.fullWidth ? words.length + 1 : words.length;
+					for (int i = len; i < holder.wordByWord.getChildCount(); i++) {
+						holder.wordByWord.getChildAt(i).setVisibility(View.GONE);
+					}
 				} else {
 					String arabic = fixArabic(app.quranText.get(mark.sura, mark.aya));
 					if (app.config.fullWidth) {
@@ -507,8 +526,8 @@ public class QuranFragment extends SherlockListFragment {
 						String parts[] = { "", "⅛", "¼", "⅜", "½", "⅝", "¾", "⅞" };
 						hizbNumber--;
 						int juz = (hizbNumber / 8) + 1;
-						hizbNumber %= 8;
-						holder.juzNumber.setText("Juz\n" + juz + parts[hizbNumber]);
+						int part = hizbNumber % 8;
+						holder.juzNumber.setText("Juz\n" + juz + parts[part]);
 						holder.juzNumber.setVisibility(View.VISIBLE);
 					} else {
 						holder.juzNumber.setVisibility(View.INVISIBLE);
