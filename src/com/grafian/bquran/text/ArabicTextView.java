@@ -36,18 +36,18 @@ public class ArabicTextView extends TextView {
 	private int mFontAscend;
 	private int mTotalWidth;
 	private int mTotalHeight;
-	private BitmapCache mCache;
+	private FontCache mCache;
 
 	public ArabicTextView(Context context) {
 		super(context);
 		setGravity(Gravity.RIGHT);
-		mCache = BitmapCache.getInstance();
+		mCache = FontCache.getInstance();
 	}
 
 	public ArabicTextView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		setGravity(Gravity.RIGHT);
-		mCache = BitmapCache.getInstance();
+		mCache = FontCache.getInstance();
 	}
 
 	private String joinWords(StringBuffer sb, int start, int end) {
@@ -61,6 +61,26 @@ public class ArabicTextView extends TextView {
 		return sb.toString();
 	}
 
+	private Bitmap getTextBitmapCached(String text, int size) {
+		Bitmap bitmap = mCache.getBitmap(text);
+		if (bitmap == null) {
+			bitmap = NativeRenderer.renderText(text, size);
+			mCache.putBitmap(text, bitmap);
+		}
+		return bitmap;
+	}
+
+	private int[] getTextExtentCached(String text, int size) {
+		int[] extent = mCache.getExtent(text);
+		if (extent == null) {
+			extent = NativeRenderer.getTextExtent(text, size);
+			mCache.putExtent(text, extent);
+		}
+		return extent;
+	}
+
+
+
 	private int consumeLine(int start, int width) {
 		int realStart = start;
 		int end = mWords.length - 1;
@@ -68,7 +88,7 @@ public class ArabicTextView extends TextView {
 		// Scan full words first
 		String text = joinWords(mBuffer, start, end);
 		int textSize = (int) getTextSize();
-		int goodExt[] = NativeRenderer.getTextExtent(text, textSize);
+		int goodExt[] = getTextExtentCached(text, textSize);
 		if (width < goodExt[0] && start < end) {
 			int badWidth = goodExt[0];
 			int goodWidth = 0;
@@ -79,7 +99,7 @@ public class ArabicTextView extends TextView {
 				mid += start + 1;
 
 				text = joinWords(mBuffer, realStart, mid);
-				int[] ext = NativeRenderer.getTextExtent(text, textSize);
+				int[] ext = getTextExtentCached(text, textSize);
 				if (width < ext[0]) {
 					end = mid - 1;
 					badWidth = ext[0];
@@ -176,7 +196,7 @@ public class ArabicTextView extends TextView {
 		int height;
 
 		String text = joinWords(mBuffer, 0, mWords.length - 1);
-		int[] ext = NativeRenderer.getTextExtent(text, (int) getTextSize());
+		int[] ext = getTextExtentCached(text, (int) getTextSize());
 		mTotalWidth = ext[0];
 		mFontHeight = ext[3];
 		mFontAscend = ext[4];
@@ -221,6 +241,7 @@ public class ArabicTextView extends TextView {
 		};
 		mPaint.setColorFilter(new ColorMatrixColorFilter(matrix));
 		Rect clip = canvas.getClipBounds();
+		int size = (int) getTextSize();
 		for (Line line : mLayout) {
 			int x = getCompoundPaddingLeft();
 			int gravity = getGravity() & Gravity.HORIZONTAL_GRAVITY_MASK;
@@ -243,11 +264,7 @@ public class ArabicTextView extends TextView {
 			}
 
 			String text = joinWords(mBuffer, line.start, line.end);
-			Bitmap bitmap = mCache.getBitmap(text);
-			if (bitmap == null) {
-				bitmap = NativeRenderer.renderText(text, (int) getTextSize());
-				mCache.addBitmap(text, bitmap);
-			}
+			Bitmap bitmap = getTextBitmapCached(text, size);
 
 			Rect src = new Rect(0, 0, line.width, line.height);
 			Rect dst = new Rect(x, y, x + line.width, y + line.height);

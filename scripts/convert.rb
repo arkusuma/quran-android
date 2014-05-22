@@ -45,7 +45,7 @@ File.readlines(source).each do |line|
     end
     type = f.length
     sura, aya, text = f
-    if aya == '1' and sura != '1' and sura != 9
+    if aya == '1' and sura != '1' and sura != '9'
       text.gsub!(/^([^ ]+ ){4}/, '')
       puts sura
       puts text

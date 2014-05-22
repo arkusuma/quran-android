@@ -13,7 +13,7 @@ import com.grafian.bquran.model.QuranText;
 import com.grafian.bquran.model.QuranWord;
 import com.grafian.bquran.prefs.Bookmark;
 import com.grafian.bquran.prefs.Config;
-import com.grafian.bquran.text.BitmapCache;
+import com.grafian.bquran.text.FontCache;
 import com.grafian.bquran.text.NativeRenderer;
 
 public class App extends Application {
@@ -75,35 +75,34 @@ public class App extends Application {
 		}
 	}
 
+	private String getFontName(int fontCode) {
+		switch (fontCode) {
+		case Config.FONT_HAFS:
+			return "hafs.otf";
+		case Config.FONT_NOOREHUDA:
+			return "noorehuda.ttf";
+		case Config.FONT_ME_QURAN:
+			return "me_quran.ttf";
+		case Config.FONT_QALAM_MAJEED:
+		default:
+			return "qalam.ttf";
+		}
+	}
+
 	public boolean loadFont() {
-		if (loadedFont != config.fontArabic) {
-			String name;
-			switch (config.fontArabic) {
-			case Config.FONT_NASKH:
-				name = "naskh.otf";
-				break;
-			case Config.FONT_NOOREHUDA:
-				name = "noorehuda.ttf";
-				break;
-			case Config.FONT_ME_QURAN:
-				name = "me_quran.ttf";
-				break;
-			default:
-				name = "qalam.ttf";
-			}
+		if (loadedFont != config.fontArabic || loadedFontSize != config.fontSizeArabic) {
+			String name = getFontName(config.fontArabic);
 			try {
 				NativeRenderer.loadFont(getAssets().open(name));
-				BitmapCache.getInstance().clearCache();
+				FontCache.getInstance().clearCache();
 				loadedFont = config.fontArabic;
+				loadedFontSize = config.fontSizeArabic;
 			} catch (IOException e) {
 				e.printStackTrace();
 				loadedFont = -1;
+				loadedFontSize = -1;
 				return false;
 			}
-		}
-		if (loadedFontSize != config.fontSizeArabic) {
-			loadedFontSize = config.fontSizeArabic;
-			BitmapCache.getInstance().clearCache();
 		}
 		return true;
 	}

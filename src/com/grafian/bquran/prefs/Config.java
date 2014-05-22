@@ -10,7 +10,7 @@ import android.preference.PreferenceManager;
 public class Config {
 
 	final public static int FONT_QALAM_MAJEED = 0;
-	final public static int FONT_NASKH = 1;
+	final public static int FONT_HAFS = 1;
 	final public static int FONT_NOOREHUDA = 2;
 	final public static int FONT_ME_QURAN = 3;
 	final public static int FONT_MAX = 3;

@@ -233,6 +233,7 @@ public class QuranFragment extends ListFragment {
 		};
 		new AlertDialog.Builder(getActivity())
 				.setCancelable(true)
+				.setTitle(folder.getName())
 				.setMessage(R.string.replace_confirm)
 				.setPositiveButton(R.string.replace, listener)
 				.setNegativeButton(R.string.cancel, null)
@@ -316,20 +317,26 @@ public class QuranFragment extends ListFragment {
 			case Config.FONT_QALAM_MAJEED:
 				ch += '\u06F0' - '0';
 				break;
-			default:
+			case Config.FONT_HAFS:
+			case Config.FONT_ME_QURAN:
 				ch += '\u0660' - '0';
+				break;
 			}
 			sb.setCharAt(i, ch);
 		}
-		return sb.reverse().toString();
+		if (app.config.fontArabic != Config.FONT_HAFS) {
+			sb.reverse();
+		}
+		return sb.toString();
 	}
 
 	private String fixArabic(String s) {
-		switch (app.config.fontArabic) {
-		case Config.FONT_QALAM_MAJEED:
-		case Config.FONT_NASKH:
-			// (Small Waw | Small Yeh) + Maddah
-			s = s.replaceAll("[\u06E5\u06E6]\u0653?", "");
+		if (app.config.fontArabic == Config.FONT_QALAM_MAJEED) {
+			// Small Waw => Regular Waw
+			s = s.replaceAll("\u06E5", "\u200C\u0648");
+
+			// Small Yeh => High Small Yeh
+			s = s.replaceAll("\u06E6", "\u06E7");
 		}
 
 		// Add sukun on mem | nun
@@ -446,23 +453,15 @@ public class QuranFragment extends ListFragment {
 					holder = (AyaRowHolder) convertView.getTag();
 				}
 
-				String ayaNumber = "(" + mark.aya + ")";
-
 				if (App.app.config.wordByWord) {
 					holder.arabic.setVisibility(View.GONE);
 					holder.wordByWord.setVisibility(View.VISIBLE);
-					String[][] words = App.app.quranWord.get(mark.sura,
-							mark.aya);
+					String[][] words = App.app.quranWord.get(mark.sura, mark.aya);
 
 					// Make sure we have sufficient childs
 					LayoutInflater inflater = getActivity().getLayoutInflater();
-					for (int i = holder.wordByWord.getChildCount(); i < words.length + 1; i++) {
+					while (holder.wordByWord.getChildCount() < words.length + 1) {
 						View view = inflater.inflate(R.layout.word_by_word, null);
-						TextView arabic = (TextView) view.findViewById(R.id.arabic);
-						TextView translation = (TextView) view.findViewById(R.id.translation);
-						arabic.setTextSize(TypedValue.COMPLEX_UNIT_SP, app.config.fontSizeArabic);
-						translation.setTextSize(TypedValue.COMPLEX_UNIT_SP, app.config.fontSizeTranslation - 4);
-						view.setVisibility(View.GONE);
 						holder.wordByWord.addView(view);
 					}
 
@@ -472,16 +471,22 @@ public class QuranFragment extends ListFragment {
 						TextView translation = (TextView) view.findViewById(R.id.translation);
 						arabic.setText(fixArabic(words[i][0]));
 						translation.setText(words[i][1]);
+						arabic.setTextSize(TypedValue.COMPLEX_UNIT_SP, app.config.fontSizeArabic);
+						translation.setTextSize(TypedValue.COMPLEX_UNIT_SP, app.config.fontSizeTranslation - 4);
 						view.setVisibility(View.VISIBLE);
 					}
+
 					if (app.config.fullWidth) {
 						View view = holder.wordByWord.getChildAt(words.length);
 						TextView arabic = (TextView) view.findViewById(R.id.arabic);
 						TextView translation = (TextView) view.findViewById(R.id.translation);
 						arabic.setText("\uFD3F" + intToArabic(mark.aya) + "\uFD3E");
-						translation.setText("(" + Integer.toString(mark.aya) + ")");
+						translation.setText(Integer.toString(mark.aya));
+						arabic.setTextSize(TypedValue.COMPLEX_UNIT_SP, app.config.fontSizeArabic);
+						translation.setTextSize(TypedValue.COMPLEX_UNIT_SP, app.config.fontSizeTranslation - 4);
 						view.setVisibility(View.VISIBLE);
 					}
+
 					int len = app.config.fullWidth ? words.length + 1 : words.length;
 					for (int i = len; i < holder.wordByWord.getChildCount(); i++) {
 						holder.wordByWord.getChildAt(i).setVisibility(View.GONE);
@@ -498,13 +503,17 @@ public class QuranFragment extends ListFragment {
 					holder.arabic.setGravity(Gravity.RIGHT);
 				}
 
-				String translation = app.translation.get(mark.sura, mark.aya);
-				if (app.config.fullWidth) {
-					translation = ayaNumber + " " + translation;
+				if (app.config.showTranslation) {
+					String translation = app.translation.get(mark.sura, mark.aya);
+					if (app.config.fullWidth) {
+						translation = "(" + mark.aya + ") " + translation;
+					}
+					holder.translation.setText(translation);
+					holder.translation.setTextSize(TypedValue.COMPLEX_UNIT_SP, app.config.fontSizeTranslation);
+					holder.translation.setVisibility(View.VISIBLE);
+				} else {
+					holder.translation.setVisibility(View.GONE);
 				}
-				holder.translation.setText(translation);
-				holder.translation.setTextSize(TypedValue.COMPLEX_UNIT_SP, app.config.fontSizeTranslation);
-				holder.translation.setVisibility(app.config.showTranslation ? View.VISIBLE : View.GONE);
 
 				int pageNumber = app.metaData.find(Paging.PAGE, mark.sura, mark.aya);
 				Mark page = app.metaData.getMarkStart(Paging.PAGE, pageNumber);
