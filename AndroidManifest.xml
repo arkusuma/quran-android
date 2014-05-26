@@ -2,8 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.grafian.bquran"
     android:installLocation="auto"
-    android:versionCode="20"
-    android:versionName="1.6.3" >
+    android:versionCode="21"
+    android:versionName="1.6.4" >
 
     <uses-sdk
         android:minSdkVersion="8"

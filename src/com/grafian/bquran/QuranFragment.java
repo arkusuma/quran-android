@@ -480,7 +480,12 @@ public class QuranFragment extends ListFragment {
 						View view = holder.wordByWord.getChildAt(words.length);
 						TextView arabic = (TextView) view.findViewById(R.id.arabic);
 						TextView translation = (TextView) view.findViewById(R.id.translation);
-						arabic.setText("\uFD3F" + intToArabic(mark.aya) + "\uFD3E");
+						if (app.config.fontArabic == Config.FONT_HAFS) {
+							// The "((" is intentional, to fix centering problem with Hafs font
+							arabic.setText("((" + intToArabic(mark.aya) + ")");
+						} else {
+							arabic.setText("\uFD3F" + intToArabic(mark.aya) + "\uFD3E");
+						}
 						translation.setText(Integer.toString(mark.aya));
 						arabic.setTextSize(TypedValue.COMPLEX_UNIT_SP, app.config.fontSizeArabic);
 						translation.setTextSize(TypedValue.COMPLEX_UNIT_SP, app.config.fontSizeTranslation - 4);
