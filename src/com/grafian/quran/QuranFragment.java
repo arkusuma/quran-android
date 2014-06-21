@@ -1,4 +1,4 @@
-package com.grafian.bquran;
+package com.grafian.quran;
 
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
@@ -29,14 +29,15 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.grafian.bquran.layout.FlowLayout;
-import com.grafian.bquran.model.MetaData.Mark;
-import com.grafian.bquran.model.MetaData.Sura;
-import com.grafian.bquran.model.Paging;
-import com.grafian.bquran.prefs.Bookmark;
-import com.grafian.bquran.prefs.Bookmark.Folder;
-import com.grafian.bquran.prefs.Bookmark.Item;
-import com.grafian.bquran.prefs.Config;
+import com.grafian.quran.R;
+import com.grafian.quran.layout.FlowLayout;
+import com.grafian.quran.model.Paging;
+import com.grafian.quran.model.MetaData.Mark;
+import com.grafian.quran.model.MetaData.Sura;
+import com.grafian.quran.prefs.Bookmark;
+import com.grafian.quran.prefs.Config;
+import com.grafian.quran.prefs.Bookmark.Folder;
+import com.grafian.quran.prefs.Bookmark.Item;
 
 @SuppressWarnings("deprecation")
 public class QuranFragment extends ListFragment {

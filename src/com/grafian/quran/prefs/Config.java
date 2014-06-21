@@ -1,4 +1,4 @@
-package com.grafian.bquran.prefs;
+package com.grafian.quran.prefs;
 
 import java.util.Locale;
 

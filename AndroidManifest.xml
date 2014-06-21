@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.grafian.bquran"
+    package="com.grafian.quran"
     android:installLocation="auto"
     android:versionCode="21"
-    android:versionName="1.6.4" >
+    android:versionName="1.7.0" >
 
     <uses-sdk
         android:minSdkVersion="8"

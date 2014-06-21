@@ -1,4 +1,4 @@
-package com.grafian.bquran;
+package com.grafian.quran;
 
 import java.io.File;
 import java.io.IOException;
@@ -7,14 +7,14 @@ import java.lang.reflect.Field;
 import android.app.Application;
 import android.view.ViewConfiguration;
 
-import com.grafian.bquran.R;
-import com.grafian.bquran.model.MetaData;
-import com.grafian.bquran.model.QuranText;
-import com.grafian.bquran.model.QuranWord;
-import com.grafian.bquran.prefs.Bookmark;
-import com.grafian.bquran.prefs.Config;
-import com.grafian.bquran.text.FontCache;
-import com.grafian.bquran.text.NativeRenderer;
+import com.grafian.quran.R;
+import com.grafian.quran.model.MetaData;
+import com.grafian.quran.model.QuranText;
+import com.grafian.quran.model.QuranWord;
+import com.grafian.quran.prefs.Bookmark;
+import com.grafian.quran.prefs.Config;
+import com.grafian.quran.text.FontCache;
+import com.grafian.quran.text.NativeRenderer;
 
 public class App extends Application {
 

@@ -1,4 +1,4 @@
-package com.grafian.bquran;
+package com.grafian.quran;
 
 import java.util.Date;
 
@@ -17,10 +17,11 @@ import android.widget.ListView;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
-import com.grafian.bquran.model.MetaData.Sura;
-import com.grafian.bquran.prefs.Bookmark;
-import com.grafian.bquran.prefs.Bookmark.Folder;
-import com.grafian.bquran.prefs.Bookmark.Item;
+import com.grafian.quran.R;
+import com.grafian.quran.model.MetaData.Sura;
+import com.grafian.quran.prefs.Bookmark;
+import com.grafian.quran.prefs.Bookmark.Folder;
+import com.grafian.quran.prefs.Bookmark.Item;
 
 public class BookmarkFragment extends ListFragment {
 

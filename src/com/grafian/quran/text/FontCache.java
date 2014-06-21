@@ -1,4 +1,4 @@
-package com.grafian.bquran.text;
+package com.grafian.quran.text;
 
 import android.graphics.Bitmap;
 import android.support.v4.util.LruCache;

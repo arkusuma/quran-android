@@ -1,4 +1,4 @@
-package com.grafian.bquran.model;
+package com.grafian.quran.model;
 
 import java.io.File;
 
@@ -7,7 +7,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 
-public class QuranWord {
+public class QuranText {
 
 	private SQLiteDatabase mDB;
 	private String mPath;
@@ -38,29 +38,23 @@ public class QuranWord {
 		return true;
 	}
 
-	public String[][] get(int sura, int aya) {
+	public String get(int sura, int aya) {
 		if (mDB == null) {
-			return new String[][] {};
+			return "";
 		}
 
 		try {
-			Cursor cursor = mDB.query("quran", new String[] { "ar", "tr" },
+			Cursor cursor = mDB.query("quran", new String[] { "text" },
 					"sura=? and aya=?", new String[] { "" + sura, "" + aya },
-					null, null, "word");
-			final int rows = cursor.getCount();
-			String[][] result = new String[rows][];
-			for (int i = 0; i < rows; i++) {
-				cursor.moveToNext();
-				String ar = cursor.getString(0);
-				String tr = cursor.getString(1);
-				result[i] = new String[] { ar, tr };
-			}
+					null, null, null);
+			cursor.moveToFirst();
+			String s = cursor.getString(0);
 			cursor.close();
-			return result;
+			return s;
 		} catch (SQLiteException e) {
 			e.printStackTrace();
 			close();
-			return new String[][] {};
+			return "";
 		}
 	}
 

@@ -44,13 +44,13 @@
         android:orientation="vertical"
         android:padding="8dp" >
 
-        <com.grafian.bquran.text.ArabicTextView
+        <com.grafian.quran.text.ArabicTextView
             android:id="@+id/arabic"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="20sp" />
 
-        <com.grafian.bquran.layout.FlowLayout
+        <com.grafian.quran.layout.FlowLayout
             android:id="@+id/word_by_word"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

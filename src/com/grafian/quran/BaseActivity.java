@@ -1,4 +1,4 @@
-package com.grafian.bquran;
+package com.grafian.quran;
 
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
@@ -14,8 +14,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
-
 import com.google.analytics.tracking.android.EasyTracker;
+import com.grafian.quran.R;
 
 public class BaseActivity extends ActionBarActivity {
 

@@ -1,4 +1,4 @@
-package com.grafian.bquran;
+package com.grafian.quran;
 
 import android.annotation.TargetApi;
 import android.app.backup.BackupManager;
@@ -6,6 +6,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import android.view.MenuItem;
+import com.grafian.quran.R;
 
 public class SettingsActivity extends PreferenceActivity {
 
@@ -22,7 +23,9 @@ public class SettingsActivity extends PreferenceActivity {
 		super.onPostCreate(savedInstanceState);
 		addPreferencesFromResource(R.xml.settings);
 		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-		    getActionBar().setDisplayHomeAsUpEnabled(true);
+			if (getActionBar() != null) {
+				getActionBar().setDisplayHomeAsUpEnabled(true);
+			}
 		}
 	}
 

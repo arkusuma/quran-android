@@ -1,4 +1,4 @@
-package com.grafian.bquran;
+package com.grafian.quran;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,11 +9,12 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.grafian.bquran.model.MetaData.Mark;
-import com.grafian.bquran.model.MetaData.Sura;
-import com.grafian.bquran.model.Paging;
+import com.grafian.quran.R;
+import com.grafian.quran.model.Paging;
+import com.grafian.quran.model.MetaData.Mark;
+import com.grafian.quran.model.MetaData.Sura;
 
-public class PageFragment extends ListFragment {
+public class JuzFragment extends ListFragment {
 
 	private App app;
 
@@ -23,36 +24,36 @@ public class PageFragment extends ListFragment {
 
 		app = (App) getActivity().getApplication();
 
-		setListAdapter(new PageAdapter());
+		setListAdapter(new JuzAdapter());
 		getListView().setFastScrollEnabled(true);
 	}
 
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
 		Intent intent = new Intent(getActivity(), ViewerActivity.class);
-		Mark mark = app.metaData.getMarkStart(Paging.PAGE, position + 1);
-		intent.putExtra(QuranFragment.PAGING, Paging.PAGE);
+		Mark mark = app.metaData.getMarkStart(Paging.JUZ, position + 1);
+		intent.putExtra(QuranFragment.PAGING, Paging.JUZ);
 		intent.putExtra(QuranFragment.SURA, mark.sura);
 		intent.putExtra(QuranFragment.AYA, mark.aya);
 		startActivity(intent);
 	}
 
-	private static class PageRowHolder {
-		public TextView pageNumber;
+	private static class JuzRowHolder {
+		public TextView juzNumber;
 		public TextView suraName;
 		public TextView ayaNumber;
 	}
 
-	class PageAdapter extends BaseAdapter {
+	class JuzAdapter extends BaseAdapter {
 
 		@Override
 		public int getCount() {
-			return app.metaData.getMarkCount(Paging.PAGE);
+			return app.metaData.getMarkCount(Paging.JUZ);
 		}
 
 		@Override
 		public Object getItem(int position) {
-			return app.metaData.getMarkStart(Paging.PAGE, position + 1);
+			return app.metaData.getMarkStart(Paging.JUZ, position + 1);
 		}
 
 		@Override
@@ -62,23 +63,23 @@ public class PageFragment extends ListFragment {
 
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
-			PageRowHolder holder;
+			JuzRowHolder holder;
 			if (convertView == null) {
-				convertView = getActivity().getLayoutInflater().inflate(R.layout.main_page_row, null);
+				convertView = getActivity().getLayoutInflater().inflate(R.layout.main_juz_row, null);
 
-				holder = new PageRowHolder();
-				holder.pageNumber = (TextView) convertView.findViewById(R.id.page_number);
+				holder = new JuzRowHolder();
+				holder.juzNumber = (TextView) convertView.findViewById(R.id.juz_number);
 				holder.suraName = (TextView) convertView.findViewById(R.id.sura_name);
 				holder.ayaNumber = (TextView) convertView.findViewById(R.id.aya_number);
 				convertView.setTag(holder);
 			} else {
-				holder = (PageRowHolder) convertView.getTag();
+				holder = (JuzRowHolder) convertView.getTag();
 			}
 
 			Mark mark = (Mark) getItem(position);
 			Sura sura = app.metaData.getSura(mark.sura);
 
-			holder.pageNumber.setText("" + (position + 1));
+			holder.juzNumber.setText("" + (position + 1));
 			holder.suraName.setText("" + sura.index + ". " + App.getSuraName(sura.index) + " :");
 			holder.ayaNumber.setText("" + mark.aya);
 

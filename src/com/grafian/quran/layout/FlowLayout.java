@@ -1,4 +1,4 @@
-package com.grafian.bquran.layout;
+package com.grafian.quran.layout;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -6,7 +6,7 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.grafian.bquran.R;
+import com.grafian.quran.R;
 
 public class FlowLayout extends ViewGroup {
 	public static final int HORIZONTAL = 0;

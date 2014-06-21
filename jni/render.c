@@ -242,7 +242,7 @@ static void cleanup(void)
 
 #define UNUSED(x) (void)(x)
 
-JNIEXPORT void JNICALL Java_com_grafian_bquran_text_NativeRenderer_loadFont
+JNIEXPORT void JNICALL Java_com_grafian_quran_text_NativeRenderer_loadFont
   (JNIEnv *env, jclass cls, jbyteArray blob)
 {
 	UNUSED(cls);
@@ -281,7 +281,7 @@ static jintArray createExtent(JNIEnv *env, const FT_BBox *bbox)
 	return result;
 }
 
-JNIEXPORT jintArray JNICALL Java_com_grafian_bquran_text_NativeRenderer_getTextExtent
+JNIEXPORT jintArray JNICALL Java_com_grafian_quran_text_NativeRenderer_getTextExtent
   (JNIEnv *env, jclass cls, jstring text, jint font_size)
 {
 	const jchar *ctext;
@@ -304,7 +304,7 @@ JNIEXPORT jintArray JNICALL Java_com_grafian_bquran_text_NativeRenderer_getTextE
 	return createExtent(env, &bbox);
 }
 
-JNIEXPORT jobject JNICALL Java_com_grafian_bquran_text_NativeRenderer_renderText
+JNIEXPORT jobject JNICALL Java_com_grafian_quran_text_NativeRenderer_renderText
   (JNIEnv *env, jclass cls, jstring text, jint font_size)
 {
 	AndroidBitmapInfo abi;

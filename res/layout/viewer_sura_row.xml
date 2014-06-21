@@ -31,7 +31,7 @@
             android:gravity="center"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
-        <com.grafian.bquran.text.ArabicTextView
+        <com.grafian.quran.text.ArabicTextView
             android:id="@+id/bismillah"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

@@ -1,4 +1,4 @@
-package com.grafian.bquran.text;
+package com.grafian.quran.text;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;

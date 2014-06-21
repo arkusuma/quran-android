@@ -1,4 +1,4 @@
-package com.grafian.bquran;
+package com.grafian.quran;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,9 +9,10 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.grafian.bquran.model.MetaData.Mark;
-import com.grafian.bquran.model.MetaData.Sura;
-import com.grafian.bquran.model.Paging;
+import com.grafian.quran.R;
+import com.grafian.quran.model.Paging;
+import com.grafian.quran.model.MetaData.Mark;
+import com.grafian.quran.model.MetaData.Sura;
 
 public class HizbFragment extends ListFragment {
 

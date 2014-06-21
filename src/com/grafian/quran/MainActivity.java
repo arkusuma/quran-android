@@ -1,7 +1,7 @@
-package com.grafian.bquran;
+package com.grafian.quran;
 
-import com.grafian.bquran.R;
-import com.grafian.bquran.model.Paging;
+import com.grafian.quran.R;
+import com.grafian.quran.model.Paging;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;

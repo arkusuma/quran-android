@@ -1,4 +1,4 @@
-package com.grafian.bquran;
+package com.grafian.quran;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,8 +10,9 @@ import android.support.v4.view.ViewPager;
 import android.view.MenuItem;
 import android.view.WindowManager;
 
-import com.grafian.bquran.model.MetaData.Mark;
-import com.grafian.bquran.model.Paging;
+import com.grafian.quran.R;
+import com.grafian.quran.model.Paging;
+import com.grafian.quran.model.MetaData.Mark;
 
 public class ViewerActivity extends BaseActivity {
 
