@@ -1,6 +1,6 @@
-[submodule "jni/freetype"]
-	path = jni/freetype
+[submodule "freetype"]
+	path = app/src/main/cpp/freetype
 	url = https://github.com/android/platform_external_freetype.git
-[submodule "jni/harfbuzz-ng"]
-	path = jni/harfbuzz-ng
+[submodule "harfbuzz"]
+	path = app/src/main/cpp/harfbuzz
 	url = https://github.com/arkusuma/harfbuzz-android.git

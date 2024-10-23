@@ -1,0 +1,21 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/view_as_sura"
+        android:title="@string/view_as_sura"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/view_as_page"
+        android:title="@string/view_as_page"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/view_as_juz"
+        android:title="@string/view_as_juz"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/view_as_hizb"
+        android:title="@string/view_as_hizb"
+        app:showAsAction="never" />
+
+</menu>

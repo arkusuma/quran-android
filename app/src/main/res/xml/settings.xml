@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <PreferenceCategory android:title="Language" >
+        <ListPreference
+            android:entries="@array/lang_names"
+            android:entryValues="@array/lang_codes"
+            android:key="lang"
+            android:title="Translation" />
+
+        <CheckBoxPreference
+            android:key="showTranslation"
+            android:title="Show Translation" />
+        <CheckBoxPreference
+            android:key="wordByWord"
+            android:title="Word by Word" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Appearance" >
+        <ListPreference
+            android:entries="@array/theme_names"
+            android:entryValues="@array/theme_codes"
+            android:key="theme"
+            android:title="Theme" />
+        <ListPreference
+            android:entries="@array/font_names"
+            android:entryValues="@array/font_codes"
+            android:key="fontArabic"
+            android:title="Arabic Font" />
+        <ListPreference
+            android:entries="@array/arabic_font_sizes"
+            android:entryValues="@array/arabic_font_sizes"
+            android:key="fontSizeArabic"
+            android:title="Arabic Font Size" />
+        <ListPreference
+            android:entries="@array/translation_font_sizes"
+            android:entryValues="@array/translation_font_sizes"
+            android:key="fontSizeTranslation"
+            android:title="Translation Font Size" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Layout" >
+        <CheckBoxPreference
+            android:key="rtl"
+            android:title="Right to Left" />
+        <CheckBoxPreference
+            android:key="fullWidth"
+            android:title="Full Width" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Other" >
+        <CheckBoxPreference
+            android:key="keepScreenOn"
+            android:title="Keep Screen On" />
+    </PreferenceCategory>
+
+</PreferenceScreen>
