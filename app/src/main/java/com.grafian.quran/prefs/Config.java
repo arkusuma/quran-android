@@ -27,7 +27,6 @@ public class Config {
 	final private static String FULL_WIDTH = "fullWidth";
 	final private static String KEEP_SCREEN_ON = "keepScreenOn";
 	final private static String THEME = "theme";
-	final private static String ENABLE_ANALYTICS = "enableAnalytics";
 	final private static String FONT_ARABIC = "fontArabic";
 	final private static String FONT_SIZE_ARABIC = "fontSizeArabic";
 	final private static String FONT_SIZE_TRANSLATION = "fontSizeTranslation";
@@ -81,7 +80,6 @@ public class Config {
 			wordByWord = sp.getBoolean(WORD_BY_WORD, wordByWord);
 			fullWidth = sp.getBoolean(FULL_WIDTH, fullWidth);
 			keepScreenOn = sp.getBoolean(KEEP_SCREEN_ON, keepScreenOn);
-			enableAnalytics = sp.getBoolean(ENABLE_ANALYTICS, enableAnalytics);
 			fontArabic = getStringInt(sp, FONT_ARABIC, fontArabic);
 			fontSizeArabic = getStringInt(sp, FONT_SIZE_ARABIC, fontSizeArabic);
 			fontSizeTranslation = getStringInt(sp, FONT_SIZE_TRANSLATION, fontSizeTranslation);
@@ -107,12 +105,11 @@ public class Config {
 		ed.putBoolean(WORD_BY_WORD, wordByWord);
 		ed.putBoolean(FULL_WIDTH, fullWidth);
 		ed.putBoolean(KEEP_SCREEN_ON, keepScreenOn);
-		ed.putBoolean(ENABLE_ANALYTICS, enableAnalytics);
 		ed.putString(FONT_ARABIC, "" + fontArabic);
 		ed.putString(FONT_SIZE_ARABIC, "" + fontSizeArabic);
 		ed.putString(FONT_SIZE_TRANSLATION, "" + fontSizeTranslation);
 		ed.putString(THEME, "" + theme);
-		ed.commit();
+		ed.apply();
 	}
 
 }

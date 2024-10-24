@@ -12,7 +12,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class BaseActivity extends AppCompatActivity {
@@ -83,7 +82,7 @@ public class BaseActivity extends AppCompatActivity {
 			PackageInfo info = getPackageManager().getPackageInfo(getPackageName(), 0);
 			TextView name = about.findViewById(R.id.app_name);
 			name.setText(name.getText() + " v" + info.versionName);
-		} catch (NameNotFoundException e) {
+		} catch (NameNotFoundException ignored) {
 		}
 		new AlertDialog.Builder(this)
 				.setCustomTitle(about)
@@ -96,14 +95,4 @@ public class BaseActivity extends AppCompatActivity {
 				.setCancelable(true)
 				.show();
 	}
-
-	private final DialogInterface.OnClickListener onAboutDialog = (dialog, which) -> {
-        Intent intent;
-        if (which == DialogInterface.BUTTON_POSITIVE) {
-            intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://play.google.com/store/search?q=pub:Grafian"));
-            startActivity(intent);
-        }
-        dialog.dismiss();
-    };
-
 }

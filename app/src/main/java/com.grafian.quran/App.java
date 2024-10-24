@@ -1,7 +1,6 @@
 package com.grafian.quran;
 
 import android.app.Application;
-import android.view.ViewConfiguration;
 
 import com.grafian.quran.model.MetaData;
 import com.grafian.quran.model.QuranText;
@@ -13,7 +12,6 @@ import com.grafian.quran.text.NativeRenderer;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Field;
 
 public class App extends Application {
 
@@ -42,20 +40,7 @@ public class App extends Application {
 		config.load(this);
 		bookmark.load(this);
 
-		forceOverflowMenu();
 		loadFont();
-	}
-
-	private void forceOverflowMenu() {
-		try {
-			ViewConfiguration config = ViewConfiguration.get(this);
-			Field menuKeyField = ViewConfiguration.class.getDeclaredField("sHasPermanentMenuKey");
-			if (menuKeyField != null) {
-				menuKeyField.setAccessible(true);
-				menuKeyField.setBoolean(config, false);
-			}
-		} catch (Exception ex) {
-		}
 	}
 
 	private String getQuranTextPath() {
@@ -97,7 +82,6 @@ public class App extends Application {
 				loadedFont = config.fontArabic;
 				loadedFontSize = config.fontSizeArabic;
 			} catch (IOException e) {
-				e.printStackTrace();
 				loadedFont = -1;
 				loadedFontSize = -1;
 				return false;
