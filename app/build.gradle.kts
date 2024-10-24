@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
 }
@@ -12,19 +14,39 @@ android {
         targetSdk = 34
         versionCode = 22
         versionName = "1.8.0"
+        externalNativeBuild {
+            ndkBuild {
+                arguments += "NDK_DEBUG=1"
+            }
+        }
+
     }
 
     lint {
         abortOnError = false
     }
 
+    signingConfigs {
+        create("release") {
+            val prop = Properties().apply {
+                load(File("signing.properties").reader())
+            }
+            storeFile = File(prop.getProperty("storeFile"))
+            storePassword = prop.getProperty("storePassword")
+            keyAlias = prop.getProperty("keyAlias")
+            keyPassword = prop.getProperty("keyPassword")
+        }
+    }
+
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("release")
         }
     }
     compileOptions {

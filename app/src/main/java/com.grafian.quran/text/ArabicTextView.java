@@ -78,8 +78,6 @@ public class ArabicTextView extends AppCompatTextView {
 		return extent;
 	}
 
-
-
 	private int consumeLine(int start, int width) {
 		int realStart = start;
 		int end = mWords.length - 1;

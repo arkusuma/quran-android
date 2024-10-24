@@ -260,15 +260,6 @@ public class QuranFragment extends ListFragment {
 		Sura sura = app.metaData.getSura(mark.sura);
 		String title = sura.index + ". " + App.getSuraName(sura.index);
 
-		int actionBarTitle = Resources.getSystem().getIdentifier("action_bar_subtitle", "id", "android");
-		TextView tv = getActivity().getWindow().findViewById(actionBarTitle);
-		/*if (tv == null) {
-			tv = (TextView) getActivity().getWindow().findViewById(R.id.action_bar_subtitle);
-		}*/
-		if (tv != null) {
-			tv.setMinEms(title.length());
-		}
-
 		ActionBar ab = ((ViewerActivity) getActivity()).getSupportActionBar();
 		if (!title.equals(ab.getSubtitle())) {
 			ab.setSubtitle(title);
